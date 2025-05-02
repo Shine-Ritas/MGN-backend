@@ -32,6 +32,7 @@ class GetBotServices
 
     public function getBotPublisher(int $id) : BotPublisher
     {
+        
         $botPublisher = BotPublisher::where('id', $id)->first();
 
         $SocialProviderChannels = (new SocialPublisher($botPublisher->token_key, $botPublisher->type->value))->get()->getChannelsWithSubscribers();

@@ -42,9 +42,19 @@ class SocialChannel extends Model
         });
     }
 
+
+    public function getCreatedAtAttribute(string $value): string
+    {
+        return date('Y-m-d H:i:s', strtotime($value));
+    }
+
     public function getBotTypeAttribute(): string
     {
         return SocialMediaType::getKey($this->type);
+    }
+
+    public function botProvider(){
+        return $this->hasOneThrough(BotPublisher::class,BotSocialChannel::class,'social_channel_id','id','id','bot_publisher_id');
     }
 
     public function getMetaDataAttribute(?string $value): array | null

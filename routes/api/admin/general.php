@@ -17,6 +17,9 @@ use App\Http\Controllers\Api\Admin\SubscriptionController;
 use App\Http\Controllers\Api\Admin\UserAvatarController;
 use App\Http\Controllers\Api\Admin\UserSubscriptionController;
 use App\Http\Controllers\Api\Admins\AdminManagementController;
+use App\Models\Mogou;
+use App\Models\SocialChannel;
+use App\Services\Publishing\PublishingService;
 use Illuminate\Support\Facades\Route;
 
 
@@ -162,6 +165,5 @@ Route::middleware(['auth:sanctum'])
 
 
 Route::get("/test",function(){
-    // dd((new App\Repo\Admin\Dashboard\RevenueGrowthRepo('2025-02-01','2025-02-28'))->getRevenueByDaysOfTheMonth());
-    dd((new App\Repo\Admin\Dashboard\DashboardRepo())->trafficByChapters());
+    (new PublishingService())->publishOneContent(Mogou::first(),SocialChannel::first());
 });

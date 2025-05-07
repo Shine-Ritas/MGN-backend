@@ -3,17 +3,23 @@
 namespace App\Services\BotPublisher\Bots;
 
 use App\Services\BotPublisher\Bots\Telegram\SingleChannel;
-use WeStacks\TeleBot\Laravel\TeleBot;
 use GuzzleHttp\Client;
+use Log;
+use WeStacks\TeleBot\TeleBot;
 
 class BasePublisher
 {
+
+    protected string $providerName;
     protected TeleBot|null $serviceBot;
     protected Client $httpClient;
+
+    protected string $clientAppUrl;
 
     public function __construct()
     {
         $this->httpClient = $this->createHttpClient();
+        $this->clientAppUrl = config('control.client_app_url');
     }
 
     public function self(): mixed{
@@ -31,7 +37,6 @@ class BasePublisher
         return new SingleChannel($this->serviceBot, $channel_id);
     }
 
-
     protected function createHttpClient(): Client
     {
         return new Client([
@@ -40,5 +45,10 @@ class BasePublisher
                 'Accept' => 'application/json',
             ],
         ]);
+    }
+
+
+    public function outputLog(string $message,string $level='info'){
+        Log::channel('automation')->$level("{$this->providerName} - {$message}");
     }
 }

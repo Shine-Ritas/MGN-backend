@@ -145,6 +145,13 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'automation' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/automation.log'),
+            'level' => 'debug',
+            'replace_placeholders' => true,
+        ]
     ],
 
 ];

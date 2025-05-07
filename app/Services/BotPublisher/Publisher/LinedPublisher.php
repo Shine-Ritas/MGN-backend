@@ -18,7 +18,7 @@ class LinedPublisher
         return $this->botPublisher;
     }
 
-    public function getPublisher() : PublisherInterface
+    public function getPublisher() : mixed
     {
         return $this->publisher;
     }

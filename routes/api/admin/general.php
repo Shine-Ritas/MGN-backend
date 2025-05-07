@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\MogouChapterController;
 use App\Http\Controllers\Api\Admin\MogouController;
+use App\Http\Controllers\Api\Admin\PublishingController;
 use App\Http\Controllers\Api\Admin\SectionManagementController;
 use App\Http\Controllers\Api\Admin\SocialChannelController;
 use App\Http\Controllers\Api\Admin\SocialInfoController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Api\Admin\UserSubscriptionController;
 use App\Http\Controllers\Api\Admins\AdminManagementController;
 use App\Models\Mogou;
 use App\Models\SocialChannel;
+use App\Models\SubMogou;
 use App\Services\Publishing\PublishingService;
 use Illuminate\Support\Facades\Route;
 
@@ -158,12 +160,16 @@ Route::middleware(['auth:sanctum'])
 
     Route::controller(ApplicationConfigController::class)->group(function(){
         Route::post('/application-configs','update')->name('application-configs.update');
+    });
 
+    Route::controller(PublishingController::class)->group(function(){
+        Route::post('/publish-content','publishContent')->name('publish-content');
     });
 });
 
 
-
 Route::get("/test",function(){
-    (new PublishingService())->publishOneContent(Mogou::first(),SocialChannel::first());
+    (new PublishingService())->publishOneContent(Mogou::first(),SocialChannel::first(),'test');    
+    return 'success';
+
 });

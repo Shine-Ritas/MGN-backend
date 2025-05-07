@@ -48,7 +48,7 @@ class BasePublisher
     }
 
 
-    public function outputLog(string $message,string $level='info'){
+    public function outputLog(string $message,string $level='info'):void{
         Log::channel('automation')->$level("{$this->providerName} - {$message}");
     }
 }

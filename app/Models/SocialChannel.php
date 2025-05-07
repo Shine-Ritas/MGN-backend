@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Enum\SocialMediaType;
-use Database\Factories\SocialChannelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @property mixed $providers
@@ -53,7 +53,8 @@ class SocialChannel extends Model
         return SocialMediaType::getKey($this->type);
     }
 
-    public function botProvider(){
+    /** @phpstan-ignore-next-line */
+    public function botProvider(): HasOneThrough{
         return $this->hasOneThrough(BotPublisher::class,BotSocialChannel::class,'social_channel_id','id','id','bot_publisher_id');
     }
 

@@ -10,6 +10,9 @@ run-octane:
 seed:
 	@php artisan migrate:fresh --seed
 
+optimize:
+	@php artisan optimize:clear
+
 phpstan:
 	./vendor/bin/phpstan analyse --memory-limit=512M
 

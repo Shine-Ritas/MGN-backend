@@ -11,7 +11,7 @@ class PublishingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,8 +26,12 @@ class PublishingRequest extends FormRequest
             'sub_mogou_slug' => 'nullable|string|exists:sub_mogous,slug',
             'type' => 'required|string|in:mogou,sub_mogou',
             'text_content' => 'nullable|string',
-            'social_channel_ids' => 'required|array',
-            'social_channel_ids.*' => 'required|integer|exists:social_channels,id',
+            'social_channel_ids' => ['required', function ($attribute, $value, $fail) {
+                if (!is_array($value) && $value !== 'all') {
+                    $fail('The social_channel_ids must be either an array of IDs or the string "all".');
+                }
+            }],
+            'social_channel_ids.*' => 'required_if:social_channel_ids,array|integer|exists:social_channels,id',
         ];
     }
 }

@@ -51,7 +51,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
         return $this->httpClient->get($url, ['query' => $queryParams]);
     }
 
-    public function publishContent(Mogou|SubMogou $content, SocialChannel $socialChannel, string $textContent = '')
+    public function publishContent(Mogou|SubMogou $content, SocialChannel $socialChannel,?string $textContent = ''):bool
     {
         try {
             $chapterHrefHtml = "";
@@ -73,11 +73,15 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             }
             $chapterHrefHtml = "<b>Chapters:</b>\n" . $chapterHrefHtml;
 
+            if($textContent){
+                $textContent = "\n\n" . $textContent . "\n\n";
+            }
+
             $this->serviceBot->sendPhoto([
                 'chat_id' => $socialChannel->token_key,
                 'photo' => $mougou->cover,
                 'parse_mode' => 'html',
-                'caption' => "{$title}\n\n{$content->description}\n\n{$textContent}\n\n{$chapterHrefHtml}",
+                'caption' => "{$title}\n\n{$content->description}{$textContent}{$chapterHrefHtml}",
                 'reply_markup' => [
                     'inline_keyboard' => [
                         [

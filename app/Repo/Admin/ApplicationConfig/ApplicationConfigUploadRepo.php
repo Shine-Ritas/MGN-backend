@@ -5,6 +5,7 @@ namespace App\Repo\Admin\ApplicationConfig;
 use App\Models\ApplicationConfig;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
 use Illuminate\Http\Request;
+use Log;
 use UnexpectedValueException;
 
 class ApplicationConfigUploadRepo
@@ -28,7 +29,6 @@ class ApplicationConfigUploadRepo
             if ($request->hasFile($property)) {
                 $this->handleFileUpload($app, $request, $property);
             }
-
         }
 
         $app->fill($request->only('title','daily_subscriptions_target','daily_traffic_target','monthly_subscriptions_target','user_side_is_maintenance_mode'));

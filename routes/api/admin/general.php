@@ -145,6 +145,7 @@ Route::middleware(['auth:sanctum'])
     });
 
     Route::controller(SocialChannelController::class)->group(function(){
+        Route::get('/social-channels','index')->name('social-channels.index');
         Route::post('/social-channel','create')->name('social-channels.store');
     });
 
@@ -167,9 +168,7 @@ Route::middleware(['auth:sanctum'])
     });
 });
 
-
 Route::get("/test",function(){
-    (new PublishingService())->publishOneContent(Mogou::first(),SocialChannel::first(),'test');    
+    (new PublishingService())->publishContent(Mogou::first(),SocialChannel::first(),'test');    
     return 'success';
-
 });

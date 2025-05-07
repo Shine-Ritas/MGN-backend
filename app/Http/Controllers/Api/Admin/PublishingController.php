@@ -20,7 +20,7 @@ class PublishingController extends Controller
         $content = $this->publishingService->getContentModel($request->mogou_slug, $request->sub_mogou_slug, $request->type);
         try {
             if ($content) {
-                $this->publishingService->publishOneContent($content, $request->social_channel_ids, $request->text_content);
+                $this->publishingService->publishContent($content, $request->social_channel_ids, $request->text_content);
             }else{
                 return response()->json(['message' => "Content not found"], 404);
             }

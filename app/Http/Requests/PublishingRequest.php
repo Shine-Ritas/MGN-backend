@@ -23,7 +23,7 @@ class PublishingRequest extends FormRequest
     {
         return [
             'mogou_slug' => 'nullable|string|exists:mogous,slug',
-            'sub_mogou_slug' => 'nullable|string|exists:sub_mogous,slug',
+            'sub_mogou_slug' => 'nullable|string',
             'type' => 'required|string|in:mogou,sub_mogou',
             'text_content' => 'nullable|string',
             'social_channel_ids' => ['required', function ($attribute, $value, $fail) {

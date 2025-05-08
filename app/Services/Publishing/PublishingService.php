@@ -9,6 +9,7 @@ use App\Models\SocialChannel;
 use App\Models\SubMogou;
 use App\Repo\Admin\SubMogouRepo\MogouPartitionFind;
 use App\Services\BotPublisher\GetBotServices;
+use Illuminate\Support\Facades\Log;
 
 class PublishingService
 {
@@ -24,7 +25,7 @@ class PublishingService
 
         if($type == "sub_mogou"){
             $sub_mogou = MogouPartitionFind::getSubMogou("slug", $mogou_slug);
-            return $sub_mogou->where('slug',$sub_mogou_slug)->first();
+            return $sub_mogou->where('slug',$sub_mogou_slug)->firstOrFail();
         }
 
         return null;
@@ -33,6 +34,7 @@ class PublishingService
 
     public function publishContent(Mogou|SubMogou $mougou,array|string $socialChannel,?string $content=''):bool
     {
+
         if($socialChannel == "all"){
             $socialChannels = SocialChannel::all();
             foreach($socialChannels as $socialChannel){
@@ -40,6 +42,7 @@ class PublishingService
             }
         }else{
            $socialChannel = SocialChannel::whereIn('id',$socialChannel)->get();
+           $socialChannel = $socialChannel->unique('token_key');
            foreach($socialChannel as $channel){
                 $this->upload($channel,$mougou,$content);
            }
@@ -49,15 +52,17 @@ class PublishingService
     }
     
 
-    public function upload(SocialChannel $socialChannel,Mogou|SubMogou $mougou,?string $content=''):void{
+    public function upload(SocialChannel $socialChannel,Mogou|SubMogou $modal,?string $content=''):void{
         $botProvider = $socialChannel->botProvider;
         $bot = ((new GetBotServices())->getBot((int) $botProvider->id))->getPublisher();
-        $bot->publishContent($mougou,$socialChannel,$content);
+        $bot->publishContent($modal,$socialChannel,$content);
 
+        $Mogou = $modal instanceof Mogou ? $modal : $modal->mogou;
+        
         $this->savedToBotPublisher([
             'bot_publisher_id' => $botProvider->id,
-            'mogou_id' => $mougou->id,
-            'sub_mogou_id' => $mougou->id,
+            'mogou_id' => $Mogou->id,
+            'sub_mogou_id' => $modal->id,
             'social_channel_id' => $socialChannel->id,
             'data' => $content,
         ]);

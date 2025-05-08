@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PublishingRequest;
 use App\Services\Publishing\PublishingService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class PublishingController extends Controller
 {
@@ -27,6 +28,7 @@ class PublishingController extends Controller
             return response()->json(['message' => 'Content published successfully'], 200);
 
         } catch (\Exception $e) {
+            Log::channel('automation')->error($e->getMessage());
             return response()->json(['message' => "Publishing failed"], 500);
         }
     }

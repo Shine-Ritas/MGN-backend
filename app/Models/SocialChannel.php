@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
+
 /**
  * @property mixed $providers
  */
 class SocialChannel extends Model
 {
-    /** @use HasFactory<SocialChannelFactory> */
+    /** @use HasFactory<\Database\Factories\SocialChannelFactory> */
+
     use HasFactory;
 
     protected $fillable = [

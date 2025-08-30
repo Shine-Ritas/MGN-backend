@@ -17,9 +17,22 @@ use Illuminate\Validation\ValidationException;
 class Authentication
 {
     protected string $authType = 'web';
+    protected Request $request;
 
-    public function __construct(protected Request $request)
+    public function __construct(Request $request = null)
     {
+        if ($request) {
+            $this->request = $request;
+        }
+    }
+
+    /**
+     * Set the request object.
+     */
+    public function setRequest(Request $request): self
+    {
+        $this->request = $request;
+        return $this;
     }
 
     /**

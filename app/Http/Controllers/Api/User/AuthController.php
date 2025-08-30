@@ -6,21 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserRegistrationRequest;
+use App\Services\Auth\Authentication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function __construct()
+    public function __construct(protected Authentication $authService)
     {
 
     }
 
     public function login(UserLoginRequest $request): JsonResponse
     {
-        $process =  new \App\Services\Auth\Authentication($request);
+        $this->authService->setRequest($request);
 
-        return $process->returnResponse('api')->signIn('web', '');
+        return $this->authService->returnResponse('api')->signIn('web', '');
     }
 
     public function register(UserRegistrationRequest $request): JsonResponse
@@ -30,15 +31,15 @@ class AuthController extends Controller
             'password' => 'required|string|min:8'
         ]);
 
-        $process =  new \App\Services\Auth\Authentication($request);
+        $this->authService->setRequest($request);
 
-        return $process->returnResponse('api')->signUp('web', '');
+        return $this->authService->returnResponse('api')->signUp('web', '');
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $process =  new \App\Services\Auth\Authentication($request);
+        $this->authService->setRequest($request);
 
-        return $process->returnResponse('api')->signOut();
+        return $this->authService->returnResponse('api')->signOut();
     }
 }

@@ -24,20 +24,40 @@ beforeEach(function () {
 
     // Mock Authentication service to bypass real authentication logic
     $this->mock(Authentication::class, function ($mock) {
+        $mock->shouldReceive('setRequest')->andReturnSelf();
         $mock->shouldReceive('returnResponse')->andReturnSelf();
         $mock->shouldReceive('signIn')->andReturn(response()->json([
             'token' => 'sample-token',
             'user' => [
                 'id' => 1,
                 'name' => 'Test User',
-                // Add any other user fields as needed
-            ]
+                'email' => 'test@example.com',
+                'user_code' => 'testuser'
+            ],
+            'role' => null
+        ], 200));
+        $mock->shouldReceive('signUp')->andReturn(response()->json([
+            'token' => 'sample-token',
+            'user' => [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'user_code' => 'testuser'
+            ],
+            'role' => null
+        ], 200));
+        $mock->shouldReceive('signOut')->andReturn(response()->json([
+            'message' => 'Logged out successfully'
         ], 200));
     });
 });
 
 test('user login route exists', function () {
     $this->assertTrue(Route::has('api.user.login'));
+});
+
+test('user register route exists', function () {
+    $this->assertTrue(Route::has('api.user.register'));
 });
 
 test("user can login successfully", function () {
@@ -56,6 +76,34 @@ test("user can login successfully", function () {
             'name',
             // Add other expected user fields
         ]
+    ]);
+    
+    // Assert that we get the mocked token
+    $response->assertJson([
+        'token' => 'sample-token'
+    ]);
+});
+
+test("User can register successfully",function(){
+    $response = $this->postJson(route("api.user.register"), [
+        'name' => 'Test User',
+        'email' => 'testuser@gmail.com',
+        'user_code' => 'testuser',
+        'password' => 'password',
+        'password_confirmation' => 'password'
+    ]);
+
+    $response->assertStatus(200)->assertJsonStructure([
+        'token',
+        'user' => [
+            'id',
+            'name',
+        ]
+    ]);
+    
+    // Assert that we get the mocked token
+    $response->assertJson([
+        'token' => 'sample-token'
     ]);
 });
 

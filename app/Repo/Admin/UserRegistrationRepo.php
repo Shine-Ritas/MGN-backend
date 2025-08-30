@@ -31,7 +31,7 @@ class UserRegistrationRepo
     public static function registerUser(UserRegistrationRequest|Request $request,bool $register = false): User
     {
         return DB::transaction(function () use ($request,$register) {
-            $data =  $request->validated();
+            $data = $request instanceof UserRegistrationRequest ? $request->validated() : $request->all();
             $data = self::mutateDataSubscription($data,$register);
             $user = User::create($data);
             if($data['current_subscription_id']){

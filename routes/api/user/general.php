@@ -23,13 +23,14 @@ Route::middleware(['user.maintenance'])->group(function () {
 
         Route::controller(UserProfileController::class)->group(function () {
             Route::get('/profile', 'getProfile')->name('profile');
-
+            Route::get('/get-subscription','getSubscription')->name("getSubscription");
             Route::post("/update/profile", "updateProfile")->name("update.profile");
         });
 
         Route::controller(UserAvatarController::class)->group(function () {
             Route::get('/user-avatars', 'get')->name('avatars');
         });
+        
     });
 
     Route::prefix('users')->name('users.')->group(function () {

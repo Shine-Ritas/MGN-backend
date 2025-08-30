@@ -25,21 +25,23 @@ class UserRegistrationRepo
     /**
      * handle user registration
      *
-     * @param UserRegistrationRequest $request
+     * @param UserRegistrationRequest|Request $request
      * @return User
      */
-    public static function registerUser(UserRegistrationRequest $request): User
+    public static function registerUser(UserRegistrationRequest|Request $request,bool $register = false): User
     {
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request,$register) {
             $data =  $request->validated();
-            $data = self::mutateDataSubscription($data);
+            $data = self::mutateDataSubscription($data,$register);
             $user = User::create($data);
+            if($data['current_subscription_id']){
             UserSubscription::create(
                 [
                     'user_id' => $user->id,
-                    'subscription_id' => $data['current_subscription_id'],
-                ]
-            );
+                        'subscription_id' => $data['current_subscription_id'],
+                    ]
+                );
+            }
             return $user;
         });
     }
@@ -105,13 +107,18 @@ class UserRegistrationRepo
      * @param  mixed $data
      * @return mixed
      */
-    protected static function mutateDataSubscription(mixed $data): mixed
+    protected static function mutateDataSubscription(mixed $data,bool $register = false): mixed
     {
         if (isset($data['current_subscription_id'])) {
             $end_date = Subscription::where('id', $data['current_subscription_id'])->first()->duration;
 
             $data['subscription_end_date'] = now()->addDays($end_date);
         }
+
+        if($register){
+            $data['current_subscription_id'] = null;
+        }
+
         return $data;
     }
 

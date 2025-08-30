@@ -3,6 +3,7 @@
 namespace App\Services\Auth;
 
 use App\Jobs\RecordLoginAddress;
+use App\Repo\Admin\UserRegistrationRepo;
 use App\Services\ClientIp\ClientIpAddressService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
@@ -47,20 +48,24 @@ class Authentication
     }
 
      /**
-     * Handle the sign-up process and generate a redirect response.
+     * Handle the user sign-up process and generate an appropriate response.
      *
-     * @param Model $model The model where the user data is being saved
-     * @param array<string, mixed> $body The body data to create a new user (field names and values)
-     * @param string $redirect The URL to redirect after successful sign-up
-     * @param string $message The success message to display (default: 'Registered Successfully!')
+     * Registers a new user using validated request data and returns either a redirect
+     * response for web authentication or a JSON response for API authentication.
      *
-     * @return RedirectResponse
+     * @param string $guard The authentication guard to use (default: 'web')
+     * @param string $path The path to redirect to after successful registration (default: '/dashboard')
+     *
+     * @return RedirectResponse|JsonResponse Returns a redirect response for web auth or JSON response for API auth
+     *
+     * @throws \Exception When user registration fails
      */
-    public function signUp(Model $model, array $body, string $redirect, string $message = 'Registered Successfully!'): RedirectResponse
+    public function signUp(string $guard = 'web', string $path = '/dashboard'): RedirectResponse|JsonResponse
     {
         try {
-            $model::create($body);
-            return $this->signUpSuccessResponse($redirect, $message);
+            $user = UserRegistrationRepo::registerUser($this->request,true);
+            
+            return $this->signIn($guard,$path);
         } catch (\Exception $e) {
             return $this->handleSignUpException($e);
         }
@@ -159,15 +164,11 @@ class Authentication
     /**
      * Generate a success response for sign-up.
      */
-    protected function signUpSuccessResponse(string $redirect, string $message): RedirectResponse
+    protected function signUpSuccessResponse(string $path, string $guard = 'web') : RedirectResponse | JsonResponse
     {
-        return redirect($redirect)->with(
-            [
-            'alert' => [
-                'type' => 'success',
-                'message' => $message,
-            ]
-            ]
+        return $this->fnResponse(
+            fn() => $this->regenerateSessionAndRedirect($path),
+            $this->generateApiResponseData($guard)
         );
     }
 

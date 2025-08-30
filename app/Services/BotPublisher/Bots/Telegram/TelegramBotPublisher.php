@@ -57,13 +57,15 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             $chapterHrefHtml = "";
             $mougou = null;
             if ($content instanceof Mogou) {
-                $latestThreeChapters = $content->subMogous()->latest('chapter_number')->limit(3)->get();
                 $mougou = $content;
+                $latestThreeChapters = $content->subMogous($mougou->rotation_key)->latest('chapter_number')->limit(3)->get();
                 $title = $content->title;
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}";
             } else {
-                $latestThreeChapters = $content->mogou->subMogous()->latest('chapter_number')->limit(3)->get();
                 $mougou = $content->mogou;
+                $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)->latest('chapter_number')
+                ->where('chapter_number','<',$content->chapter_number)
+                ->limit(3)->get();
                 $title = "$mougou->title - Chapter {$content->chapter_number}";
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$content->slug}";
             }
@@ -76,6 +78,8 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             if($textContent){
                 $textContent = "\n\n" . $textContent . "\n\n";
             }
+
+            \Log::info('debug',['deb' => $content->mogou->subMogous]);
 
             $this->serviceBot->sendPhoto([
                 'chat_id' => $socialChannel->token_key,

@@ -26,10 +26,10 @@ class SocialChannelActionRepo
         $channel = SocialChannel::where('token_key', $request->token_key)->first();
 
         if ($channel) {
-            $publisher_channel = BotSocialChannel::where('bot_publisher_id', $request->bot_id)->where('social_channel_id', $channel->id)->first();
+            $publisher_channel = BotSocialChannel::where('social_channel_id', $channel->id)->first();
 
             if ($publisher_channel) {
-                throw new \Exception('Channel already exists', 400);
+                throw new \Exception('Channel already exists or other bot have this channel', 400);
             }
         }
 

@@ -46,8 +46,12 @@ class User extends Authenticatable
     }
 
 
-    public function getSubscriptionEndDateAttribute(string $value): string|null
+    public function getSubscriptionEndDateAttribute(?string $value): string|null
     {
+        if($value == null){
+            return null;
+        }
+
         $timestamp = strtotime($value);
         return $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : null;
     }

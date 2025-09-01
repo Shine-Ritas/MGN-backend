@@ -9,6 +9,7 @@ use App\Models\SubMogou;
 use App\Models\SubMogouImage;
 use HydraStorage\HydraStorage\Service\Option\MediaOption;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
+use Storage;
 
 class SubMogouStorageUploadRepo
 {
@@ -44,18 +45,17 @@ class SubMogouStorageUploadRepo
     public function upload(SubMogouStorageUploadRequest $request): SubMogou{
 
         $subMogou = $this->setSubMogouTable("id", $request['mogou_id']);
-        $subMogou = $subMogou->where('slug', $request['sub_mogou_slug'])->firstOrFail();
+        $subMogou = $subMogou->where('ulid', $request['ulid'])->firstOrFail();
 
         $parent_mogou = $this->parentMogou->id;
         $sub_mogou_id = $subMogou->id;
         $path = "mogou/{$parent_mogou}/{$sub_mogou_id}";
 
-        $mediaOption =  MediaOption::create()
-        ->setQuality($this->compress_quality );
+        $mediaOption =  MediaOption::create();
 
-        if($request->has('water_mark')){
+        // if($request->has('water_mark')){
             $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage(),'center',100);
-        }
+        // }
         $mediaOption = $mediaOption->get();
         $subMogouImage = new SubMogouImage();
 
@@ -85,15 +85,20 @@ class SubMogouStorageUploadRepo
         $subMogouImage->setTable($table);
         $fileRecord =  $subMogouImage->where('id', $data['image_id'])->firstOrFail();
 
-        $this->removeMedia($fileRecord->path, "mogou/{$data['mogou_id']}/{$data['sub_mogou_id']}");
+        $this->removeMedia("public/mogou/{$data['mogou_id']}/{$data['sub_mogou_id']}/{$fileRecord->path}");
 
 
     }
 
-    public function getWaterMarkImage(): string
+    public function getWaterMarkImage()
     {
         $app = ApplicationConfig::firstOrFail();
 
-        return $app->water_mark;
+        // get original water_mark path 
+        $water_mark = $app->getRawOriginal('water_mark');
+
+        $provider = config('hydrastorage.provider');
+        $wm = Storage::disk($provider)->get('public/config/'.$water_mark);
+        return $wm;
     }
 }

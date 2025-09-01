@@ -14,6 +14,7 @@ class ApplicationConfigUploadRepo
 
     private array $validUploadProperties = [
         'logo',
+        'cover_photo',
         'water_mark',
         'intro_a',
         'outro_a',
@@ -24,10 +25,13 @@ class ApplicationConfigUploadRepo
     public function upload(Request $request): ApplicationConfig
     {
         $app = ApplicationConfig::firstOrFail();
+    
+
+        \Log::info('log',[$request->all()]);
 
         foreach ($this->validUploadProperties as $property) {
             if ($request->hasFile($property)) {
-                $this->handleFileUpload($app, $request, $property);
+                $app = $this->handleFileUpload($app, $request, $property);
             }
         }
 
@@ -37,7 +41,7 @@ class ApplicationConfigUploadRepo
         return $app;
     }
 
-    private function handleFileUpload(ApplicationConfig $app, Request $request, string $property): void
+    private function handleFileUpload(ApplicationConfig $app, Request $request, string $property): ApplicationConfig
     {
         $oldPath = $app->getRawOriginal($property);
         $this->removeMedia("public/config/{$oldPath}");
@@ -46,5 +50,7 @@ class ApplicationConfigUploadRepo
             throw new UnexpectedValueException('Expected a string path but got an array.');
         }
         $app->{$property} = $mediaResult;
+        $app->save();
+        return $app;
     }
 }

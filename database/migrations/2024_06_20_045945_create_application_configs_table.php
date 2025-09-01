@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer("daily_subscriptions_target")->default(1000);
             $table->integer("daily_traffic_target")->default(1000);
             $table->string("logo")->nullable();
+            $table->string("watermark_position")->default("top-left");
+            $table->string("cover_photo")->nullable();
             $table->string("water_mark")->nullable();
             $table->string("intro_a")->nullable();
             $table->string("outro_a")->nullable();

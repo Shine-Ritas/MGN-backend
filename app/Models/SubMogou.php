@@ -62,7 +62,7 @@ class SubMogou extends Model
             function ($sub_mogou) {
                 $sub_mogou->slug = Str::slug($sub_mogou->title);
                 Mogou::where('id', $sub_mogou->mogou_id)->increment('total_chapters');
-
+                $sub_mogou->ulid = Str::ulid();
             }
         );
 

@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
@@ -53,6 +54,17 @@ class Handler extends ExceptionHandler
                 'message' => "{$this->prettyModelNotFound($e)} not found"
                 ], Response::HTTP_NOT_FOUND
             );
+        }
+
+        // Handle authentication exceptions for API routes
+        if ($e instanceof AuthenticationException) {
+            // Check if this is an API request
+            if ($request->is('api/*') || $request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Unauthenticated.',
+                    'error' => 'Authentication required'
+                ], Response::HTTP_UNAUTHORIZED);
+            }
         }
 
         return parent::render($request, $e);

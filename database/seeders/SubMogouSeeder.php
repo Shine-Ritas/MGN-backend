@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class SubMogouSeeder extends Seeder
 {
@@ -26,6 +27,7 @@ class SubMogouSeeder extends Seeder
                 $total_chapter = 5;
                 for ($j = 1; $j <= $total_chapter; $j++) {
                     SubMogou::factory()->create([
+                        'ulid' => Str::ulid(),
                         'mogou_id' => $i,
                         'chapter_number' => $j,
                         'creator_id' => rand(1, 6),
@@ -56,6 +58,7 @@ class SubMogouSeeder extends Seeder
                     for ($j = 1; $j <= $total_chapter; $j++) {
                         $sub_mogou_insert[] = [
                             'title' => 'Chapter ' . $j . ' of Mogou ' . $mogou[$i],
+                            'ulid' => Str::ulid(),
                             "slug" => "chapter-" . $j . rand(1, 100) . "-of-mogou-" . $mogou[$i] . rand(1, 100),
                             'cover' => 'cover.jpg',
                             'mogou_id' => $mogou[$i],

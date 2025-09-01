@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('sub_mogous', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->ulid('ulid')->unique();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('cover')->nullable();
@@ -33,7 +34,11 @@ return new class extends Migration
 
             $table->foreignId('mogou_id')->constrained()->onDelete('cascade');
             $table->morphs('creator');
+
             $table->timestamps();
+
+            // index
+            $table->index('ulid');
         });
     }
 

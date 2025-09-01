@@ -26,7 +26,7 @@ class SubMogouDraftRequest extends FormRequest
             'title' => 'required|string',
             'chapter_number' => 'required|integer',
             'mogou_slug' => "required|string|exists:mogous,slug",
-            "description" => "required|string",
+            "description" => "nullable|string",
             "third_party_url" => "nullable|string|min:5",
             "subscription_only" => "required|boolean",
             'third_party_redirect' => 'required|boolean',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DeleteSubmogouImageRequest;
 use App\Http\Requests\SubMogouDraftRequest;
 use App\Http\Requests\SubMogouStorageUploadRequest;
 use App\Http\Requests\SubMogouZipUploadRequest;
@@ -116,6 +117,11 @@ class SubMogouController extends Controller
         catch(\Exception $e){
             return response()->json(['message' => $e->getMessage()],500);
         }
+    }
 
+    public function deleteImage(DeleteSubmogouImageRequest $request): JsonResponse
+    {
+        $this->subMogouActionRepo->deleteImage($request->validated());
+        return response()->json(['message' => 'success'],200);
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Services\LexoRank;
 
 use App\Models\SubMogouImage;
-use App\Repo\Admin\SubMogouRepo\MogouPartitionFind;
 use Illuminate\Support\Facades\Log;
 
 class LexoRankHelperService {

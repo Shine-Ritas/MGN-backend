@@ -202,6 +202,22 @@ class SubMogouActionRepo
         return true;
     }
 
+    public function deleteImage(array $data): bool
+    {
+        $subMogouImage = MogouPartitionFind::getSubMogouImage("id", $data['mogou_id']);
+        $fileRecord = $subMogouImage->where('id', $data['image_id'])->firstOrFail();
+        $mogou_id = $fileRecord->mogou_id;
+        $sub_mogou_id = $fileRecord->sub_mogou_id;
+        $path = $fileRecord->getRawOriginal('path');
+
+        $path = "public/mogou/{$mogou_id}/{$sub_mogou_id}/{$path}";
+
+        $this->removeMedia($path);
+
+        $fileRecord->delete();
+        return true;
+    }
+
     private function generateNewLexoRank(string $targetPosition) : string
     {
         return $targetPosition . "a"; // Append a character to ensure uniqueness

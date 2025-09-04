@@ -35,7 +35,7 @@ class ApplicationConfigUploadRepo
             }
         }
 
-        $app->fill($request->only('title','daily_subscriptions_target','daily_traffic_target','monthly_subscriptions_target','user_side_is_maintenance_mode'));
+        $app->fill($request->only('title','daily_subscriptions_target','daily_traffic_target','monthly_subscriptions_target','user_side_is_maintenance_mode','watermark_position'));
         $app->save();
 
         return $app;

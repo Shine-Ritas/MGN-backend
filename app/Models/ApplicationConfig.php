@@ -19,6 +19,7 @@ class ApplicationConfig extends Model
         'monthly_subscriptions_target',
         'user_side_is_maintenance_mode',
         'water_mark',
+        'watermark_position',
         'cover_photo',
         'intro_a',
         'outro_a',

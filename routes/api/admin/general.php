@@ -117,6 +117,7 @@ Route::middleware(['auth:sanctum'])
         Route::post("/sub-mogous/remove-file",'removeStorageFile')->name('sub-mogous.removeStorageFile');
         Route::post("/sub-mogous/delete",'deleteSubMogou')->name('sub-mogous.deleteSubMogou');
         Route::post("/sub-mogous/image/reorder",'updateImageIndex')->name('sub-mogous.reorder');
+        Route::post("/sub-mogous/image/delete",'deleteImage')->name('sub-mogous.deleteImage');
     });
 
     Route::controller(SocialInfoController::class)->group(function(){

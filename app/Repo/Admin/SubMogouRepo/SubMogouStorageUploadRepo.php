@@ -53,9 +53,10 @@ class SubMogouStorageUploadRepo
 
         $mediaOption =  MediaOption::create();
 
-        // if($request->has('water_mark')){
-            $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage(),'center',100);
-        // }
+        if($request->has('watermark_apply') && $request->watermark_apply == '1'){
+            $applicationConfig = ApplicationConfig::firstOrFail();
+            $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage(),$applicationConfig->watermark_position,100);
+        }
         $mediaOption = $mediaOption->get();
         $subMogouImage = new SubMogouImage();
 

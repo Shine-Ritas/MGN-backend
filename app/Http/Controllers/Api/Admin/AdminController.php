@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Enum\AdminRole;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Services\RolePermissions\AlphaRole;
@@ -11,11 +10,7 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-
-    public function __construct(public AlphaRole $alphaRole)
-    {
-
-    }
+    public function __construct(public AlphaRole $alphaRole) {}
 
     public function roles(Request $request): JsonResponse
     {
@@ -23,7 +18,7 @@ class AdminController extends Controller
 
         return response()->json(
             [
-            'roles' => $roles
+                'roles' => $roles,
             ]
         );
     }
@@ -32,8 +27,8 @@ class AdminController extends Controller
     {
         $request->validate(
             [
-            'name' => 'required|string',
-            'permissions' => 'array'
+                'name' => 'required|string',
+                'permissions' => 'array',
             ]
         );
 
@@ -41,8 +36,8 @@ class AdminController extends Controller
 
         return response()->json(
             [
-            'role' => $role,
-            'message' => 'Role created successfully',
+                'role' => $role,
+                'message' => 'Role created successfully',
             ], 201
         );
     }
@@ -53,19 +48,19 @@ class AdminController extends Controller
 
         return response()->json(
             [
-            'permissions' => $permissions
+                'permissions' => $permissions,
             ]
         );
     }
 
-    public function getAuthPermissions() : JsonResponse
+    public function getAuthPermissions(): JsonResponse
     {
 
         $permissions = auth()->user()->allPermissions;
 
         return response()->json(
             [
-            'permissions' => $permissions,
+                'permissions' => $permissions,
 
             ]
         );
@@ -73,11 +68,11 @@ class AdminController extends Controller
 
     public function members(Request $request): JsonResponse
     {
-        $members =  Admin::with('roles')->get();
+        $members = Admin::with('roles')->get();
 
         return response()->json(
             [
-            'members' => $members
+                'members' => $members,
             ]
         );
     }

@@ -14,17 +14,17 @@ uses()->group('service', 'chapter-analysis-service');
 beforeEach(function () {
     Cache::flush();
     ChapterAnalysis::truncate();
-    $this->service = new ChapterAnalysisService();
+    $this->service = new ChapterAnalysisService;
 
     config(['control.test.mogous_count' => 20]);
 
     $this->seed([
         CategorySeeder::class,
         MogouSeeder::class,
-        SubMogouSeeder::class
+        SubMogouSeeder::class,
     ]);
 
-    $this->client_ip = "127.0.0.1";
+    $this->client_ip = '127.0.0.1';
     $this->sub_mogou_id = 22;
     $this->subMogou = SubMogou::findOrFail($this->sub_mogou_id);
 
@@ -36,7 +36,6 @@ uses(FakeIpHeader::class);
 
 it('stores a new chapter view if not cached', function () {
     $this->setupHeader($this->client_ip);
-
 
     $response = $this->service->storeRecord($this->subMogou);
 

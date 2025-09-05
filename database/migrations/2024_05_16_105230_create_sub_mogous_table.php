@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('cover')->nullable();
 
             $table->integer('status')->default(MogousStatus::DRAFT->value);
-            $table->integer("chapter_number");
+            $table->integer('chapter_number');
             $table->unsignedBigInteger('views')->default(0);
 
             $table->text('third_party_url')->nullable();

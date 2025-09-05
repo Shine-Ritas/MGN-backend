@@ -19,7 +19,7 @@ class CacheApplicationConfigService
 
     public function getApplicationConfig(): mixed
     {
-        $key = $this->cacheKey ;
+        $key = $this->cacheKey;
         $applicationConfig = (new self)->cacheResponse(
             $key, 300, function () {
                 return ApplicationConfig::first();
@@ -28,5 +28,4 @@ class CacheApplicationConfigService
 
         return $applicationConfig;
     }
-
 }

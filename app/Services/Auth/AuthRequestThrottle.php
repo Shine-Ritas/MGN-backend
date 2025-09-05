@@ -3,8 +3,8 @@
 namespace App\Services\Auth;
 
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AuthRequestThrottle
 {
@@ -22,7 +22,7 @@ class AuthRequestThrottle
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (!RateLimiter::tooManyAttempts($this->key, $this->maxAttempts())) {
+        if (! RateLimiter::tooManyAttempts($this->key, $this->maxAttempts())) {
             return;
         }
 
@@ -30,12 +30,12 @@ class AuthRequestThrottle
 
         throw ValidationException::withMessages(
             [
-            'message' => trans(
-                'auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-                ]
-            ),
+                'message' => trans(
+                    'auth.throttle', [
+                        'seconds' => $seconds,
+                        'minutes' => ceil($seconds / 60),
+                    ]
+                ),
             ]
         );
     }
@@ -69,6 +69,6 @@ class AuthRequestThrottle
      */
     protected function generateThrottleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email) . '|' . $this->ip);
+        return Str::transliterate(Str::lower($this->email).'|'.$this->ip);
     }
 }

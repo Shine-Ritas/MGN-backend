@@ -14,6 +14,7 @@ class ClientIpAddressService
     public function getClientInfo(string $ip): bool|Position
     {
         Log::info('ClientIpAddressService R1', ['client_ip' => $ip]);
+
         return Location::get($ip);
     }
 
@@ -25,7 +26,7 @@ class ClientIpAddressService
 
         $location = $this->getClientInfo($ip);
 
-        $device = Browser::platformName() . " ( " . Browser::browserFamily() . " ) ";
+        $device = Browser::platformName().' ( '.Browser::browserFamily().' ) ';
 
         $country = $location instanceof Position ? $location->countryName : 'Unknown';
         $region = $location instanceof Position ? $location->regionName : 'Unknown';
@@ -36,7 +37,7 @@ class ClientIpAddressService
             'location' => $locationString,
             'country' => $country,
             'device' => $device,
-            'login_at' => now()
+            'login_at' => now(),
         ]);
 
         $user->last_login_at = now();

@@ -7,13 +7,11 @@ use App\Models\Mogou;
 use App\Models\SocialChannel;
 use App\Models\SubMogou;
 use App\Services\BotPublisher\Bots\BasePublisher;
-use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Collection;
 use WeStacks\TeleBot\TeleBot;
 
 class TelegramBotPublisher extends BasePublisher implements PublisherInterface
 {
-
     public function __construct(protected string $api_key)
     {
         parent::__construct();
@@ -29,6 +27,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
     public function checkIsExistOnProvider(string $id): bool
     {
         $response = $this->makeTelegramRequest("bot{$id}/getMe");
+
         return $response->getStatusCode() === 200;
     }
 
@@ -36,6 +35,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
     {
         return $channels->map(function ($channel) {
             $channel->providers = $this->individualChannel($channel->token_key)->getChatInfo();
+
             return $channel;
         });
     }
@@ -48,13 +48,14 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
     protected function makeTelegramRequest(string $endpoint, array $queryParams = []): \Psr\Http\Message\ResponseInterface
     {
         $url = "https://api.telegram.org/{$endpoint}";
+
         return $this->httpClient->get($url, ['query' => $queryParams]);
     }
 
-    public function publishContent(Mogou|SubMogou $content, SocialChannel $socialChannel,?string $textContent = ''):bool
+    public function publishContent(Mogou|SubMogou $content, SocialChannel $socialChannel, ?string $textContent = ''): bool
     {
         try {
-            $chapterHrefHtml = "";
+            $chapterHrefHtml = '';
             $mougou = null;
             if ($content instanceof Mogou) {
                 $mougou = $content;
@@ -64,8 +65,8 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             } else {
                 $mougou = $content->mogou;
                 $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)->latest('chapter_number')
-                ->where('chapter_number','<',$content->chapter_number)
-                ->limit(3)->get();
+                    ->where('chapter_number', '<', $content->chapter_number)
+                    ->limit(3)->get();
                 $title = "$mougou->title - Chapter {$content->chapter_number}";
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$content->slug}";
             }
@@ -73,13 +74,13 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             foreach ($latestThreeChapters as $chapter) {
                 $chapterHrefHtml .= "<a href='{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$chapter->slug}'>Chapter {$chapter->chapter_number}</a>\n";
             }
-            $chapterHrefHtml = "<b>Chapters:</b>\n" . $chapterHrefHtml;
+            $chapterHrefHtml = "<b>Chapters:</b>\n".$chapterHrefHtml;
 
-            if($textContent){
-                $textContent = "\n\n" . $textContent . "\n\n";
+            if ($textContent) {
+                $textContent = "\n\n".$textContent."\n\n";
             }
 
-            \Log::info('debug',['deb' => $content->mogou->subMogous]);
+            \Log::info('debug', ['deb' => $content->mogou->subMogous]);
 
             $this->serviceBot->sendPhoto([
                 'chat_id' => $socialChannel->token_key,
@@ -95,13 +96,14 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 ],
             ]);
 
-            $this->outputLog("{$socialChannel->name} - {$content->id} at - " . now()->toDateTimeString());
+            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString());
 
             return true;
 
         } catch (\Exception $e) {
-            $this->outputLog("{$socialChannel->name} - {$content->id} at - " . now()->toDateTimeString(),'error');
-            $this->outputLog($e->getMessage(),'error');
+            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString(), 'error');
+            $this->outputLog($e->getMessage(), 'error');
+
             return false;
         }
     }

@@ -7,19 +7,16 @@ use App\Http\Requests\UserFavoriteRequest;
 use App\Models\User;
 use App\Repo\User\Favorite\UserFavoriteRepo;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class UserFavoriteController extends Controller
 {
-    public function __construct(protected UserFavoriteRepo $userFavoriteRepo)
-    {
-    }
+    public function __construct(protected UserFavoriteRepo $userFavoriteRepo) {}
 
     public function index(): JsonResponse
     {
         return response()->json(
             [
-            'favorites' => $this->userFavoriteRepo->getFavorites()
+                'favorites' => $this->userFavoriteRepo->getFavorites(),
             ]
         );
     }

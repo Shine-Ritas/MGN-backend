@@ -28,7 +28,7 @@ class SubMogouStorageUploadRequest extends FormRequest
             // 'upload_files.*' => 'required|array',
             'upload_files.*.file' => 'required|image',
             // 'upload_files.*.position' => 'required',
-            'watermark_apply' => 'required'
+            'watermark_apply' => 'required',
         ];
     }
 }

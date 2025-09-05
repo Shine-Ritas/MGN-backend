@@ -6,44 +6,41 @@ use Database\Seeders\UserSeeder;
 use Illuminate\Support\Facades\Schema;
 use Tests\Support\UserAuthenticated;
 
-
-uses()->group('admin','api','admin-subscription');
+uses()->group('admin', 'api', 'admin-subscription');
 uses(UserAuthenticated::class);
 
-beforeEach(function(){
+beforeEach(function () {
     config(['control.test.users_count' => 30]);
     $this->seed([
         SubscriptionSeeder::class,
-        UserSeeder::class
+        UserSeeder::class,
     ]);
     $this->setupAdmin();
 
     $this->subscriptions = $this->authenticatedAdmin()->getJson(route('api.admin.subscriptions.index'));
 });
 
-test("subscription table exists",function(){
+test('subscription table exists', function () {
     $this->assertTrue(Schema::hasTable('subscriptions'));
 });
 
-
-test("config was successfully updated",function(){
+test('config was successfully updated', function () {
 
     $this->subscriptions->assertOk();
 
     $user_total = User::count();
 
-    $this->assertEquals(31,$user_total);
+    $this->assertEquals(31, $user_total);
 });
 
-
-test("check subscription have expected count more than 1",function(){
+test('check subscription have expected count more than 1', function () {
 
     $this->subscriptions->assertOk();
 
     $this->assertTrue(count($this->subscriptions->json('subscriptions')) > 1);
 });
 
-test("total sum of user count on each subscription is equal to total user count",function(){
+test('total sum of user count on each subscription is equal to total user count', function () {
 
     $this->subscriptions->assertOk();
 
@@ -51,42 +48,41 @@ test("total sum of user count on each subscription is equal to total user count"
 
     $sum = $this->subscriptions->json('total_user_subscription');
 
-    $this->assertEquals($total,$sum);
+    $this->assertEquals($total, $sum);
 });
 
-test("request body validation in creating subscription",function(){
-    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'),[]);
+test('request body validation in creating subscription', function () {
+    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'), []);
 
     $response->assertStatus(422)
         ->assertJsonStructure([
-            'message' ,
-            'errors'
+            'message',
+            'errors',
         ]);
 });
 
-test("show subscription return success response",function(){
-    $response = $this->authenticatedAdmin()->getJson(route('api.admin.subscriptions.show',[
-        'subscription' => 1
+test('show subscription return success response', function () {
+    $response = $this->authenticatedAdmin()->getJson(route('api.admin.subscriptions.show', [
+        'subscription' => 1,
     ]));
 
     $response->assertStatus(200);
 
     $response->assertJsonStructure([
-        'subscription'
+        'subscription',
     ]);
 
 });
 
-test("return 404 on non-existed subscription",function(){
-    $response = $this->authenticatedAdmin()->getJson(route('api.admin.subscriptions.show',[
-        'subscription' => 1000
+test('return 404 on non-existed subscription', function () {
+    $response = $this->authenticatedAdmin()->getJson(route('api.admin.subscriptions.show', [
+        'subscription' => 1000,
     ]));
 
     $response->assertStatus(404);
 })->group('new');
 
-
-test("create subscription",function($title, $max, $duration){
+test('create subscription', function ($title, $max, $duration) {
 
     $data = [
         'title' => $title,
@@ -95,32 +91,32 @@ test("create subscription",function($title, $max, $duration){
         'duration' => $duration,
     ];
 
-    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'),$data);
+    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'), $data);
 
     $response->assertStatus(201)
         ->assertJson([
-            'subscription' => $data
-    ]);
+            'subscription' => $data,
+        ]);
 
-    $this->assertDatabaseHas('subscriptions',$data);
+    $this->assertDatabaseHas('subscriptions', $data);
 
 })
-->with([
-    ['test_subscription', 100, 30],
-    ['test_subscription2', 200, 60]
-]);
+    ->with([
+        ['test_subscription', 100, 30],
+        ['test_subscription2', 200, 60],
+    ]);
 
-test("request body required in updating subscription",function(){
-    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update',1),[]);
+test('request body required in updating subscription', function () {
+    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update', 1), []);
 
     $response->assertStatus(422)
         ->assertJsonStructure([
-            'message' ,
-            'errors'
+            'message',
+            'errors',
         ]);
 });
 
-test("can update subscription",function($title, $max, $duration){
+test('can update subscription', function ($title, $max, $duration) {
     $data = [
         'title' => $title,
         'max' => $max,
@@ -128,19 +124,19 @@ test("can update subscription",function($title, $max, $duration){
         'duration' => $duration,
     ];
 
-    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update',1),$data);
+    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update', 1), $data);
 
     $response->assertStatus(200)
         ->assertJson([
-            'subscription' => $data
-    ]);
-    $this->assertDatabaseHas('subscriptions',$data);
+            'subscription' => $data,
+        ]);
+    $this->assertDatabaseHas('subscriptions', $data);
 })
-->with([
-    ['test_subscription', 100, 30],
-]);
+    ->with([
+        ['test_subscription', 100, 30],
+    ]);
 
-test("can update same subscription with same title",function($title, $max, $duration){
+test('can update same subscription with same title', function ($title, $max, $duration) {
     $data = [
         'title' => $title,
         'price' => 100,
@@ -148,7 +144,7 @@ test("can update same subscription with same title",function($title, $max, $dura
         'duration' => $duration,
     ];
 
-    $new_subscription = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'),$data);
+    $new_subscription = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'), $data);
 
     $new_subscription_id = $new_subscription->json('subscription.id');
 
@@ -159,20 +155,20 @@ test("can update same subscription with same title",function($title, $max, $dura
         'duration' => 60,
     ];
 
-    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update',$new_subscription_id),$new_body);
+    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update', $new_subscription_id), $new_body);
 
     $response->assertStatus(200)
         ->assertJson([
-            'subscription' => $new_body
+            'subscription' => $new_body,
+        ]);
+
+    $this->assertDatabaseHas('subscriptions', $new_body);
+})
+    ->with([
+        ['test_subscription', 100, 30],
     ]);
 
-    $this->assertDatabaseHas('subscriptions',$new_body);
-})
-->with([
-    ['test_subscription', 100, 30],
-]);
-
-test("can't update the duplicate title",function($title, $max, $duration){
+test("can't update the duplicate title", function ($title, $max, $duration) {
 
     $new_body = [
         'title' => $title,
@@ -181,21 +177,21 @@ test("can't update the duplicate title",function($title, $max, $duration){
         'duration' => 60,
     ];
 
-    $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'),$new_body);
+    $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.store'), $new_body);
 
-    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update',1),$new_body);
+    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update', 1), $new_body);
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'The title has already been taken.'
-    ]);
+            'message' => 'The title has already been taken.',
+        ]);
 
 })
-->with([
-    ['test_subscription', 100, 30],
-]);
+    ->with([
+        ['test_subscription', 100, 30],
+    ]);
 
-test("can't update because subscription not found",function($title, $max, $duration){
+test("can't update because subscription not found", function ($title, $max, $duration) {
 
     $new_body = [
         'title' => $title,
@@ -204,44 +200,44 @@ test("can't update because subscription not found",function($title, $max, $durat
         'duration' => 60,
     ];
 
-    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update',1000242),$new_body);
+    $response = $this->authenticatedAdmin()->putJson(route('api.admin.subscriptions.update', 1000242), $new_body);
 
     $response->assertStatus(404)
         ->assertJson([
-            'message' => 'Subscription not found'
+            'message' => 'Subscription not found',
+        ]);
+
+})
+    ->with([
+        ['test_subscription', 100, 30],
     ]);
 
-})
-->with([
-    ['test_subscription', 100, 30],
-]);
+test("can't delete because subscription not found", function ($id) {
 
-test("can't delete because subscription not found",function($id){
+    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.delete', $id));
 
-        $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.delete',$id));
-
-        $response->assertStatus(404)
-            ->assertJson([
-                'message' => 'Subscription not found'
+    $response->assertStatus(404)
+        ->assertJson([
+            'message' => 'Subscription not found',
         ]);
 })
-->with([
-    1000242,
-    1002424
-]);
+    ->with([
+        1000242,
+        1002424,
+    ]);
 
-test("can delete subscription",function($id){
+test('can delete subscription', function ($id) {
 
-    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.delete',$id));
+    $response = $this->authenticatedAdmin()->postJson(route('api.admin.subscriptions.delete', $id));
 
     $response->assertStatus(200)
         ->assertJson([
-            'message' => 'Subscription deleted successfully.'
-    ]);
+            'message' => 'Subscription deleted successfully.',
+        ]);
 
     $this->assertDatabaseMissing('subscriptions',['id' => $id]);
 })
-->with([
-    1,
-    2
-])->group('new');
+    ->with([
+        1,
+        2,
+    ])->group('new');

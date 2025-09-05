@@ -8,7 +8,7 @@ use App\Models\User;
 
 class UserDashboardRepo
 {
-    public function userRegistrationByMonths() : object
+    public function userRegistrationByMonths(): object
     {
         return User::whereNotNull('created_at')
             ->where('created_at', '>=', now()->subMonths(6))
@@ -18,7 +18,7 @@ class UserDashboardRepo
             ->get();
     }
 
-    public function userByLocations() : object
+    public function userByLocations(): object
     {
         $top_five = LoginHistory::query()
             ->select('country as key')
@@ -37,17 +37,17 @@ class UserDashboardRepo
 
     }
 
-    public function userLoginThisWeek() : object
+    public function userLoginThisWeek(): object
     {
         return LoginHistory::query()
-        ->selectRaw('TO_CHAR(login_at, \'Day\') as key, COUNT(id) as count, EXTRACT(ISODOW FROM login_at) as weekday')
-        ->whereBetween('login_at', [now()->startOfWeek(), now()->endOfWeek()])
-        ->groupBy('key', 'weekday')
-        ->orderBy('weekday')
-        ->get();
+            ->selectRaw('TO_CHAR(login_at, \'Day\') as key, COUNT(id) as count, EXTRACT(ISODOW FROM login_at) as weekday')
+            ->whereBetween('login_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->groupBy('key', 'weekday')
+            ->orderBy('weekday')
+            ->get();
     }
 
-    public function isUserTrafficSummary() : array
+    public function isUserTrafficSummary(): array
     {
         // get user traffic count key and count where user_id is not null this month
         // date 30days ago

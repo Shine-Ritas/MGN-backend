@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Database\Factories\SubscriptionFactory;
@@ -19,20 +20,20 @@ class Subscription extends Model
     /**
      * scopeSearch
      *
-     * @param  Builder<Subscription> $query
-     * @param  string|null $search
+     * @param  Builder<Subscription>  $query
+     * @param  string|null  $search
      * @return Builder<Subscription>
      */
     public function scopeSearch($query, $search): Builder
     {
-        return $query->where('title', 'like', '%' . $search . '%');
+        return $query->where('title', 'like', '%'.$search.'%');
     }
 
     /**
      * scopeCountBy
      *
-     * @param  Builder<Subscription> $query
-     * @param  string|null $countBy
+     * @param  Builder<Subscription>  $query
+     * @param  string|null  $countBy
      * @return Builder<Subscription>
      */
     public function scopeCountBy($query, $countBy): Builder
@@ -47,8 +48,8 @@ class Subscription extends Model
     /**
      * scopePriceBy
      *
-     * @param Builder<Subscription> $query
-     * @param string|null $price
+     * @param  Builder<Subscription>  $query
+     * @param  string|null  $price
      * @return Builder<Subscription>
      */
     public function scopePriceBy($query, $price): Builder
@@ -69,13 +70,13 @@ class Subscription extends Model
     {
         return $this->hasMany(User::class, 'current_subscription_id');
     }
-    
+
     /**
      * userSubscriptions
      *
      * @return HasMany<UserSubscription, $this>
      */
-    public function userSubscriptions() : HasMany
+    public function userSubscriptions(): HasMany
     {
         return $this->hasMany(UserSubscription::class, 'subscription_id');
     }

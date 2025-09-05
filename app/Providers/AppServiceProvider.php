@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\Http\Controllers\Controller;
-use App\Services\BotPublisher\GetBotServices;
 use App\Services\IpAddressService;
-use App\Services\Publishing\PublishingService;
 use Illuminate\Support\ServiceProvider;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         // });
 
         $this->app->singleton(IpAddressService::class, function ($app) {
-            return new IpAddressService();
+            return new IpAddressService;
         });
 
         $this->app->singleton(
@@ -48,13 +44,13 @@ class AppServiceProvider extends ServiceProvider
 
                 $client = new \GuzzleHttp\Client(
                     [
-                        'base_uri' => 'https://'.config('global.rapid_api.myanimelist.host') .'/',
+                        'base_uri' => 'https://'.config('global.rapid_api.myanimelist.host').'/',
                         'http_errors' => false,
                         'headers' => [
                             'accept' => 'application/json',
                             'x-rapidapi-host' => config('global.rapid_api.myanimelist.host'),
                             'x-rapidapi-key' => config('global.rapid_api.myanimelist.key'),
-                        ]
+                        ],
                     ]
                 );
 

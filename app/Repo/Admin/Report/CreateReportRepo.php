@@ -13,7 +13,7 @@ class CreateReportRepo
 
     public function create(ReportActionRequest $request): Report
     {
-        $report = new Report();
+        $report = new Report;
         $report->title = $request->title;
         $report->description = $request->description;
         $report->current_url = $request->current_url;
@@ -23,6 +23,7 @@ class CreateReportRepo
         }
         $report->user_id = auth()->id() !== null ? (int) auth()->id() : null;
         $report->save();
+
         return $report;
     }
 }

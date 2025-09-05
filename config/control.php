@@ -2,16 +2,16 @@
 
 return [
 
-    "client_app_url" => env("CLIENT_APP_URL"),
+    'client_app_url' => env('CLIENT_APP_URL'),
     'test' => [
         'users_count' => 180,
         'mogous_count' => 50,
         'categories_count' => 22,
         'chapter_analysis_count' => 120,
     ],
-    'mongou_storage' => "local",
+    'mongou_storage' => 'local',
 
-    "cacheMode" => false,
+    'cacheMode' => false,
 
     'mogou' => [
         'cover' => [
@@ -40,11 +40,11 @@ return [
 
     'cache_key' => [
         'homepage' => [
-            'tags' => "homepage",
+            'tags' => 'homepage',
             'most_viewed' => 'homepage_most_viewed',
             'last_uploaded' => 'homepage_last_uploaded',
             'carousel' => 'hero_highlight_slider',
             'recommend' => 'main_page_recommended',
-        ]
-    ]
+        ],
+    ],
 ];

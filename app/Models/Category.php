@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+
 class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
-    protected $fillable = ['title','slug'];
+    protected $fillable = ['title', 'slug'];
 
     public $timestamps = false;
 
@@ -39,10 +40,10 @@ class Category extends Model
     /**
      * scopeSearch
      *
-     * @param Builder<Category> $query
+     * @param  Builder<Category>  $query
      * @return Builder<Category>
      */
-    public function scopeSearch($query,string|null $search): Builder
+    public function scopeSearch($query, ?string $search): Builder
     {
         return $query->where('title', 'like', '%'.$search.'%');
     }
@@ -60,10 +61,10 @@ class Category extends Model
     /**
      * scopeWithMogousCount
      *
-     * @param  Builder<Category> $query
+     * @param  Builder<Category>  $query
      * @return Builder<Category>
      */
-    public function scopeWithMogousCount($query) : Builder
+    public function scopeWithMogousCount($query): Builder
     {
         return $query->when(
             request('with_mogous_count'), function ($query) {
@@ -75,7 +76,7 @@ class Category extends Model
     /**
      * scopeOrderByMogousCount
      *
-     * @param  Builder<Category> $query
+     * @param  Builder<Category>  $query
      * @return Builder<Category>
      */
     public function scopeOrderByMogousCount($query)
@@ -87,5 +88,4 @@ class Category extends Model
             }
         );
     }
-
 }

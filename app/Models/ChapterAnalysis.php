@@ -24,9 +24,8 @@ class ChapterAnalysis extends Model
         'mogou_id',
         'ip',
         'date',
-        'user_id'
+        'user_id',
     ];
-
 
     public static function boot()
     {
@@ -41,7 +40,7 @@ class ChapterAnalysis extends Model
      *
      * @return BelongsTo<Mogou,$this>
      */
-    public function mogou() : BelongsTo
+    public function mogou(): BelongsTo
     {
         return $this->belongsTo(Mogou::class);
     }
@@ -51,7 +50,7 @@ class ChapterAnalysis extends Model
      *
      * @return BelongsTo<SubMogou,$this>
      */
-    public function subMogou() : BelongsTo
+    public function subMogou(): BelongsTo
     {
         return $this->belongsTo(SubMogou::class);
     }

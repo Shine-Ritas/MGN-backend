@@ -16,32 +16,31 @@ use Illuminate\Support\Facades\DB;
  * This repository class handles operations related to user registration,
  *
  * @version 1.0.0
+ *
  * @company North Wolf
+ *
  * @developer Dede182
  */
-
 class UserRegistrationRepo
 {
     /**
      * handle user registration
-     *
-     * @param UserRegistrationRequest|Request $request
-     * @return User
      */
-    public static function registerUser(UserRegistrationRequest|Request $request,bool $register = false): User
+    public static function registerUser(UserRegistrationRequest|Request $request, bool $register = false): User
     {
-        return DB::transaction(function () use ($request,$register) {
+        return DB::transaction(function () use ($request, $register) {
             $data = $request instanceof UserRegistrationRequest ? $request->validated() : $request->all();
-            $data = self::mutateDataSubscription($data,$register);
+            $data = self::mutateDataSubscription($data, $register);
             $user = User::create($data);
-            if($data['current_subscription_id']){
-            UserSubscription::create(
-                [
-                    'user_id' => $user->id,
+            if ($data['current_subscription_id']) {
+                UserSubscription::create(
+                    [
+                        'user_id' => $user->id,
                         'subscription_id' => $data['current_subscription_id'],
                     ]
                 );
             }
+
             return $user;
         });
     }
@@ -49,7 +48,6 @@ class UserRegistrationRepo
     /**
      * List all users
      *
-     * @param  Request $request
      * @return LengthAwarePaginator<User>
      */
     public function list(Request $request): LengthAwarePaginator
@@ -66,10 +64,6 @@ class UserRegistrationRepo
 
     /**
      * Retrieve a specific user by its ID.
-     *
-     * @param  string $haystack
-     * @param  string $value
-     * @return User
      */
     public function show(string $haystack, string $value): User
     {
@@ -78,10 +72,6 @@ class UserRegistrationRepo
 
     /**
      * Update an existing user.
-     *
-     * @param  UserRegistrationRequest $request
-     * @param  string $id
-     * @return User
      */
     public function updateUser(UserRegistrationRequest $request, string $id): User
     {
@@ -98,16 +88,14 @@ class UserRegistrationRepo
         $data = self::updateDataSubscription($data, $user);
 
         $user->update($data);
+
         return $user;
     }
 
     /**
      * mutate data subscription of user
-     *
-     * @param  mixed $data
-     * @return mixed
      */
-    protected static function mutateDataSubscription(mixed $data,bool $register = false): mixed
+    protected static function mutateDataSubscription(mixed $data, bool $register = false): mixed
     {
         if (isset($data['current_subscription_id'])) {
             $end_date = Subscription::where('id', $data['current_subscription_id'])->first()->duration;
@@ -115,7 +103,7 @@ class UserRegistrationRepo
             $data['subscription_end_date'] = now()->addDays($end_date);
         }
 
-        if($register){
+        if ($register) {
             $data['current_subscription_id'] = null;
         }
 
@@ -124,10 +112,6 @@ class UserRegistrationRepo
 
     /**
      *  update data subscription of user
-     *
-     * @param  mixed $data
-     * @param  User $user
-     * @return mixed
      */
     public static function updateDataSubscription(mixed $data, User $user): mixed
     {

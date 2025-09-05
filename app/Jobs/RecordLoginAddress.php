@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class RecordLoginAddress implements ShouldQueue
 {
@@ -22,6 +21,7 @@ class RecordLoginAddress implements ShouldQueue
     public User $user;
 
     public string $ip;
+
     /**
      * Create a new job instance.
      */
@@ -40,5 +40,4 @@ class RecordLoginAddress implements ShouldQueue
 
         $clientIp->saveRecord($this->user, $this->ip);
     }
-
 }

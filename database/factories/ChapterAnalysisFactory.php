@@ -18,7 +18,7 @@ class ChapterAnalysisFactory extends Factory
     {
         return [
             'mogou_id' => rand(1, config('control.test.mogous_count')),
-            'sub_mogou_id' => rand(1,100),
+            'sub_mogou_id' => rand(1, 100),
             'ip' => $this->faker->ipv4,
             'date' => $this->faker->dateTimeThisYear,
         ];

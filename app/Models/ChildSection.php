@@ -11,8 +11,7 @@ class ChildSection extends Model
     /** @use HasFactory<ChildSectionFactory> */
     use HasFactory;
 
-    protected $guarded=[];
+    protected $guarded = [];
 
     public $timestamps = false;
-
 }

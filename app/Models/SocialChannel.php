@@ -7,14 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
-
 /**
  * @property mixed $providers
  */
 class SocialChannel extends Model
 {
     /** @use HasFactory<\Database\Factories\SocialChannelFactory> */
-
     use HasFactory;
 
     protected $fillable = [
@@ -44,7 +42,6 @@ class SocialChannel extends Model
         });
     }
 
-
     public function getCreatedAtAttribute(string $value): string
     {
         return date('Y-m-d H:i:s', strtotime($value));
@@ -56,15 +53,17 @@ class SocialChannel extends Model
     }
 
     /** @phpstan-ignore-next-line */
-    public function botProvider(): HasOneThrough{
-        return $this->hasOneThrough(BotPublisher::class,BotSocialChannel::class,'social_channel_id','id','id','bot_publisher_id');
+    public function botProvider(): HasOneThrough
+    {
+        return $this->hasOneThrough(BotPublisher::class, BotSocialChannel::class, 'social_channel_id', 'id', 'id', 'bot_publisher_id');
     }
 
-    public function getMetaDataAttribute(?string $value): array | null
+    public function getMetaDataAttribute(?string $value): ?array
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
+
         return json_decode($value, true);
     }
 }

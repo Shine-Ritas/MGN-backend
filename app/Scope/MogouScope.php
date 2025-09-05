@@ -26,15 +26,16 @@ trait MogouScope
         );
     }
 
-
     /**
      * Scope a query to order results by rating.
      *
      * @param  Builder<Mogou>  $query
      * @return Builder<Mogou>
-     */    public function scopeFilterStatus(Builder $query, bool $orWhere = true): Builder
+     */
+    public function scopeFilterStatus(Builder $query, bool $orWhere = true): Builder
     {
         $status = request()->input('status');
+
         return $query->when(
             $status,
             function (Builder $query) use ($orWhere, $status): Builder {
@@ -42,7 +43,6 @@ trait MogouScope
             }
         );
     }
-
 
     /**
      * Scope a query to order results by rating.
@@ -129,10 +129,11 @@ trait MogouScope
     public function scopeSearch(Builder $query): Builder
     {
         $search = request()->input('search');
+
         return $query->when(
             $search,
             function (Builder $query) use ($search): Builder {
-                return $query->whereRaw('LOWER(title) LIKE ?', [strtolower($search) . '%']);
+                return $query->whereRaw('LOWER(title) LIKE ?', [strtolower($search).'%']);
             }
         );
     }
@@ -178,17 +179,16 @@ trait MogouScope
         // Convert to an array and remove empty values
         $genres = array_filter(explode(',', $genres));
 
-        return $query->when(!empty($genres), function (Builder $query) use ($genres): Builder {
+        return $query->when(! empty($genres), function (Builder $query) use ($genres): Builder {
             foreach ($genres as $genre) {
                 $query->whereHas('categories', function (Builder $query) use ($genre): Builder {
                     return $query->where('categories.title', $genre);
                 });
             }
+
             return $query;
         });
     }
-
-
 
     /**
      * Scope a query to order results by rating.
@@ -199,6 +199,7 @@ trait MogouScope
     public function scopeYear(Builder $query): Builder
     {
         $year = request()->input('year');
+
         return $query->when(
             $year,
             function (Builder $query) use ($year): Builder {
@@ -218,13 +219,14 @@ trait MogouScope
         if ($strict) {
             return $query->where('status', 1);
         }
+
         return $query;
     }
 
     /**
      * scopeByTotalChapters
      *
-     * @param  Builder<Mogou> $query
+     * @param  Builder<Mogou>  $query
      * @return Builder<Mogou>
      */
     public function scopeByTotalChapters(Builder $query): Builder
@@ -233,14 +235,14 @@ trait MogouScope
 
         return $query->when($chapters_count_order, function (Builder $builder) use ($chapters_count_order): Builder {
             // return $builder->order_by("total_chapters",$chapters_count_order);
-            return $builder->orderBy("total_chapters", $chapters_count_order);
+            return $builder->orderBy('total_chapters', $chapters_count_order);
         });
     }
-    
+
     /**
      * scopeBySorting
      *
-     * @param  Builder<Mogou> $query
+     * @param  Builder<Mogou>  $query
      * @return Builder<Mogou>
      */
     public function scopeBySorting(Builder $query): Builder
@@ -249,7 +251,8 @@ trait MogouScope
         $orderByDirection = request('order_by_direction', 'desc');
 
         if ($orderBy == 'popular') {
-            $popularIds = (new MogouService())->getMogouByPopularity();
+            $popularIds = (new MogouService)->getMogouByPopularity();
+
             return $query->whereIn('id', $popularIds);
         }
 

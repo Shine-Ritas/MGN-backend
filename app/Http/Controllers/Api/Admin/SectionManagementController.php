@@ -9,17 +9,14 @@ use Illuminate\Http\Request;
 
 class SectionManagementController extends Controller
 {
-
-    public function __construct(protected SectionManagementService $sms)
-    {
-    }
+    public function __construct(protected SectionManagementService $sms) {}
 
     public function index(Request $request): JsonResponse
     {
         $baseSection = $this->sms->getMogouSection($request->section);
 
         return response()->json([
-            "baseSection" => $baseSection,
+            'baseSection' => $baseSection,
         ]);
     }
 
@@ -36,14 +33,14 @@ class SectionManagementController extends Controller
     {
         $this->sms->removeChild($request->section, $request->child);
 
-        return response()->json( [
+        return response()->json([
             'message' => 'component was removed successfully',
         ]);
     }
 
     public function searchMogou(Request $request): JsonResponse
     {
-        $mogous = $this->sms->searchMogou($request->search,$request->type);
+        $mogous = $this->sms->searchMogou($request->search, $request->type);
 
         return response()->json([
             'mogous' => $mogous,
@@ -58,7 +55,7 @@ class SectionManagementController extends Controller
         $visibilityStatus = $request->visibility ? 'visible' : 'invisible';
 
         return response()->json([
-            'message' => 'component was activated to ' . $visibilityStatus,
+            'message' => 'component was activated to '.$visibilityStatus,
         ]);
     }
 
@@ -70,6 +67,4 @@ class SectionManagementController extends Controller
             'message' => 'all data were cleared',
         ]);
     }
-
-
 }

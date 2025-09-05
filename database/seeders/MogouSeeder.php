@@ -19,7 +19,7 @@ class MogouSeeder extends Seeder
      */
     public function run(): void
     {
-        if(config('database.default') == 'sqlite') {
+        if (config('database.default') == 'sqlite') {
             Mogou::factory()->count(config('control.test.mogous_count'))->create();
         } else {
             $data = [];
@@ -27,32 +27,32 @@ class MogouSeeder extends Seeder
             $outsource_folder = storage_path('app/public/outsource');
             $file_name = 'manga.json';
 
-            if (!file_exists($outsource_folder)) {
+            if (! file_exists($outsource_folder)) {
                 mkdir($outsource_folder, 0777, true);
             }
 
-            if (!file_exists($outsource_folder . '/' . $file_name)) {
+            if (! file_exists($outsource_folder.'/'.$file_name)) {
                 $outsource_data = DataClient::getMangaData();
-                file_put_contents($outsource_folder . '/' . $file_name, json_encode($outsource_data));
+                file_put_contents($outsource_folder.'/'.$file_name, json_encode($outsource_data));
                 Log::info('Manga data fetched from API and saved to local storage');
-            }else{
-                $outsource_data = json_decode(file_get_contents($outsource_folder . '/' . $file_name), true);
+            } else {
+                $outsource_data = json_decode(file_get_contents($outsource_folder.'/'.$file_name), true);
                 Log::info('Manga data fetched from local storage');
             }
 
             \Log::info($outsource_data);
 
             foreach ($outsource_data as $manga) {
-                $title  = str_replace('"', '', $manga['title']);
+                $title = str_replace('"', '', $manga['title']);
                 $data[] = [
                     'rotation_key' => TablePartition::getRandomRotationKey(),
-                    'title' =>  $title,
-                    'slug' => Str::slug($title) . '-' . Str::random(5),
-                    'description' =>fake()->paragraph(4),
+                    'title' => $title,
+                    'slug' => Str::slug($title).'-'.Str::random(5),
+                    'description' => fake()->paragraph(4),
                     'author' => fake()->name,
                     'cover' => $manga['picture_url'],
                     'status' => MogousStatus::getRandomStatus(),
-                    'finish_status' =>  MogouFinishStatus::getRandomStatus(),
+                    'finish_status' => MogouFinishStatus::getRandomStatus(),
                     'mogou_type' => MogouTypeEnum::getRandomMogouType(),
                     'legal_age' => fake()->boolean,
                     'rating' => fake()->randomFloat(0, 0, 5),
@@ -67,4 +67,3 @@ class MogouSeeder extends Seeder
 
     }
 }
-

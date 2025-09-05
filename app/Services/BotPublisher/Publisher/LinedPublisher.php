@@ -8,22 +8,19 @@ use App\Models\SocialChannel;
 
 class LinedPublisher
 {
-    public function __construct(protected PublisherInterface $publisher,protected ?BotPublisher $botPublisher)
-    {
+    public function __construct(protected PublisherInterface $publisher, protected ?BotPublisher $botPublisher) {}
 
-    }
-
-    public function getBot() : BotPublisher
+    public function getBot(): BotPublisher
     {
         return $this->botPublisher;
     }
 
-    public function getPublisher() : mixed
+    public function getPublisher(): mixed
     {
         return $this->publisher;
     }
 
-    public function getInfo() : mixed
+    public function getInfo(): mixed
     {
         return $this->publisher->getPublisherDetail();
     }
@@ -33,14 +30,14 @@ class LinedPublisher
         return $this->publisher->checkIsExistOnProvider($id);
     }
 
-    public function getChannelsWithSubscribers() : mixed
+    public function getChannelsWithSubscribers(): mixed
     {
 
         $socialChannelIds = $this->botPublisher->socialChannels->pluck('id');
 
         $channels = SocialChannel::whereIn('id', $socialChannelIds)->get();
 
-        if($channels->isEmpty()){
+        if ($channels->isEmpty()) {
             return [];
         }
 
@@ -49,8 +46,6 @@ class LinedPublisher
 
     public function checkChannelExistOnProvider(string $channel_token_key): mixed
     {
-        return $this->publisher->checkChannelExistOnProvider($this->botPublisher->id,$channel_token_key);
+        return $this->publisher->checkChannelExistOnProvider($this->botPublisher->id, $channel_token_key);
     }
-
-
 }

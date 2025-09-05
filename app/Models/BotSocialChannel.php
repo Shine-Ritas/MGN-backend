@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class BotSocialChannel extends Model
 {
     /** @use HasFactory<BotSocialChannelFactory> */
-
     use HasFactory;
 
     protected $fillable = [

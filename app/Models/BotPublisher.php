@@ -7,8 +7,6 @@ use Database\Factories\BotPublisherFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
 
 /**
  * @property mixed $channels
@@ -23,7 +21,7 @@ class BotPublisher extends Model
         'token_key',
         'type',
         'is_active',
-        'last_activity'
+        'last_activity',
     ];
 
     protected $casts = [
@@ -41,9 +39,6 @@ class BotPublisher extends Model
     {
         return date('Y-m-d H:i:s', strtotime($value));
     }
-
-
-
 
     /**
      * socialChannels

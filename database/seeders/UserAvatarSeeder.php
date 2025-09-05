@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserAvatarSeeder extends Seeder
@@ -15,7 +14,7 @@ class UserAvatarSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             \App\Models\UserAvatar::factory()->create([
                 'avatar_name' => "avatar-$i",
-                'avatar_path' => "user_sample_$i.png"
+                'avatar_path' => "user_sample_$i.png",
             ]);
         }
     }

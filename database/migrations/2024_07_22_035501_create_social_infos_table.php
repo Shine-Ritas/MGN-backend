@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('type');
-            $table->string("icon")->nullable();
-            $table->string("meta")->nullable();
-            $table->string("cover_photo")->nullable();
-            $table->string("text_url")->nullable();
-            $table->string("redirect_url");
+            $table->string('icon')->nullable();
+            $table->string('meta')->nullable();
+            $table->string('cover_photo')->nullable();
+            $table->string('text_url')->nullable();
+            $table->string('redirect_url');
             $table->integer('active')->default(1);
             $table->timestamps();
         });

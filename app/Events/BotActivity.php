@@ -21,13 +21,10 @@ class BotActivity
     /**
      * Handle the event.
      */
-
     public function handle(): void
     {
         $this->botPublisher->update([
             'last_activity' => now(),
         ]);
     }
-
-
 }

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Mogou;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -15,19 +14,19 @@ class MogousCategorySeeder extends Seeder
      */
     public function run(): void
     {
-        if(config('database.default') == 'sqlite') {
+        if (config('database.default') == 'sqlite') {
             $one = $this->loopOver(config('control.test.mogous_count'), config('control.test.categories_count'));
             $two = $this->loopOver(config('control.test.mogous_count'), config('control.test.categories_count'));
             $mogousCategories = array_merge($one, $two);
 
         } else {
-            $mogousCategories = array_merge($this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()),$this->loopOver(Mogou::count(), Category::count()),$this->loopOver(Mogou::count(), Category::count()),$this->loopOver(Mogou::count(), Category::count()),$this->loopOver(Mogou::count(), Category::count()),$this->loopOver(Mogou::count(), Category::count()));
+            $mogousCategories = array_merge($this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()), $this->loopOver(Mogou::count(), Category::count()));
         }
 
         DB::table('mogous_categories')->insert($mogousCategories);
     }
 
-    protected function loopOver($mogousCount, $categoriesCount) : array
+    protected function loopOver($mogousCount, $categoriesCount): array
     {
         $mogousCategories = [];
 

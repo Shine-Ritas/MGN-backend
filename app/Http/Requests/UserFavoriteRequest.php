@@ -22,7 +22,7 @@ class UserFavoriteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mogou_id' => "required|exists:mogous,id"
+            'mogou_id' => 'required|exists:mogous,id',
         ];
     }
 }

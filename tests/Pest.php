@@ -1,10 +1,8 @@
 <?php
 
-use App\Console\Kernel;
 use Database\Seeders\AdminPermissionSeeder;
 use Database\Seeders\ApplicationConfigSeeder;
 use Database\Seeders\UserAvatarSeeder;
-use Tests\Support\TestStorage;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,23 +19,21 @@ uses(
     Tests\TestCase::class,
     Illuminate\Foundation\Testing\RefreshDatabase::class,
 )
-->beforeEach(function () {
-    $this->seed([
-        AdminPermissionSeeder::class,
-        ApplicationConfigSeeder::class,
-        UserAvatarSeeder::class,
-    ]);
-})
-->in('Feature');
+    ->beforeEach(function () {
+        $this->seed([
+            AdminPermissionSeeder::class,
+            ApplicationConfigSeeder::class,
+            UserAvatarSeeder::class,
+        ]);
+    })
+    ->in('Feature');
 
 // use testcase in unit test
 uses(
     Tests\TestCase::class,
     Illuminate\Foundation\Testing\RefreshDatabase::class,
 )
-->in('Unit');
-
-
+    ->in('Unit');
 
 /*
 |--------------------------------------------------------------------------

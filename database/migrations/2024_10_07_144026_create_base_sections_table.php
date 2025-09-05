@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('base_sections', function (Blueprint $table) {
             $table->id();
-            $table->string("section_name",115);
-            $table->text("section_description");
-            $table->smallInteger("component_limit")->default(10);
+            $table->string('section_name', 115);
+            $table->text('section_description');
+            $table->smallInteger('component_limit')->default(10);
 
             $table->index('section_name');
             $table->timestamps();

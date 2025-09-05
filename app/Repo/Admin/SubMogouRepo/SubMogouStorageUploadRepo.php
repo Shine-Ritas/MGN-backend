@@ -13,59 +13,58 @@ use Storage;
 
 class SubMogouStorageUploadRepo
 {
-
     use HydraMedia;
 
     protected Mogou $parentMogou;
 
-    protected int $compress_quality ;
+    protected int $compress_quality;
 
     public function __construct()
     {
         $this->compress_quality = config('hydrastorage.compressed_quality') ?? 100;
     }
 
-    protected function setSubMogouTable(string $key="id",string $value =null): SubMogou
+    protected function setSubMogouTable(string $key = 'id', ?string $value = null): SubMogou
     {
         $this->parentMogou = Mogou::where($key, $value)->firstOrFail();
 
         $rotation_key = $this->parentMogou->rotation_key;
 
-        $sub_mogou = new SubMogou();
+        $sub_mogou = new SubMogou;
         $table = $sub_mogou->getPartition($rotation_key);
 
         $sub_mogou->setTable($table);
 
         $sub_mogou->setKeyName('id');
+
         return $sub_mogou;
     }
 
+    public function upload(SubMogouStorageUploadRequest $request): SubMogou
+    {
 
-
-    public function upload(SubMogouStorageUploadRequest $request): SubMogou{
-
-        $subMogou = $this->setSubMogouTable("id", $request['mogou_id']);
+        $subMogou = $this->setSubMogouTable('id', $request['mogou_id']);
         $subMogou = $subMogou->where('ulid', $request['ulid'])->firstOrFail();
 
         $parent_mogou = $this->parentMogou->id;
         $sub_mogou_id = $subMogou->id;
         $path = "mogou/{$parent_mogou}/{$sub_mogou_id}";
 
-        $mediaOption =  MediaOption::create();
+        $mediaOption = MediaOption::create();
 
-        if($request->has('watermark_apply') && $request->watermark_apply == '1'){
+        if ($request->has('watermark_apply') && $request->watermark_apply == '1') {
             $applicationConfig = ApplicationConfig::firstOrFail();
-            $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage(),$applicationConfig->watermark_position,100);
+            $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage(), $applicationConfig->watermark_position, 100);
         }
         $mediaOption = $mediaOption->get();
-        $subMogouImage = new SubMogouImage();
+        $subMogouImage = new SubMogouImage;
 
         $rotation_key = $this->parentMogou->rotation_key;
         $table = $subMogouImage->getPartition($rotation_key);
         $subMogouImage->setTable($table);
 
         foreach ($request->upload_files as $file) {
-            $obj['path'] = $this->storeMedia($file['file'], $path, true, $mediaOption,);
+            $obj['path'] = $this->storeMedia($file['file'], $path, true, $mediaOption);
             $obj['sub_mogou_id'] = $subMogou->id;
             $obj['mogou_id'] = $parent_mogou;
 
@@ -77,29 +76,29 @@ class SubMogouStorageUploadRepo
 
     public function removeStorageFile(array $data): void
     {
-        $subMogou = $this->setSubMogouTable("id", $data['mogou_id']);
+        $subMogou = $this->setSubMogouTable('id', $data['mogou_id']);
         $subMogou = $subMogou->where('id', $data['sub_mogou_id'])->firstOrFail();
 
-        $subMogouImage = new SubMogouImage();
+        $subMogouImage = new SubMogouImage;
         $rotation_key = $this->parentMogou->rotation_key;
         $table = $subMogouImage->getPartition($rotation_key);
         $subMogouImage->setTable($table);
-        $fileRecord =  $subMogouImage->where('id', $data['image_id'])->firstOrFail();
+        $fileRecord = $subMogouImage->where('id', $data['image_id'])->firstOrFail();
 
         $this->removeMedia("public/mogou/{$data['mogou_id']}/{$data['sub_mogou_id']}/{$fileRecord->path}");
 
-
     }
 
-    public function getWaterMarkImage()
+    public function getWaterMarkImage(): ?string
     {
         $app = ApplicationConfig::firstOrFail();
 
-        // get original water_mark path 
+        // get original water_mark path
         $water_mark = $app->getRawOriginal('water_mark');
 
         $provider = config('hydrastorage.provider');
         $wm = Storage::disk($provider)->get('public/config/'.$water_mark);
+
         return $wm;
     }
 }

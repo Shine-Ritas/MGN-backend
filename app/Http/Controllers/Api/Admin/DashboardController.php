@@ -9,26 +9,21 @@ use App\Repo\Admin\Dashboard\RevenueGrowthRepo;
 use App\Repo\Admin\Dashboard\UserDashboardRepo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Concurrency;
-use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
+    public function __construct(protected DashboardRepo $dashboardRepo, protected UserDashboardRepo $userDashboardRepo) {}
 
-    public function __construct(protected DashboardRepo $dashboardRepo,protected UserDashboardRepo $userDashboardRepo)
-    {
-    }
-
-    public function stats() : JsonResponse
+    public function stats(): JsonResponse
     {
 
         [$subscriptions,$users,$traffics,$contents] = Concurrency::run(
             [
-                fn() => (new DashboardRepo)->subscriptions(),
-                fn() => (new DashboardRepo)->users(),
-                fn() => (new DashboardRepo)->traffic(),
-                fn() => (new DashboardRepo)->contentUploaded(),
+                fn () => (new DashboardRepo)->subscriptions(),
+                fn () => (new DashboardRepo)->users(),
+                fn () => (new DashboardRepo)->traffic(),
+                fn () => (new DashboardRepo)->contentUploaded(),
             ]
         );
 
@@ -42,14 +37,14 @@ class DashboardController extends Controller
         );
     }
 
-    public function userGrowthStats() : JsonResponse
+    public function userGrowthStats(): JsonResponse
     {
-       [$userByLocations,$userRegistrationByMonths,$userLoginThisWeek,$isUserTrafficSummary] = Concurrency::run(
+        [$userByLocations,$userRegistrationByMonths,$userLoginThisWeek,$isUserTrafficSummary] = Concurrency::run(
             [
-                fn() => (new UserDashboardRepo)->userByLocations(),
-                fn() => (new UserDashboardRepo)->userRegistrationByMonths(),
-                fn() => (new UserDashboardRepo)->userLoginThisWeek(),
-                fn() => (new UserDashboardRepo)->isUserTrafficSummary(),
+                fn () => (new UserDashboardRepo)->userByLocations(),
+                fn () => (new UserDashboardRepo)->userRegistrationByMonths(),
+                fn () => (new UserDashboardRepo)->userLoginThisWeek(),
+                fn () => (new UserDashboardRepo)->isUserTrafficSummary(),
             ]
         );
 
@@ -63,7 +58,7 @@ class DashboardController extends Controller
         );
     }
 
-    public function chapterGrowthStats(Request $request) : JsonResponse
+    public function chapterGrowthStats(Request $request): JsonResponse
     {
         $date = $request->date;
         $startDate = date('Y-m-01', strtotime($date));
@@ -71,10 +66,10 @@ class DashboardController extends Controller
 
         [$mostChapterUploadedAdmins,$chaptersByWeek,$getContentByFavorites,$mostViewContents] = Concurrency::run(
             [
-                fn() => (new ContentGrowthRepo($startDate,$endDate))->mostChapterUploadedAdmins(),
-                fn() => (new ContentGrowthRepo($startDate,$endDate))->chapterUploadedBetweenTimePeriod(),
-                fn() => (new ContentGrowthRepo($startDate,$endDate))->getContentByFavorites(),
-                fn() => (new ContentGrowthRepo($startDate,$endDate))->getMostViewedContents(),
+                fn () => (new ContentGrowthRepo($startDate, $endDate))->mostChapterUploadedAdmins(),
+                fn () => (new ContentGrowthRepo($startDate, $endDate))->chapterUploadedBetweenTimePeriod(),
+                fn () => (new ContentGrowthRepo($startDate, $endDate))->getContentByFavorites(),
+                fn () => (new ContentGrowthRepo($startDate, $endDate))->getMostViewedContents(),
             ]
         );
 
@@ -89,7 +84,7 @@ class DashboardController extends Controller
         );
     }
 
-    public function revenueGrowthStats(Request $request) : JsonResponse
+    public function revenueGrowthStats(Request $request): JsonResponse
     {
         $date = $request->date;
         $startDate = date('Y-m-01', strtotime($date));
@@ -97,9 +92,9 @@ class DashboardController extends Controller
 
         [$countBySubscriptions,$monthlySubscriptions,$revenueByDaysOfTheMonth] = Concurrency::run(
             [
-                fn() => (new RevenueGrowthRepo($startDate,$endDate))->getCountBySubscriptions(),
-                fn() => (new RevenueGrowthRepo($startDate,$endDate))->getMonthlySubscriptions(),
-                fn() => (new RevenueGrowthRepo($startDate,$endDate))->getRevenueByDaysOfTheMonth(),
+                fn () => (new RevenueGrowthRepo($startDate, $endDate))->getCountBySubscriptions(),
+                fn () => (new RevenueGrowthRepo($startDate, $endDate))->getMonthlySubscriptions(),
+                fn () => (new RevenueGrowthRepo($startDate, $endDate))->getRevenueByDaysOfTheMonth(),
             ]
         );
 
@@ -112,22 +107,22 @@ class DashboardController extends Controller
         );
     }
 
-    public function dailyStats() : JsonResponse
+    public function dailyStats(): JsonResponse
     {
         $today = date('Y-m-d');
         $tomorrow = date('Y-m-d', strtotime('+1 day', strtotime($today)));
         $yesterday = date('Y-m-d', strtotime('-1 day', strtotime($today)));
         [$subscriptions,$users,$traffics,$revenue,$trafficByChapters] = Concurrency::run(
             [
-                fn() => (new DashboardRepo)->setDates($today,$tomorrow,$yesterday,$today)->subscriptions(),
-                fn() => (new DashboardRepo)->setDates($today,$tomorrow,$yesterday,$today)->users(),
-                fn() => (new DashboardRepo)->setDates($today,$tomorrow,$yesterday,$today)->traffic(),
-                fn() => (new DashboardRepo)->setDates($today,$tomorrow,$yesterday,$today)->revenue(),
-                fn() => (new DashboardRepo)->setDates($today,$tomorrow,$yesterday,$today)->trafficByChapters(),
+                fn () => (new DashboardRepo)->setDates($today, $tomorrow, $yesterday, $today)->subscriptions(),
+                fn () => (new DashboardRepo)->setDates($today, $tomorrow, $yesterday, $today)->users(),
+                fn () => (new DashboardRepo)->setDates($today, $tomorrow, $yesterday, $today)->traffic(),
+                fn () => (new DashboardRepo)->setDates($today, $tomorrow, $yesterday, $today)->revenue(),
+                fn () => (new DashboardRepo)->setDates($today, $tomorrow, $yesterday, $today)->trafficByChapters(),
             ]
         );
 
-        $folder = env('FILESYSTEM_DISK') == "local" ? env("STORAGE_VOLUME_PATH","/") : '/';
+        $folder = env('FILESYSTEM_DISK') == 'local' ? env('STORAGE_VOLUME_PATH', '/') : '/';
 
         return response()->json(
             [

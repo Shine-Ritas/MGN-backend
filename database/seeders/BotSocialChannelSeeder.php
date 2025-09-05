@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BotSocialChannelSeeder extends Seeder
@@ -22,10 +21,10 @@ class BotSocialChannelSeeder extends Seeder
 
         // minor test ,decided to  not implement insert approach
         foreach ($botPublishers as $botPublisher) {
-                \App\Models\BotSocialChannel::factory()->create([
-                    'bot_publisher_id' => $botPublisher->id,
-                    'social_channel_id' => $socialChannels->random()->id,
-                ]);
+            \App\Models\BotSocialChannel::factory()->create([
+                'bot_publisher_id' => $botPublisher->id,
+                'social_channel_id' => $socialChannels->random()->id,
+            ]);
         }
     }
 }

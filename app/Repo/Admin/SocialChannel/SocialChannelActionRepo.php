@@ -11,15 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 class SocialChannelActionRepo
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function create(SocialChannelActionRequest $request): mixed
     {
         // Create a new social channel
 
-        $bot = (new GetBotServices())->getBot((int) $request->bot_id);
+        $bot = (new GetBotServices)->getBot((int) $request->bot_id);
 
         $valid_channel = $bot->checkChannelExistOnProvider($request->token_key);
 
@@ -37,7 +35,7 @@ class SocialChannelActionRepo
             DB::transaction(function () use ($request, $valid_channel, $channel) {
                 $channel = SocialChannel::firstOrCreate([
                     'token_key' => $request->token_key,
-                    'type' => SocialMediaType::getByLabel($request->bot_type)
+                    'type' => SocialMediaType::getByLabel($request->bot_type),
                 ], [
                     'name' => $valid_channel->title,
                     'meta_data' => $valid_channel,
@@ -50,9 +48,7 @@ class SocialChannelActionRepo
             });
 
             return $channel;
-        }
-
-        else{;
+        } else {
             throw new \Exception('Failed to bind a channel', 400);
         }
 

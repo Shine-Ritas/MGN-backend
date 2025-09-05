@@ -2,11 +2,8 @@
 
 namespace App\Services\SocialChannel;
 
-use App\Enum\SocialMediaType;
 use App\Models\BotPublisher;
-use App\Models\SocialChannel;
 use App\Services\BotPublisher\Publisher\SocialPublisher;
-use Illuminate\Database\Eloquent\Collection;
 
 class SocialChannelService
 {
@@ -16,7 +13,7 @@ class SocialChannelService
 
         $channels = [];
 
-        $bots->each(function($bot) use (&$channels) {
+        $bots->each(function ($bot) use (&$channels) {
             $botChannels = (new SocialPublisher($bot->token_key, $bot->type->value))->get()->getChannelsWithSubscribers()->toArray();
 
             $channels = array_merge($channels, $botChannels);

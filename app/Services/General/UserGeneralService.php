@@ -7,11 +7,11 @@ use App\Models\SocialInfo;
 
 class UserGeneralService
 {
-    public function contactUsSocialLink() : array
+    public function contactUsSocialLink(): array
     {
-        return SocialInfo::select("id","name","icon","redirect_url",'type')
-        ->where("type",SocialInfoType::ReferSocial->value)
-        ->limit(2)
-        ->get()->toArray();
+        return SocialInfo::select('id', 'name', 'icon', 'redirect_url', 'type')
+            ->where('type', SocialInfoType::ReferSocial->value)
+            ->limit(2)
+            ->get()->toArray();
     }
 }

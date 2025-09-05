@@ -22,11 +22,11 @@ class BotProviderActionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bot_publisher_id' => "required|integer|exists:bot_publishers,id",
-            "bot_social_channels" => "required|array",
-            "stack_id" => "required|integer|exists:stacks,id",
-            "mogou_id" => "required|integer|exists:mogous,id",
-            "sub_mogou_id" => "required|integer|exists:sub_mogous,id",
+            'bot_publisher_id' => 'required|integer|exists:bot_publishers,id',
+            'bot_social_channels' => 'required|array',
+            'stack_id' => 'required|integer|exists:stacks,id',
+            'mogou_id' => 'required|integer|exists:mogous,id',
+            'sub_mogou_id' => 'required|integer|exists:sub_mogous,id',
         ];
     }
 }

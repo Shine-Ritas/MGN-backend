@@ -10,17 +10,14 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GetBotServices
 {
-
-    public function __construct(){
-
-    }
+    public function __construct() {}
 
     /**
      * getBotPublishers
      *
      * @return Collection<int, BotPublisher>
      */
-    public function getBotPublishers(string $type) : Collection
+    public function getBotPublishers(string $type): Collection
     {
 
         $labelType = SocialMediaType::getByLabel($type);
@@ -30,9 +27,9 @@ class GetBotServices
         return $botPublishers;
     }
 
-    public function getBotPublisher(int $id) : BotPublisher
+    public function getBotPublisher(int $id): BotPublisher
     {
-        
+
         $botPublisher = BotPublisher::where('id', $id)->first();
 
         $SocialProviderChannels = (new SocialPublisher($botPublisher->token_key, $botPublisher->type->value))->get()->getChannelsWithSubscribers();
@@ -42,7 +39,7 @@ class GetBotServices
         return $botPublisher;
     }
 
-    public function getBot(int $id) : LinedPublisher
+    public function getBot(int $id): LinedPublisher
     {
         // find the bot publisher first
         $botPublisher = BotPublisher::where('id', $id)->first();
@@ -52,5 +49,4 @@ class GetBotServices
 
         return $linePublisher;
     }
-
 }

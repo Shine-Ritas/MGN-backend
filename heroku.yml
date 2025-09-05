@@ -1,6 +1,0 @@
-build:
-  - heroku/php
-
-config:
-  PHP_EXTENSIONS:
-    - imagick

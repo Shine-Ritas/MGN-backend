@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enum\MogousStatus;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -17,9 +16,8 @@ class LargeSeeder extends Seeder
     {
         ini_set('memory_limit', '2048M');
 
-        $count= 5000;
+        $count = 5000;
         $large_seed = [];
-
 
         // larget seed should be mutliply of count
 
@@ -40,9 +38,9 @@ class LargeSeeder extends Seeder
         $subMogous = [];
         $mogous_category = [];
         $total_mogou = 5000;
-        $rand = rand(0,7);
+        $rand = rand(0, 7);
         for ($i = $offset; $i < $offset + $total_mogou; $i++) {
-            $title = fake()->sentence($rand) . ' ' . $i . $i . fake()->sentence(4);
+            $title = fake()->sentence($rand).' '.$i.$i.fake()->sentence(4);
             $mogous[] = [
                 'title' => $title,
                 'slug' => Str::slug($title),
@@ -62,7 +60,7 @@ class LargeSeeder extends Seeder
             }
 
             for ($j = 0; $j < 5; $j++) {
-                $sub_title = $title . " chapter $j";
+                $sub_title = $title." chapter $j";
                 $subMogous[] = [
                     'title' => $sub_title,
                     'slug' => Str::slug($sub_title),

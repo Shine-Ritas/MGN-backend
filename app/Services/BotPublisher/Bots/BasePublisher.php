@@ -9,9 +9,10 @@ use WeStacks\TeleBot\TeleBot;
 
 class BasePublisher
 {
-
     protected string $providerName;
-    protected TeleBot|null $serviceBot;
+
+    protected ?TeleBot $serviceBot;
+
     protected Client $httpClient;
 
     protected string $clientAppUrl;
@@ -22,13 +23,15 @@ class BasePublisher
         $this->clientAppUrl = config('control.client_app_url');
     }
 
-    public function self(): mixed{
+    public function self(): mixed
+    {
         return $this->serviceBot;
     }
 
     public function getPublisherDetail(): mixed
     {
         $botDetails = $this->individualChannel('-1002198423534')->getTotalMembers();
+
         return json_encode($botDetails);
     }
 
@@ -47,8 +50,8 @@ class BasePublisher
         ]);
     }
 
-
-    public function outputLog(string $message,string $level='info'):void{
+    public function outputLog(string $message, string $level = 'info'): void
+    {
         Log::channel('automation')->$level("{$this->providerName} - {$message}");
     }
 }

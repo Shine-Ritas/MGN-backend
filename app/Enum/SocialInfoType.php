@@ -4,7 +4,7 @@ namespace App\Enum;
 
 use App\Contracts\SmartEnum;
 
-enum SocialInfoType :string implements SmartEnum
+enum SocialInfoType: string implements SmartEnum
 {
     case Image = 'image';
     case ReferSocial = 'refer_social';
@@ -16,7 +16,7 @@ enum SocialInfoType :string implements SmartEnum
         return [
             self::Image,
             self::ReferSocial,
-            self::Banner
+            self::Banner,
         ];
     }
 
@@ -25,7 +25,7 @@ enum SocialInfoType :string implements SmartEnum
         return [
             'image' => self::Image,
             'refer_social' => self::ReferSocial,
-            'banner' => self::Banner
+            'banner' => self::Banner,
         ];
     }
 
@@ -41,8 +41,6 @@ enum SocialInfoType :string implements SmartEnum
 
     public static function requiredInValidationMessage(): string
     {
-        return "Social info type must be one of the following: " . implode(',', self::getValues());
+        return 'Social info type must be one of the following: '.implode(',', self::getValues());
     }
-
-
 }

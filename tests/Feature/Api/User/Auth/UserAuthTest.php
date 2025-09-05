@@ -33,13 +33,13 @@ function mockAuthenticationService(): void
     test()->mock(Authentication::class, function ($mock) {
         $mock->shouldReceive('setRequest')->andReturnSelf();
         $mock->shouldReceive('returnResponse')->andReturnSelf();
-        
+
         $mockResponse = getMockAuthResponse();
-        
+
         $mock->shouldReceive('signIn')->andReturn($mockResponse);
         $mock->shouldReceive('signUp')->andReturn($mockResponse);
         $mock->shouldReceive('signOut')->andReturn(response()->json([
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]));
     });
 }
@@ -52,9 +52,9 @@ function getMockAuthResponse()
             'id' => 1,
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'user_code' => 'testuser'
+            'user_code' => 'testuser',
         ],
-        'role' => null
+        'role' => null,
     ]);
 }
 
@@ -70,10 +70,10 @@ test('user register route exists', function () {
 // Authentication functionality tests
 test('user can login successfully', function () {
     $user = User::factory()->create();
-    
+
     $response = $this->postJson(route('api.user.login'), [
         'user_code' => $user->user_code,
-        'password' => 'password'
+        'password' => 'password',
     ]);
 
     assertSuccessfulAuthResponse($response);
@@ -85,9 +85,9 @@ test('user can register successfully', function () {
         'email' => 'testuser@gmail.com',
         'user_code' => 'testuser',
         'password' => 'password',
-        'password_confirmation' => 'password'
+        'password_confirmation' => 'password',
     ];
-    
+
     $response = $this->postJson(route('api.user.register'), $registrationData);
 
     assertSuccessfulAuthResponse($response);
@@ -99,13 +99,13 @@ test('user login validation works', function () {
     $response->assertStatus(422)
         ->assertJsonStructure([
             'message',
-            'errors'
+            'errors',
         ]);
 });
 
 test('user can logout successfully', function () {
     $this->setupUser();
-    
+
     $response = $this->authenticatedAdmin($this->user)
         ->postJson(route('api.user.logout'));
 
@@ -122,9 +122,9 @@ function assertSuccessfulAuthResponse($response): void
         ->assertJsonStructure([
             'token',
             'user' => ['id', 'name'],
-            'role'
+            'role',
         ])
         ->assertJson([
-            'token' => 'sample-token'
+            'token' => 'sample-token',
         ]);
 }

@@ -33,7 +33,6 @@ class ApplicationConfigController extends Controller
         return response()->json($app);
     }
 
-
     public function update(Request $request): JsonResponse
     {
         $app = $this->applicationConfigUploadRepo->upload($request);

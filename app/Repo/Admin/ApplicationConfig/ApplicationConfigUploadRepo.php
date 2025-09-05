@@ -5,7 +5,6 @@ namespace App\Repo\Admin\ApplicationConfig;
 use App\Models\ApplicationConfig;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
 use Illuminate\Http\Request;
-use Log;
 use UnexpectedValueException;
 
 class ApplicationConfigUploadRepo
@@ -25,9 +24,8 @@ class ApplicationConfigUploadRepo
     public function upload(Request $request): ApplicationConfig
     {
         $app = ApplicationConfig::firstOrFail();
-    
 
-        \Log::info('log',[$request->all()]);
+        \Log::info('log', [$request->all()]);
 
         foreach ($this->validUploadProperties as $property) {
             if ($request->hasFile($property)) {
@@ -35,7 +33,7 @@ class ApplicationConfigUploadRepo
             }
         }
 
-        $app->fill($request->only('title','daily_subscriptions_target','daily_traffic_target','monthly_subscriptions_target','user_side_is_maintenance_mode','watermark_position'));
+        $app->fill($request->only('title', 'daily_subscriptions_target', 'daily_traffic_target', 'monthly_subscriptions_target', 'user_side_is_maintenance_mode', 'watermark_position'));
         $app->save();
 
         return $app;
@@ -46,11 +44,12 @@ class ApplicationConfigUploadRepo
         $oldPath = $app->getRawOriginal($property);
         $this->removeMedia("public/config/{$oldPath}");
         $mediaResult = $this->storeMedia($request->file($property), 'config');
-        if (!is_string($mediaResult)) {
+        if (! is_string($mediaResult)) {
             throw new UnexpectedValueException('Expected a string path but got an array.');
         }
         $app->{$property} = $mediaResult;
         $app->save();
+
         return $app;
     }
 }

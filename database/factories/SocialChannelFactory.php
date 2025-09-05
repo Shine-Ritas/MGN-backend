@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class SocialChannelFactory extends Factory
 {
-
     protected $model = SocialChannel::class;
+
     /**
      * Define the model's default state.
      *

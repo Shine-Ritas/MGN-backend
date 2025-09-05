@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\Log;
 
 class PublishingController extends Controller
 {
-
     public function __construct(
         protected PublishingService $publishingService
-    ) {
-    }
+    ) {}
 
     public function publishContent(PublishingRequest $request): JsonResponse
     {
@@ -22,14 +20,16 @@ class PublishingController extends Controller
         try {
             if ($content) {
                 $this->publishingService->publishContent($content, $request->social_channel_ids, $request->text_content);
-            }else{
-                return response()->json(['message' => "Content not found"], 404);
+            } else {
+                return response()->json(['message' => 'Content not found'], 404);
             }
+
             return response()->json(['message' => 'Content published successfully'], 200);
 
         } catch (\Exception $e) {
             Log::channel('automation')->error($e->getMessage());
-            return response()->json(['message' => "Publishing failed"], 500);
+
+            return response()->json(['message' => 'Publishing failed'], 500);
         }
     }
 }

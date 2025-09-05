@@ -5,21 +5,22 @@ namespace App\Models;
 use App\Enum\ReportStatusEnum;
 use Database\Factories\ReportFactory;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 class Report extends Model
 {
     /** @use HasFactory<ReportFactory> */
     use HasFactory,HydraMedia;
+
     protected $fillable = [
         'title',
         'description',
         'current_url',
         'status',
         'image',
-        'user_id'
+        'user_id',
     ];
 
     public function getStatusAttribute(int $value): string
@@ -34,33 +35,30 @@ class Report extends Model
 
     protected function getImageAttribute(?string $value): string
     {
-        return $this->getMedia($value ?? "", 'public/reports');
-    }
-
-
-    /**
-     * scopeSearch
-     *
-     * @param  Builder<static> $query
-     * @param  ?string $search
-     * @return Builder<static>
-     */
-    public function scopeSearch(Builder $query, ?string $search):  Builder
-    {
-        return $query->where('title', 'like', $search . '%')
-            ->orWhere('description', 'like', $search . '%');
+        return $this->getMedia($value ?? '', 'public/reports');
     }
 
     /**
      * scopeSearch
      *
-     * @param  Builder<static> $query
-     * @param  ?string $status
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
-    public function scopeStatus(Builder $query,?string $status): Builder
+    public function scopeSearch(Builder $query, ?string $search): Builder
     {
-        return $query->when($status, function (Builder $query) use ($status){
+        return $query->where('title', 'like', $search.'%')
+            ->orWhere('description', 'like', $search.'%');
+    }
+
+    /**
+     * scopeSearch
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeStatus(Builder $query, ?string $status): Builder
+    {
+        return $query->when($status, function (Builder $query) use ($status) {
             $status_value = ReportStatusEnum::getByLabel($status);
             $query->where('status', $status_value);
         });
@@ -69,15 +67,11 @@ class Report extends Model
     /**
      * scopeSortBy
      *
-     * @param  Builder<static> $query
-     * @param  ?string $sortBy
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeSortBy(Builder $query, ?string $sortBy): Builder
     {
-        return $query->orderBy("id", $sortBy);
+        return $query->orderBy('id', $sortBy);
     }
-
-
-
 }

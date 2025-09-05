@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
@@ -12,13 +11,12 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles =[
+        $roles = [
             'normal',
             'premium',
         ];
 
-        foreach($roles as $role)
-        {
+        foreach ($roles as $role) {
             \Spatie\Permission\Models\Role::create(['name' => $role, 'guard_name' => 'web']);
         }
 
@@ -27,8 +25,7 @@ class PermissionSeeder extends Seeder
             'normal-content',
         ];
 
-        foreach($parent_permissions as $permission)
-        {
+        foreach ($parent_permissions as $permission) {
             \Spatie\Permission\Models\Permission::create(['name' => $permission, 'guard_name' => 'web']);
         }
     }

@@ -4,8 +4,7 @@ use App\Services\Auth\AuthRequestThrottle;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
-
-uses()->group('unit','auth-throttle');
+uses()->group('unit', 'auth-throttle');
 
 it('does not throw an exception if the request is not rate-limited', function () {
     $email = 'test@example.com';
@@ -18,7 +17,7 @@ it('does not throw an exception if the request is not rate-limited', function ()
 
     $throttle = new AuthRequestThrottle($email, $ip);
 
-    expect(fn() => $throttle->ensureIsNotRateLimited())->not->toThrow(ValidationException::class);
+    expect(fn () => $throttle->ensureIsNotRateLimited())->not->toThrow(ValidationException::class);
 });
 
 it('throws a validation exception if the request is rate-limited', function () {
@@ -37,7 +36,7 @@ it('throws a validation exception if the request is rate-limited', function () {
 
     $throttle = new AuthRequestThrottle($email, $ip);
 
-    expect(fn() => $throttle->ensureIsNotRateLimited())->toThrow(ValidationException::class);
+    expect(fn () => $throttle->ensureIsNotRateLimited())->toThrow(ValidationException::class);
 });
 
 it('increments the number of attempts for the throttle key', function () {

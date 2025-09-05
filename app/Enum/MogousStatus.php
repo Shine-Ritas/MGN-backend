@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Enum;
+
 use App\Contracts\SmartEnum;
 
-enum MogousStatus : int implements SmartEnum
+enum MogousStatus: int implements SmartEnum
 {
     case DRAFT = 0;
     case PUBLISHED = 1;
@@ -21,9 +22,9 @@ enum MogousStatus : int implements SmartEnum
     public static function getStatusName(MogousStatus $status): string
     {
         return match ($status) {
-            self::DRAFT => "Draft",
-            self::PUBLISHED => "Published",
-            self::ARCHIVED => "Archived",
+            self::DRAFT => 'Draft',
+            self::PUBLISHED => 'Published',
+            self::ARCHIVED => 'Archived',
         };
     }
 
@@ -39,16 +40,15 @@ enum MogousStatus : int implements SmartEnum
     public static function getStatus(string $status): int
     {
         return match ($status) {
-            "Draft" => self::DRAFT->value,
-            "Published" => self::PUBLISHED->value,
-            "Archived" => self::ARCHIVED->value,
+            'Draft' => self::DRAFT->value,
+            'Published' => self::PUBLISHED->value,
+            'Archived' => self::ARCHIVED->value,
             default => self::DRAFT->value,
         };
     }
 
     public static function requiredInValidationMessage(): string
     {
-        return "Status must be one of the following: " . implode(',', self::getValues());
+        return 'Status must be one of the following: '.implode(',', self::getValues());
     }
-
 }

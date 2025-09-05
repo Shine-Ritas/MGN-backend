@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Enum;
+
 use App\Contracts\SmartEnum;
 
-enum AdminRole : string implements SmartEnum
+enum AdminRole: string implements SmartEnum
 {
     case Admin = 'admin';
     case Uploader = 'uploader';
@@ -12,7 +13,7 @@ enum AdminRole : string implements SmartEnum
     {
         return [
             self::Admin,
-            self::Uploader
+            self::Uploader,
         ];
     }
 
@@ -20,14 +21,12 @@ enum AdminRole : string implements SmartEnum
     {
         return [
             'admin',
-            'uploader'
+            'uploader',
         ];
     }
 
     public static function requiredInValidationMessage(): string
     {
-        return "Role must be one of the following: " . implode(',', self::getValues());
+        return 'Role must be one of the following: '.implode(',', self::getValues());
     }
 }
-
-

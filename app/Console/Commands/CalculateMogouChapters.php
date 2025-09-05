@@ -40,19 +40,17 @@ class CalculateMogouChapters extends Command
 
                 $rotation_key = $mogou->rotation_key;
 
-                $sub_mogou = new SubMogou();
+                $sub_mogou = new SubMogou;
                 $table = $sub_mogou->getPartition($rotation_key);
 
                 $sub_mogou->setTable($table);
 
-
                 // log subb mogou table
-                $this->info('Sub mogou table: ' . $table);
+                $this->info('Sub mogou table: '.$table);
 
                 $total_sub_mogou_chapters = $sub_mogou->where('mogou_id', $mogou->id)->count();
 
-                $this->info('Sub mogou count: ' . $total_sub_mogou_chapters);
-
+                $this->info('Sub mogou count: '.$total_sub_mogou_chapters);
 
                 $mogou->update(['total_chapters' => $total_sub_mogou_chapters]);
             }

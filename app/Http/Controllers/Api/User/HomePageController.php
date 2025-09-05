@@ -15,23 +15,23 @@ use Illuminate\Http\Request;
 
 class HomePageController extends Controller
 {
-
     use CacheResponse;
 
     public array $tagKeys = ['homepage'];
+
     // make constructor
     public function __construct(protected MogouRepo $mogouRepo, protected SectionManagementService $sms) {}
 
     public function carousel(): JsonResponse
     {
-        $cacheKey = config("control.cache_key.homepage.carousel");
+        $cacheKey = config('control.cache_key.homepage.carousel');
 
         $mogous = $this->cacheResponse($cacheKey, 300, function () {
-            $mogous_ids = $this->sms->getBySection("hero_highlight_slider")->childSections
-                ->where("is_visible", 1)
+            $mogous_ids = $this->sms->getBySection('hero_highlight_slider')->childSections
+                ->where('is_visible', 1)
                 ->pluck('pivot_key');
 
-            return Mogou::select("id", "title", "slug", "cover", "rotation_key", "description", "finish_status", 'mogou_type', 'status', "rating")
+            return Mogou::select('id', 'title', 'slug', 'cover', 'rotation_key', 'description', 'finish_status', 'mogou_type', 'status', 'rating')
                 ->where('status', MogousStatus::PUBLISHED->value)
                 ->with('categories:title')
                 ->whereIn('id', $mogous_ids)
@@ -40,21 +40,21 @@ class HomePageController extends Controller
 
         return response()->json(
             [
-                'mogous' => $mogous
+                'mogous' => $mogous,
             ]
         );
     }
 
     public function recommended(): JsonResponse
     {
-        $cacheKey = config("control.cache_key.homepage.recommend");
+        $cacheKey = config('control.cache_key.homepage.recommend');
 
         $mogous = $this->cacheResponse($cacheKey, 300, function () {
-            $mogous_ids = $this->sms->getBySection("main_page_recommended")->childSections
-                ->where("is_visible", 1)
+            $mogous_ids = $this->sms->getBySection('main_page_recommended')->childSections
+                ->where('is_visible', 1)
                 ->pluck('pivot_key');
 
-            return Mogou::select("id", "title", "slug", "cover", "rotation_key", "description", "finish_status", 'mogou_type', 'status', "rating")
+            return Mogou::select('id', 'title', 'slug', 'cover', 'rotation_key', 'description', 'finish_status', 'mogou_type', 'status', 'rating')
                 ->where('status', MogousStatus::PUBLISHED->value)
                 ->with('categories:title')
                 ->whereIn('id', $mogous_ids)
@@ -64,14 +64,14 @@ class HomePageController extends Controller
 
         return response()->json(
             [
-                'mogous' => $mogous
+                'mogous' => $mogous,
             ]
         );
     }
 
     public function mostViewed(): JsonResponse
     {
-        $mogous = Mogou::select("id", "title", "slug", "cover",)
+        $mogous = Mogou::select('id', 'title', 'slug', 'cover')
             ->where('status', MogousStatus::PUBLISHED->value)
             ->with('categories:title')
             ->take(20)
@@ -79,14 +79,14 @@ class HomePageController extends Controller
 
         return response()->json(
             [
-                'mogous' => $mogous
+                'mogous' => $mogous,
             ]
         );
     }
 
     public function lastUploaded(Request $request): JsonResponse
     {
-        $collection =  $this->mogouRepo
+        $collection = $this->mogouRepo
             ->withCategories()
             ->publishedOnly()
             ->get($request);
@@ -113,7 +113,7 @@ class HomePageController extends Controller
 
         return response()->json(
             [
-                'mogous' => $collection
+                'mogous' => $collection,
             ]
         );
     }
@@ -124,7 +124,7 @@ class HomePageController extends Controller
 
         return response()->json(
             [
-                'banners' => $banners
+                'banners' => $banners,
             ]
         );
     }

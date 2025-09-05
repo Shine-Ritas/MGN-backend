@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class UserFavoriteRepo
 {
-
     public ?User $user;
 
     public function __construct(?User $user)
@@ -20,9 +19,9 @@ class UserFavoriteRepo
     public function setUser(User $user): UserFavoriteRepo
     {
         $this->user = $user;
+
         return $this;
     }
-
 
     public function addFavorite(int $mogou_id): bool
     {
@@ -32,8 +31,8 @@ class UserFavoriteRepo
 
         UserFavorite::create(
             [
-            'user_id' => $this->user?->id,
-            'mogou_id' => $mogou_id
+                'user_id' => $this->user?->id,
+                'mogou_id' => $mogou_id,
             ]
         );
 
@@ -42,11 +41,11 @@ class UserFavoriteRepo
 
     public function removeFavorite(int $mogou_id): bool
     {
-        try{
+        try {
             $this->user?->favorites()->where('mogou_id', $mogou_id)->delete();
+
             return true;
-        }
-        catch (\Exception $e){
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -68,13 +67,12 @@ class UserFavoriteRepo
      */
     public function getFavoriteMogous(): Collection
     {
-        return Mogou::select('id','title','slug','cover')
-        ->whereIn('id', $this->getFavorites())->get();
+        return Mogou::select('id', 'title', 'slug', 'cover')
+            ->whereIn('id', $this->getFavorites())->get();
     }
 
     public function isFavorite(int $mogou_id): bool
     {
         return $this->user?->favorites()->where('mogou_id', $mogou_id)->exists() ? true : false;
     }
-
 }

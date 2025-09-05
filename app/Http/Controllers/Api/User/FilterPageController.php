@@ -13,7 +13,7 @@ class FilterPageController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $collection =  $this->mogouRepo
+        $collection = $this->mogouRepo
             ->withCategories()
             ->withFilterGenres()
             ->withLegalOnly()
@@ -39,10 +39,9 @@ class FilterPageController extends Controller
             }
         );
 
-
         return response()->json(
             [
-                'mogous' => $collection
+                'mogous' => $collection,
             ]
         );
     }

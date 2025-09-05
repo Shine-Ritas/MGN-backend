@@ -27,7 +27,7 @@ class PublishingRequest extends FormRequest
             'type' => 'required|string|in:mogou,sub_mogou',
             'text_content' => 'nullable|string',
             'social_channel_ids' => ['required', function ($attribute, $value, $fail) {
-                if (!is_array($value) && $value !== 'all') {
+                if (! is_array($value) && $value !== 'all') {
                     $fail('The social_channel_ids must be either an array of IDs or the string "all".');
                 }
             }],

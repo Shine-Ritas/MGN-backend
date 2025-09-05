@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\ApplicationConfigController;
 use App\Http\Controllers\Api\Admin\UserAvatarController;
 use App\Http\Controllers\Api\User\FilterPageController;
 use App\Http\Controllers\Api\User\GeneralController;
@@ -23,14 +22,14 @@ Route::middleware(['user.maintenance'])->group(function () {
 
         Route::controller(UserProfileController::class)->group(function () {
             Route::get('/profile', 'getProfile')->name('profile');
-            Route::get('/get-subscription','getSubscription')->name("getSubscription");
-            Route::post("/update/profile", "updateProfile")->name("update.profile");
+            Route::get('/get-subscription', 'getSubscription')->name('getSubscription');
+            Route::post('/update/profile', 'updateProfile')->name('update.profile');
         });
 
         Route::controller(UserAvatarController::class)->group(function () {
             Route::get('/user-avatars', 'get')->name('avatars');
         });
-        
+
     });
 
     Route::prefix('users')->name('users.')->group(function () {
@@ -45,27 +44,27 @@ Route::middleware(['user.maintenance'])->group(function () {
         Route::controller(UserMogouController::class)->group(function () {
             Route::get('/mogous/{mogou}', 'show')->name('mogous.show');
             Route::get('/mogous/{mogou}/getMoreChapters', 'getMoreChapters')->name('mogous.getMoreChapters');
-            Route::get("/mogous/{mogou}/chapters/{chapter}", "getChapter")->name("mogous.getChapter");
-            Route::get("/mogous/{mogou}/chapters/{chapter}/viewed", "getViewed")->name("mogous.getViewed");
+            Route::get('/mogous/{mogou}/chapters/{chapter}', 'getChapter')->name('mogous.getChapter');
+            Route::get('/mogous/{mogou}/chapters/{chapter}/viewed', 'getViewed')->name('mogous.getViewed');
             Route::get('/mogous/{mogou}/related', 'relatedPostPerMogou')->name('mogous.relateMogou');
         });
 
-        Route::controller(FilterPageController::class)->group(function(){
-            Route::get('/filter','index')->name('filter.index');
+        Route::controller(FilterPageController::class)->group(function () {
+            Route::get('/filter', 'index')->name('filter.index');
         });
 
         Route::controller(UserReportController::class)->group(function () {
-            Route::post('/create-report', 'create')->name("reports.create");
+            Route::post('/create-report', 'create')->name('reports.create');
         });
 
-        Route::controller(GeneralController::class)->group(function(){
-            Route::get("/contact-us","contactUs")->name("general.contactUs");
+        Route::controller(GeneralController::class)->group(function () {
+            Route::get('/contact-us', 'contactUs')->name('general.contactUs');
         });
 
-        Route::get("/check-server", function () {
+        Route::get('/check-server', function () {
             return response()->json([
                 'message' => 'service available',
-                'status' => 200
+                'status' => 200,
             ], 200);
         });
     });

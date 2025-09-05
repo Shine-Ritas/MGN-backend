@@ -1,6 +1,6 @@
 <?php
-namespace App\Repo\Admin\Subscription;
 
+namespace App\Repo\Admin\Subscription;
 
 use App\Contracts\ModelRepoInterface;
 use App\Http\Requests\SubscriptionActionRequest;
@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 
 class SubscriptionRepo implements ModelRepoInterface
 {
-
     protected Request $request;
 
-    public function get(Request $request) : mixed
+    public function get(Request $request): mixed
     {
         $this->request = $request;
+
         return $this->collection();
     }
 
@@ -23,46 +23,46 @@ class SubscriptionRepo implements ModelRepoInterface
         return Subscription::where('id', $subscription)->firstOrFail();
     }
 
-    public function collection() : mixed
+    public function collection(): mixed
     {
         return Subscription::search($this->request->search)
-        ->withCount('users')
-        ->countBy($this->request->count_by)
-        ->priceBy($this->request->price_by)
-        ->paginate($this->request->limit ?? 10)
-        ->withQueryString();
+            ->withCount('users')
+            ->countBy($this->request->count_by)
+            ->priceBy($this->request->price_by)
+            ->paginate($this->request->limit ?? 10)
+            ->withQueryString();
     }
 
-    public function total_user_subscription() : int
+    public function total_user_subscription(): int
     {
         return Subscription::withCount('users')->get()->sum('users_count');
     }
 
-    public function create(SubscriptionActionRequest $request) : Subscription
+    public function create(SubscriptionActionRequest $request): Subscription
     {
         $request->validate(
             [
-            'title' => 'unique:subscriptions,title'
+                'title' => 'unique:subscriptions,title',
             ]
         );
 
         return Subscription::create($request->validated());
     }
 
-    public function update(SubscriptionActionRequest $request, Subscription $subscription) : Subscription
+    public function update(SubscriptionActionRequest $request, Subscription $subscription): Subscription
     {
         $request->validate(
             [
-            'title' => 'unique:subscriptions,title,'.$subscription->id
+                'title' => 'unique:subscriptions,title,'.$subscription->id,
             ]
         );
         $subscription->update($request->validated());
+
         return $subscription;
     }
 
-    public function delete(Subscription $subscription) : bool
+    public function delete(Subscription $subscription): bool
     {
         return $subscription->delete();
     }
-
 }

@@ -15,16 +15,13 @@ use Illuminate\Http\Response;
 
 class MogouController extends Controller
 {
-
     use CacheResponse;
 
-    public function __construct(protected MogouRepo $mogouRepo, protected MogouActionRepo $mogouActionRepo)
-    {
-    }
+    public function __construct(protected MogouRepo $mogouRepo, protected MogouActionRepo $mogouActionRepo) {}
 
     public function index(Request $request): JsonResponse
     {
-        $collection =  $this->mogouRepo
+        $collection = $this->mogouRepo
             ->withCategories()
             ->get($request);
 
@@ -34,7 +31,7 @@ class MogouController extends Controller
 
                     $key = $mogou->rotation_key;
 
-                    if(request('mogou_total_count')) {
+                    if (request('mogou_total_count')) {
                         $mogou->append('total_view_count');
                     }
 
@@ -47,7 +44,7 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'mogous' => $collection
+                'mogous' => $collection,
             ]
         );
     }
@@ -58,7 +55,7 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'mogou' => $mogou
+                'mogou' => $mogou,
             ]
         );
     }
@@ -69,7 +66,7 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'mogou' => $mogou
+                'mogou' => $mogou,
             ], Response::HTTP_CREATED
         );
     }
@@ -77,12 +74,13 @@ class MogouController extends Controller
     public function update(MogouActionRequest $request, Mogou $mogou): JsonResponse
     {
 
-            $mogou = $this->mogouActionRepo->update($request, $mogou);
-            return response()->json(
-                [
-                'mogou' => $mogou
-                ]
-            );
+        $mogou = $this->mogouActionRepo->update($request, $mogou);
+
+        return response()->json(
+            [
+                'mogou' => $mogou,
+            ]
+        );
 
     }
 
@@ -91,8 +89,8 @@ class MogouController extends Controller
 
         $request->validate(
             [
-            'mogou_id' => 'required|exists:mogous,id',
-            'status' => 'required|'.MogouValidation::status()
+                'mogou_id' => 'required|exists:mogous,id',
+                'status' => 'required|'.MogouValidation::status(),
             ]
         );
 
@@ -102,7 +100,7 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'message' => "Mogou status updated to {$mogou->statusName} successfully"
+                'message' => "Mogou status updated to {$mogou->statusName} successfully",
             ]
         );
     }
@@ -111,8 +109,8 @@ class MogouController extends Controller
     {
         $request->validate(
             [
-            'mogou_id' => 'required|exists:mogous,id',
-            'category_id' => 'required|exists:categories,id|not_in:'.implode(',', Mogou::find($request->input('mogou_id'))->categories->pluck('id')->toArray())
+                'mogou_id' => 'required|exists:mogous,id',
+                'category_id' => 'required|exists:categories,id|not_in:'.implode(',', Mogou::find($request->input('mogou_id'))->categories->pluck('id')->toArray()),
             ]
         );
 
@@ -122,8 +120,8 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'message' => 'Category Added successfully',
-            'mogou' => $mogou->load('categories')
+                'message' => 'Category Added successfully',
+                'mogou' => $mogou->load('categories'),
             ]
         );
     }
@@ -133,8 +131,8 @@ class MogouController extends Controller
         $mogou = Mogou::findOrFail($request->input('mogou_id'));
         $request->validate(
             [
-            'mogou_id' => 'required|exists:mogous,id',
-            'category_id' => 'required|exists:categories,id|in:'.implode(',', $mogou->categories->pluck('id')->toArray())
+                'mogou_id' => 'required|exists:mogous,id',
+                'category_id' => 'required|exists:categories,id|in:'.implode(',', $mogou->categories->pluck('id')->toArray()),
             ]
         );
 
@@ -142,8 +140,8 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'message' => 'Category removed successfully',
-            'mogou' => $mogou->load('categories')
+                'message' => 'Category removed successfully',
+                'mogou' => $mogou->load('categories'),
             ]
         );
     }
@@ -156,7 +154,7 @@ class MogouController extends Controller
 
         return response()->json(
             [
-            'message' => 'Mogou deleted successfully'
+                'message' => 'Mogou deleted successfully',
             ]
         );
     }

@@ -23,7 +23,7 @@ pest-parallel:
 	./vendor/bin/pest --parallel
 
 test:
-	./vendor/bin/phpstan analyse --memory-limit=512M && ./vendor/bin/pest --parallel
+	./vendor/bin/phpstan analyse --memory-limit=512M && ./vendor/bin/pest --parallel && ./vendor/bin/pint --parallel
 
 up:
 	@docker-compose up -d

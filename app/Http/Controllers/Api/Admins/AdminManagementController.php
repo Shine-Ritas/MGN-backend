@@ -10,19 +10,18 @@ use Spatie\Permission\Models\Role;
 
 class AdminManagementController extends Controller
 {
+    public function __construct(protected AdminManagementRepo $adminManagementRepo) {}
 
-    public function __construct(protected AdminManagementRepo $adminManagementRepo){}
-
-    public function index() : JsonResponse
+    public function index(): JsonResponse
     {
         $admins = $this->adminManagementRepo->index();
 
         return response()->json([
-            'admins' => $admins
+            'admins' => $admins,
         ], 200);
     }
 
-    public function action(Request $request) : JsonResponse
+    public function action(Request $request): JsonResponse
     {
         $data = $request->validate([
             'action' => 'required|string|in:create,update',
@@ -37,43 +36,41 @@ class AdminManagementController extends Controller
 
         return response()->json([
             'message' => "Admin has been {$data['action']}ed",
-            "admin" => $admin
+            'admin' => $admin,
         ], 200);
     }
 
-    public function delete(Request $request) : JsonResponse
+    public function delete(Request $request): JsonResponse
     {
         $data = $request->validate([
             'admin_id' => 'required|integer',
         ]);
 
-        if(auth()->id() == $data['admin_id']){
+        if (auth()->id() == $data['admin_id']) {
             return response()->json([
-                'message' => "You can't delete yourself"
+                'message' => "You can't delete yourself",
             ], 400);
         }
 
         $this->adminManagementRepo->delete($data['admin_id']);
 
         return response()->json([
-            'message' => "Admin has been deleted"
+            'message' => 'Admin has been deleted',
         ], 200);
     }
 
-
-
-    public function roles() : JsonResponse
+    public function roles(): JsonResponse
     {
-        $roles = Role::where('guard_name','admin')->get()->each(function($role){
+        $roles = Role::where('guard_name', 'admin')->get()->each(function ($role) {
             $role->name = ucwords($role->name);
+
             return $role;
         });
 
         $roles = $roles->toArray();
 
-
         return response()->json([
-            'roles' => $roles
+            'roles' => $roles,
         ], 200);
     }
 }

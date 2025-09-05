@@ -24,7 +24,7 @@ class DeleteSubmogouImageRequest extends FormRequest
         return [
             'mogou_id' => 'required|integer|exists:mogous,id',
             'sub_mogou_id' => 'required|integer',
-            'image_id' => 'required|integer'
+            'image_id' => 'required|integer',
         ];
     }
 }

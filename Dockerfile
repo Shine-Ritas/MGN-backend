@@ -4,38 +4,32 @@ FROM php:8.2-fpm-alpine AS template
 ARG user=radian
 ARG uid=1000
 
-# Install common PHP extension dependencies
-RUN apk add --no-cache \
+# Install minimal runtime packages and build, then clean build deps in one layer
+RUN set -eux; \
+    apk add --no-cache \
+        ca-certificates \
+        oniguruma \
+        libzip \
+        libpng \
+        libjpeg-turbo \
+        libpq \
+        imagemagick; \
+    apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
         autoconf \
-        bash \
-        bash-completion \
-        bzip2 \
-        curl \
+        build-base \
+        linux-headers \
         freetype-dev \
-        gcc \
-        g++ \
-        git \
-        imagemagick \
-        imagemagick-dev \
-        jpeg-dev \
         libjpeg-turbo-dev \
         libpng-dev \
-        libpq-dev \
-        libtool \
         libzip-dev \
-        linux-headers \
-        make \
-        oniguruma \
+        libpq-dev \
         oniguruma-dev \
-        openssl \
-        supervisor \
-        unzip \
-        wget \
-        zlib-dev
-
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install -j$(nproc) \
+        imagemagick-dev \
+        git \
+        unzip; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg; \
+    docker-php-ext-install -j"$(nproc)" \
         bcmath \
         exif \
         gd \
@@ -45,29 +39,49 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
         pdo \
         pdo_pgsql \
         sockets \
-        zip && \
-    pecl install imagick && \
-    docker-php-ext-enable imagick sockets
+        zip; \
+    pecl install imagick; \
+    docker-php-ext-enable imagick sockets; \
+    apk del --no-network .build-deps; \
+    rm -rf /tmp/* /var/cache/apk/* /usr/src/php* /usr/local/src/*
 
 # Set the working directory
 WORKDIR /var/www/mgn
 
-# Copy composer
+# Copy composer (temporarily used during build)
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Copy source code
-COPY --chown=$user:$user . /var/www/mgn
+# Leverage layer caching: install dependencies first
+COPY composer.json composer.lock app/helpers.php /var/www/mgn/
 
-# Install composer dependencies
+# Install composer dependencies (no dev) and optimize autoloader without running scripts
+ARG COMPOSER_NO_DEV=1
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN --mount=type=cache,target=/tmp/cache \
-    composer install --prefer-dist --optimize-autoloader --no-interaction && \
-    composer dump-autoload --optimize
+    if [ "$COMPOSER_NO_DEV" = "1" ]; then \
+        composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-scripts; \
+    else \
+        composer install --prefer-dist --optimize-autoloader --no-interaction --no-scripts; \
+    fi && \
+    composer dump-autoload --optimize --no-scripts && \
+    rm -rf /root/.composer
+
+# Copy the rest of the application source
+COPY --chown=$user:$user . /var/www/mgn
+RUN composer dump-autoload --optimize --no-scripts
+
+# Ensure required Laravel runtime directories exist even if not copied
+RUN mkdir -p /var/www/mgn/storage/framework/cache \
+    /var/www/mgn/storage/framework/sessions \
+    /var/www/mgn/storage/framework/views \
+    /var/www/mgn/storage/logs \
+    /var/www/mgn/bootstrap/cache
 
 # Add user and set permission
 RUN addgroup -S $user && adduser -S $user -G www-data && \
     mkdir -p /etc/supervisor /var/log/supervisor && \
-    chown -R $user:www-data /usr/local/var/log /etc/supervisor /var/log/supervisor && \
-    chmod -R 775 /var/www/mgn/storage /usr/local/var/log /etc/supervisor /var/log/supervisor
+    chown -R $user:www-data /usr/local/var/log /etc/supervisor /var/log/supervisor /var/www/mgn && \
+    chmod -R 775 /var/www/mgn/storage /var/www/mgn/bootstrap/cache /usr/local/var/log /etc/supervisor /var/log/supervisor
 
 # Copy custom PHP-FPM configuration
 COPY deployment/config/fpm/custom-php-fpm.conf /usr/local/etc/php-fpm.d/
@@ -88,7 +102,9 @@ CMD ["sh", "-c", "/entrypoint.sh"]
 # Worker Image
 FROM template AS worker
 
-RUN mkdir -p /var/log/supervisor /var/www/mgn/storage/logs
+RUN set -eux; \
+    apk add --no-cache supervisor; \
+    mkdir -p /var/log/supervisor /var/www/mgn/storage/logs
 
 # Copy Supervisor configuration for worker
 COPY deployment/config/supervisor /etc/supervisor/conf.d

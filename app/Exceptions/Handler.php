@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -31,27 +30,26 @@ class Handler extends ExceptionHandler
         $this->reportable(
             function (Throwable $e) {
 
-                if(env('APP_ENV') === 'production') {
+                if (env('APP_ENV') === 'production') {
                     Log::channel('slack')->error(
                         $e->getMessage(), [
-                        'file' => $e->getFile(),
-                        'Line' => $e->getLine(),
-                        'code' => $e->getCode(),
+                            'file' => $e->getFile(),
+                            'Line' => $e->getLine(),
+                            'code' => $e->getCode(),
                         ]
                     );
                 }
-
 
             }
         );
     }
 
-    public function render($request,Throwable $e)
+    public function render($request, Throwable $e)
     {
-        if($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+        if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
             return response()->json(
                 [
-                'message' => "{$this->prettyModelNotFound($e)} not found"
+                    'message' => "{$this->prettyModelNotFound($e)} not found",
                 ], Response::HTTP_NOT_FOUND
             );
         }
@@ -62,7 +60,7 @@ class Handler extends ExceptionHandler
             if ($request->is('api/*') || $request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'message' => 'Unauthenticated.',
-                    'error' => 'Authentication required'
+                    'error' => 'Authentication required',
                 ], Response::HTTP_UNAUTHORIZED);
             }
         }
@@ -78,5 +76,4 @@ class Handler extends ExceptionHandler
 
         return 'resource';
     }
-
 }

@@ -11,6 +11,7 @@ class ApplicationConfig extends Model
 {
     /** @use HasFactory<ApplicationConfigFactory> */
     use HasFactory, HydraMedia;
+
     protected $fillable = [
         'title',
         'logo',
@@ -33,62 +34,69 @@ class ApplicationConfig extends Model
 
     public function getLogoAttribute(string $value): string
     {
-        return $this->getMedia($value,'config');
+        return $this->getMedia($value, 'config');
     }
 
     public function getCoverPhotoAttribute(?string $value): string
     {
-        if($value){
-            return $this->getMedia($value,'config');
+        if ($value) {
+            return $this->getMedia($value, 'config');
         }
+
         return '';
     }
 
     public function getOriginalWaterMarkAttribute(?string $value): string
     {
-        if($value){
+        if ($value) {
             return $value;
         }
+
         return '';
     }
 
-
     public function getWaterMarkAttribute(?string $value): string
     {
-        if($value){
-            return $this->getMedia($value,'config');
+        if ($value) {
+            return $this->getMedia($value, 'config');
         }
+
         return '';
     }
 
     public function getIntroAAttribute(?string $value): string
     {
-        if($value){
-            return $this->getMedia($value,'config');
+        if ($value) {
+            return $this->getMedia($value, 'config');
         }
+
         return '';
     }
+
     public function getOutroAAttribute(?string $value): string
     {
-        if($value){
-            return $this->getMedia($value,'config');
+        if ($value) {
+            return $this->getMedia($value, 'config');
         }
+
         return '';
     }
 
     public function getIntroBAttribute(?string $value): string
     {
-        if($value){
-            return $this->getMedia($value,'config');
+        if ($value) {
+            return $this->getMedia($value, 'config');
         }
+
         return '';
     }
 
     public function getOutroBAttribute(?string $value): string
     {
-        if($value){
-            return $this->getMedia($value,'config');
+        if ($value) {
+            return $this->getMedia($value, 'config');
         }
+
         return '';
     }
 }

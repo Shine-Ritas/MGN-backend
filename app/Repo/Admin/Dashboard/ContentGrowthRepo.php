@@ -2,7 +2,6 @@
 
 namespace App\Repo\Admin\Dashboard;
 
-use App\Models\Admin;
 use App\Models\ChapterAnalysis;
 use App\Models\Mogou;
 use App\Models\SubMogou;
@@ -13,12 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class ContentGrowthRepo
 {
-
     public function __construct(protected string $startDate, protected string $endDate) {}
 
     public function mostChapterUploadedAdmins(): array
     {
-        $subMogou = new SubMogou();
+        $subMogou = new SubMogou;
         $tables = $subMogou->getCreatedPartitions();
 
         $data = collect();
@@ -37,14 +35,14 @@ class ContentGrowthRepo
         return $data->groupBy('name')->map(function ($group) {
             return [
                 'name' => $group->first()->name,
-                'chapters' => $group->sum('total') // Sum all total counts for the same name
+                'chapters' => $group->sum('total'), // Sum all total counts for the same name
             ];
         })->values()->toArray();
     }
 
     public function chapterUploadedBetweenTimePeriod(): array
     {
-        $subMogou = new SubMogou();
+        $subMogou = new SubMogou;
         $tables = $subMogou->getCreatedPartitions();
 
         $data = collect();
@@ -66,8 +64,8 @@ class ContentGrowthRepo
         // Adjust weeks to only have 4 weeks in February 2025
         $finalData = $data->groupBy('week_number')->map(function ($group, $week) {
             return [
-                'week' => 'Week ' . $week,
-                'chapters' => $group->sum('total')
+                'week' => 'Week '.$week,
+                'chapters' => $group->sum('total'),
             ];
         })->values();
 
@@ -105,11 +103,11 @@ class ContentGrowthRepo
             ->toArray();
 
         foreach ($thisWeekViews as $key => $data) {
-            $subMogou =  (new MogouPartitionFind)->getSubMogouInstance("id", $data['mogou_id'])
-            ->where("id", $data['sub_mogou_id'])
-            ->where("mogou_id", $data['mogou_id'])
-            ->select('title', 'mogou_id')
-            ->firstOrFail();
+            $subMogou = (new MogouPartitionFind)->getSubMogouInstance('id', $data['mogou_id'])
+                ->where('id', $data['sub_mogou_id'])
+                ->where('mogou_id', $data['mogou_id'])
+                ->select('title', 'mogou_id')
+                ->firstOrFail();
 
             $thisWeekViews[$key]['sub_mogou_title'] = $subMogou->title;
             $thisWeekViews[$key]['mogou_title'] = $subMogou->mogou->title;

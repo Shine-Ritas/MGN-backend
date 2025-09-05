@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Enum;
+
 use App\Contracts\SmartEnum;
 
-enum MogouFinishStatus :int implements SmartEnum
+enum MogouFinishStatus: int implements SmartEnum
 {
     case ONGOING = 0;
     case COMPLETED = 1;
     case DROPPED = 2;
-
 
     public static function getValues(): array
     {
@@ -49,8 +49,6 @@ enum MogouFinishStatus :int implements SmartEnum
 
     public static function requiredInValidationMessage(): string
     {
-        return "Finish status must be one of the following: " . implode(',', self::getValues());
+        return 'Finish status must be one of the following: '.implode(',', self::getValues());
     }
-
-
 }

@@ -20,8 +20,8 @@ class SubscriptionFactory extends Factory
         return [
             'title' => $this->faker->randomElement(['Free', 'Basic', 'Premium']),
             'max' => $this->faker->numberBetween(50, 100),
-            'price' => $this->faker->numberBetween(100, 10000) . 00,
-            'duration' => $this->faker->randomElement([30, 60, 90, 120, 180, 365])
+            'price' => $this->faker->numberBetween(100, 10000). 00,
+            'duration' => $this->faker->randomElement([30, 60, 90, 120, 180, 365]),
         ];
     }
 }

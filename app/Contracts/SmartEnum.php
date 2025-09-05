@@ -6,5 +6,5 @@ interface SmartEnum
 {
     public static function getValues(): array;
 
-    public static function requiredInValidationMessage() : string;
+    public static function requiredInValidationMessage(): string;
 }

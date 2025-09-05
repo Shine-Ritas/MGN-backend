@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_avatars', function (Blueprint $table) {
             $table->id();
-            $table->string("avatar_name", 125)->nullable()->unique();
-            $table->string("avatar_path", 255)->nullable();
-            $table->string("avatar_type", 25)->nullable();
+            $table->string('avatar_name', 125)->nullable()->unique();
+            $table->string('avatar_path', 255)->nullable();
+            $table->string('avatar_type', 25)->nullable();
             $table->timestamps();
         });
     }

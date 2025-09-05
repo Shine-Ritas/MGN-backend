@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sub_mogou_id');
             $table->foreignId('mogou_id');
-            $table->unsignedInteger("total_views")->default(0);
-            $table->dateTime("start_date");
-            $table->dateTime("end_date");
+            $table->unsignedInteger('total_views')->default(0);
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->index(['sub_mogou_id', 'mogou_id']);
         });
     }
@@ -30,4 +30,3 @@ return new class extends Migration
         Schema::dropIfExists('chapter_analysis_summaries');
     }
 };
-

@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Enum;
+
 use App\Contracts\SmartEnum;
 
-enum MogouTypeEnum :int implements SmartEnum
+enum MogouTypeEnum: int implements SmartEnum
 {
     case MANGA = 0;
     case MANHWA = 1;
     case COMIC = 2;
-
 
     public static function getRandomMogouType(): int
     {
@@ -40,6 +40,7 @@ enum MogouTypeEnum :int implements SmartEnum
     public static function getMogouType(string $type): int
     {
         $type = strtolower($type);
+
         return match ($type) {
             'manga' => self::MANGA->value,
             'manhwa' => self::MANHWA->value,
@@ -50,9 +51,6 @@ enum MogouTypeEnum :int implements SmartEnum
 
     public static function requiredInValidationMessage(): string
     {
-        return "Mogou type must be one of the following: " . implode(',', self::getValues());
+        return 'Mogou type must be one of the following: '.implode(',', self::getValues());
     }
-
-
-
 }

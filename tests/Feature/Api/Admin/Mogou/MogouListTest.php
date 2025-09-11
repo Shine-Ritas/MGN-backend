@@ -262,7 +262,7 @@ test('Only Completed Manhwa Mogou returned', function () {
     $this->assertNotEmpty($mogous);
 
     collect($mogous)->each(function ($mogou) {
-        $this->assertEquals(MogouTypeEnum::MANHWA->value,$mogou['mogou_type']);
-        $this->assertEquals(MogouFinishStatus::COMPLETED->value,$mogou['finish_status']);
+        $this->assertEquals(MogouTypeEnum::MANHWA->value, $mogou['mogou_type']);
+        $this->assertEquals(MogouFinishStatus::COMPLETED->value, $mogou['finish_status']);
     });
 });

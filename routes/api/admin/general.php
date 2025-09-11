@@ -161,12 +161,12 @@ Route::middleware(['auth:sanctum'])
         });
 
         Route::controller(PublishingController::class)->group(function () {
-            Route::post('/publish-content','publishContent')->name('publish-content');
+            Route::post('/publish-content', 'publishContent')->name('publish-content');
         });
     });
 
-Route::get('/test',function () {
-    (new PublishingService)->publishContent(Mogou::first(),SocialChannel::first(),'test');
+Route::get('/test', function () {
+    (new PublishingService)->publishContent(Mogou::first(), SocialChannel::first(), 'test');
 
     return 'success';
 });

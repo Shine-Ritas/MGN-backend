@@ -235,7 +235,7 @@ test('can delete subscription', function ($id) {
             'message' => 'Subscription deleted successfully.',
         ]);
 
-    $this->assertDatabaseMissing('subscriptions',['id' => $id]);
+    $this->assertDatabaseMissing('subscriptions', ['id' => $id]);
 })
     ->with([
         1,

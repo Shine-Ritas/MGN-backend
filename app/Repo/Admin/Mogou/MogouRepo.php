@@ -41,8 +41,8 @@ class MogouRepo implements \App\Contracts\ModelRepoInterface
             ->orderByRating()
             ->byFinishStatus()
             ->byMogouType()
-            ->bySorting()
             ->byTotalChapters()
+            ->bySorting()
             ->year();
 
         return $this->collection;

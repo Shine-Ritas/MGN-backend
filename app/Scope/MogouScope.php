@@ -249,6 +249,7 @@ trait MogouScope
     {
         $orderBy = request('order_by');
         $orderByDirection = request('order_by_direction', 'desc');
+        $chapters_count_order = request('chapters_count_order');
 
         if ($orderBy == 'popular') {
             $popularIds = (new MogouService)->getMogouByPopularity();
@@ -262,6 +263,8 @@ trait MogouScope
             default => 'created_at',
         };
 
-        return $query->orderBy($sortColumn, $orderByDirection);
+        return $query->when(! $chapters_count_order, function (Builder $builder) use ($sortColumn, $orderByDirection): Builder {
+            return $builder->orderBy($sortColumn, $orderByDirection);
+        });
     }
 }

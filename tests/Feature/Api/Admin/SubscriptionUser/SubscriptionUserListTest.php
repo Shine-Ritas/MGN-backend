@@ -141,5 +141,5 @@ test('can successfully view the single user with his subscription history', func
         'subscriptions',
     ]);
 
-    $response->assertJsonCount(5,'subscriptions');
+    $response->assertJsonCount(5, 'subscriptions');
 })->group('single-user');

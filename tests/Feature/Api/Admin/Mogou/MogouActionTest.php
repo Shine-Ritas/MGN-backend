@@ -234,7 +234,7 @@ test('all related sub mogous and chapters should be deleted', function ($mogou_d
         'id' => $mogou['id'],
     ]);
 
-    $this->assertDatabaseMissing('sub_mogous',[
+    $this->assertDatabaseMissing('sub_mogous', [
         'id' => $sub_mogou['id'],
     ]);
 })

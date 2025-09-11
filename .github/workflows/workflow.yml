@@ -32,6 +32,19 @@ jobs:
           echo "DB_DATABASE=:memory:" >> .env.testing
           php artisan key:generate --env=testing
 
+      - name: Run Laravel Pint (fix)
+        run:  ./vendor/bin/pint --test --parallel
+      
+      - name: Commit Pint fixes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config --global user.email "github-actions@github.com"
+            git config --global user.name "GitHub Actions"
+            git add .
+            git commit -m "chore: fix Pint code style [ci skip]"
+            git push origin HEAD:${GITHUB_REF#refs/heads/}
+          fi
+
       - name: Run migrations for testing
         run: php artisan migrate --env=testing --force
 
@@ -61,49 +74,3 @@ jobs:
 
       - name: PhpStan analysis
         run: ./vendor/bin/phpstan analyse --memory-limit=512M
-
-
-  # Job 3: Deploy to Heroku
-  deploy:
-    runs-on: ubuntu-latest
-    # need 2 jobs to run before deploying
-    needs: [build-and-test, static-analysis]
-    steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      # Set up Git user identity for Heroku
-      - name: Set up Git user identity
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-      # Prepare and fetch Heroku remote
-      - name: Fetch from Heroku
-        if: github.ref == 'refs/heads/main' && success()
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/radian-b.git
-          git fetch heroku main
-          git rebase -X theirs heroku/main
-
-      - name: Continue rebase if necessary
-        if: github.ref == 'refs/heads/main' && success()
-        run: git rebase --continue || echo "No rebase needed"
-
-      # Deploy to Heroku
-      - name: Deploy to Heroku
-        if: github.ref == 'refs/heads/main' && success()
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          git push heroku main --force
-
-      - name: Run database migrations
-        if: github.ref == 'refs/heads/main' && success()
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          heroku run php artisan migrate --force -a radian-b

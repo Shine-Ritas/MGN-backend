@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum SocialInfoStatus : int
+enum SocialInfoStatus: int
 {
     case Active = 1;
     case Inactive = 0;
@@ -25,5 +25,4 @@ enum SocialInfoStatus : int
             default => 'Unknown',
         };
     }
-
 }

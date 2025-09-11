@@ -13,10 +13,9 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
-
     use CacheResponse;
 
-    public function __construct(protected CategoryRepo $categoryRepo,private string $cacheKey = "")
+    public function __construct(protected CategoryRepo $categoryRepo, private string $cacheKey = '')
     {
         $this->cacheKey = $this->generateCacheKey('all-categories');
 
@@ -33,37 +32,38 @@ class CategoryController extends Controller
 
         return response()->json(
             [
-            'categories' => $categories
+                'categories' => $categories,
             ]
         );
     }
 
-    public function index(Request $request)  : JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $categories =  $this->categoryRepo->get($request);
+        $categories = $this->categoryRepo->get($request);
 
         return response()->json(
             [
-            'categories' => $categories
+                'categories' => $categories,
             ]
         );
     }
 
-    public function create(CategoryActionRequest $request)  : JsonResponse
+    public function create(CategoryActionRequest $request): JsonResponse
     {
         $category = $this->categoryRepo->create($request);
         $key = $this->cacheKey;
 
         $this->forgetCache($key);
+
         return response()->json(
             [
-            'category' => $category,
-            'message' => 'Category created successfully.'
+                'category' => $category,
+                'message' => 'Category created successfully.',
             ], Response::HTTP_CREATED
         );
     }
 
-    public function update(CategoryActionRequest $request,Category $category)  : JsonResponse
+    public function update(CategoryActionRequest $request, Category $category): JsonResponse
     {
         $updated_category = $this->categoryRepo->update($request, $category);
         $key = $this->cacheKey;
@@ -71,13 +71,13 @@ class CategoryController extends Controller
 
         return response()->json(
             [
-            'category' => $updated_category,
-            'message' => 'Category updated successfully.'
+                'category' => $updated_category,
+                'message' => 'Category updated successfully.',
             ], Response::HTTP_OK
         );
     }
 
-    public function delete(Category $category)  : JsonResponse
+    public function delete(Category $category): JsonResponse
     {
         $this->categoryRepo->delete($category);
         $key = $this->cacheKey;
@@ -85,10 +85,8 @@ class CategoryController extends Controller
 
         return response()->json(
             [
-            'message' => 'Category deleted successfully.'
+                'message' => 'Category deleted successfully.',
             ], Response::HTTP_OK
         );
     }
-
-
 }

@@ -69,7 +69,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
-            'days' =>4,
+            'days' => 4,
             'replace_placeholders' => true,
         ],
         'chapter_summary' => [
@@ -144,6 +144,13 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'automation' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/automation.log'),
+            'level' => 'debug',
+            'replace_placeholders' => true,
         ],
     ],
 

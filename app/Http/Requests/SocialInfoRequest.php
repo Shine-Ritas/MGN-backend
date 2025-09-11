@@ -28,7 +28,7 @@ class SocialInfoRequest extends FormRequest
             'cover_photo' => 'nullable|file|mimes:jpeg,jpg,png,gif|max:4096',
             'redirect_url' => 'required|url',
             'text_url' => 'nullable|url',
-            'active' => 'nullable|boolean'
+            'active' => 'nullable|boolean',
         ];
     }
 }

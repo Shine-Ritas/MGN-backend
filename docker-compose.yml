@@ -44,7 +44,6 @@ services:
     nginx:
         image: nginx:alpine
         container_name: mgn-nginx
-        restart: unless-stopped
         tty: true
         ports:
             - "${NGINX_PORT:-7777}:80"

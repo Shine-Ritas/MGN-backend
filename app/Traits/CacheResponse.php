@@ -11,19 +11,19 @@ trait CacheResponse
 
     public function cacheResponse(string $key, int $minutes, Closure $callback, bool $addTagsKeys = true): mixed
     {
-        if (!$this->cacheMode) {
+        if (! $this->cacheMode) {
             return $callback();
         }
 
-        if(Cache::has($key)){
+        if (Cache::has($key)) {
 
             return Cache::get($key);
         }
 
-        return Cache::remember($key, $minutes, function () use ($callback, $addTagsKeys,$key,$minutes) {
+        return Cache::remember($key, $minutes, function () use ($callback, $addTagsKeys, $key, $minutes) {
             $process = $callback();
 
-            if (!empty($this->tagKeys) && $addTagsKeys) {
+            if (! empty($this->tagKeys) && $addTagsKeys) {
                 Cache::tags($this->tagKeys)->put($key, $process, $minutes);
             }
 
@@ -31,7 +31,7 @@ trait CacheResponse
         });
     }
 
-    public function updateCache(string $key,mixed $data,int|null $minutes = null): void
+    public function updateCache(string $key, mixed $data, ?int $minutes = null): void
     {
         if ($minutes) {
             Cache::put($key, $data, $minutes);
@@ -54,34 +54,34 @@ trait CacheResponse
     {
         $appName = config('app.name');
 
-        if (!is_string($appName)) {
+        if (! is_string($appName)) {
             $appName = 'default-app';
         }
 
-        return sprintf("%s-%s", $appName, $key);
+        return sprintf('%s-%s', $appName, $key);
     }
 
-/**
+    /**
      * Cache data with tags.
      *
-     * @param array<string>|string $tags The cache tags
-     * @param string $key The cache key
-     * @param int $minutes Time in minutes to cache
-     * @param Closure $callback The callback to generate cache data
-     *
+     * @param  array<string>|string  $tags  The cache tags
+     * @param  string  $key  The cache key
+     * @param  int  $minutes  Time in minutes to cache
+     * @param  Closure  $callback  The callback to generate cache data
      * @return mixed The cached data
      */
-    public function cacheTags(array|string $tags, string $key, int $minutes , Closure $callback): mixed
+    public function cacheTags(array|string $tags, string $key, int $minutes, Closure $callback): mixed
     {
         return Cache::tags($tags)->remember($key, $minutes, function () use ($callback) {
             return $callback();
         });
     }
-   /**
+
+    /**
      * Forget cached data by tags.
      *
-     * @param array<string>|string $tags The cache tags
-     * @param string $key The cache key
+     * @param  array<string>|string  $tags  The cache tags
+     * @param  string  $key  The cache key
      */
     public function forgetCacheTags(array|string $tags, string $key): void
     {
@@ -91,7 +91,7 @@ trait CacheResponse
     /**
      * Clear cache by tags.
      *
-     * @param array<string>|string $tags The cache tags
+     * @param  array<string>|string  $tags  The cache tags
      */
     public function clearCacheTags(array|string $tags): void
     {

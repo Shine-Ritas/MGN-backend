@@ -12,11 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 
-
 class SubMogou extends Model
 {
     /** @use HasFactory<SubMogouFactory> */
-    use HasFactory,DbPartition,HydraMedia;
+    use DbPartition,HasFactory,HydraMedia;
 
     protected $table = 'sub_mogous';
 
@@ -62,7 +61,7 @@ class SubMogou extends Model
             function ($sub_mogou) {
                 $sub_mogou->slug = Str::slug($sub_mogou->title);
                 Mogou::where('id', $sub_mogou->mogou_id)->increment('total_chapters');
-
+                $sub_mogou->ulid = Str::ulid();
             }
         );
 
@@ -82,7 +81,7 @@ class SubMogou extends Model
     public function getFullCoverPathAttribute(): string
     {
         // return asset('storage/'.generateStorageFolder("sub_mogou",$this->slug.'/cover') . '/' . $this->cover);
-        return $this->getMedia(generateStorageFolder("sub_mogou", $this->slug.'/cover') . '/' . $this->cover);
+        return $this->getMedia(generateStorageFolder('sub_mogou', $this->slug.'/cover').'/'.$this->cover);
     }
 
     public function getCreatedAtAttribute(string $value): string
@@ -91,12 +90,12 @@ class SubMogou extends Model
         return date('d M,Y', strtotime($value));
     }
 
-
     public function getSubscriptionCollectionAttribute(?string $value): array
     {
         if (empty($value)) {
             return [];
         }
+
         return json_decode($value, true);
     }
 
@@ -110,20 +109,18 @@ class SubMogou extends Model
         return $this->belongsTo(Mogou::class);
     }
 
-
     /**
      * images
      *
-     * @param string $table_name
      * @return HasMany<SubMogouImage, $this>
      */
-    public function images(string $table_name="alpha"): HasMany
+    public function images(string $table_name = 'alpha'): HasMany
     {
         $instance = new SubMogouImage;
         $instance->setTable("{$table_name}_sub_mogou_images");
 
         return $this->newHasMany(
-           ( new $instance)->query(), $this,'sub_mogou_id', 'id'
+            (new $instance)->query(), $this, 'sub_mogou_id', 'id'
         );
     }
 
@@ -132,7 +129,7 @@ class SubMogou extends Model
      *
      * @return MorphTo<Model, $this>
      */
-    public function creator() : MorphTo
+    public function creator(): MorphTo
     {
         return $this->morphTo();
     }

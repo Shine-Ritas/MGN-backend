@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class PartitionFactory
 {
-     /**
+    /**
      * Set the number of locked rotation keys.
      *
      * @return array<string>
@@ -17,18 +17,18 @@ class PartitionFactory
     {
         $tables = [];
 
-        $db = new $instanceClass();
+        $db = new $instanceClass;
 
-        if (!$db instanceof Model) {
-            throw new InvalidArgumentException("Class must be an instance of Model.");
+        if (! $db instanceof Model) {
+            throw new InvalidArgumentException('Class must be an instance of Model.');
         }
 
-        if (!in_array(\App\Traits\DbPartition::class, class_uses($db))) {
-            throw new InvalidArgumentException("Class must use DbPartition trait.");
+        if (! in_array(\App\Traits\DbPartition::class, class_uses($db))) {
+            throw new InvalidArgumentException('Class must use DbPartition trait.');
         }
 
-        if (!method_exists($db, 'createPartition')) {
-            throw new InvalidArgumentException("Method createPartition not found.");
+        if (! method_exists($db, 'createPartition')) {
+            throw new InvalidArgumentException('Method createPartition not found.');
         }
 
         $tables = $db->createPartition();
@@ -47,8 +47,7 @@ class PartitionFactory
             foreach ($chunks as $chunk) {
                 DB::table($destination_table)->insert($chunk->toArray());
             }
-        }
-        else{
+        } else {
             DB::statement("insert into $destination_table select * from $source_table");
         }
     }

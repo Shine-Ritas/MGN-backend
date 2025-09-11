@@ -5,7 +5,6 @@ namespace App\Services\Subscription;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 
 class SubscriptionAnalysis
 {
@@ -23,7 +22,6 @@ class SubscriptionAnalysis
             ->sum('subscriptions.price');
     }
 
-
     public function getPreviousMonthSubscriptions(): int
     {
         return UserSubscription::whereBetween('created_at', [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()])->count();
@@ -33,7 +31,6 @@ class SubscriptionAnalysis
     {
         return UserSubscription::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->count();
     }
-
 
     public function getCurrentMonthSubscriptionPopularity(): array
     {
@@ -45,6 +42,7 @@ class SubscriptionAnalysis
                 ->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
                 ->count();
         }
+
         return $popularity;
     }
 
@@ -58,6 +56,7 @@ class SubscriptionAnalysis
                 ->whereBetween('created_at', [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()])
                 ->count();
         }
+
         return $popularity;
     }
 
@@ -73,7 +72,6 @@ class SubscriptionAnalysis
         return $subscriptionCount;
     }
 
-
     public function analysis(): array
     {
 
@@ -81,12 +79,12 @@ class SubscriptionAnalysis
             'previous_month' => [
                 'total_users' => $this->getPreviousMonthSubscriptions(),
                 'total_profit' => $this->getPreviousMonthProfit(),
-                'packages' => $this->getPreviousMonthSubscriptionPopularity()
+                'packages' => $this->getPreviousMonthSubscriptionPopularity(),
             ],
             'current_month' => [
                 'total_users' => $this->getCurrentMonthSubscriptions(),
                 'total_profit' => $this->getCurrentMonthProfit(),
-                'packages' => $this->getCurrentMonthSubscriptionPopularity()
+                'packages' => $this->getCurrentMonthSubscriptionPopularity(),
             ],
             'get_popularity' => $this->getSubscriptionComparisonAllTime(),
         ];

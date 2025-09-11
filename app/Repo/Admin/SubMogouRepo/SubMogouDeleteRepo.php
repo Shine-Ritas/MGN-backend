@@ -12,7 +12,7 @@ class SubMogouDeleteRepo
 {
     use HydraMedia;
 
-    protected string $image_folder_path = "";
+    protected string $image_folder_path = '';
 
     public function __construct(
         protected Mogou $mogou,
@@ -30,10 +30,12 @@ class SubMogouDeleteRepo
             $this->subMogou->delete();
 
             DB::commit();
+
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Failed to delete SubMogou", ['exception' => $e->getMessage()]);
+            Log::error('Failed to delete SubMogou', ['exception' => $e->getMessage()]);
+
             return false;
         }
     }
@@ -51,10 +53,10 @@ class SubMogouDeleteRepo
     protected function removeFolder(): void
     {
         $success = $this->dropDirectory($this->image_folder_path);
-        if (!$success) {
-            Log::channel("slack")->error("Folder not deleted", ['folder' => $this->image_folder_path]);
+        if (! $success) {
+            Log::channel('slack')->error('Folder not deleted', ['folder' => $this->image_folder_path]);
         }
-        Log::channel("storage")->info("Deleting folder", ['folder' => $this->image_folder_path]);
+        Log::channel('storage')->info('Deleting folder', ['folder' => $this->image_folder_path]);
 
     }
 }

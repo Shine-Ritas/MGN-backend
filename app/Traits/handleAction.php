@@ -4,11 +4,5 @@ namespace App\Traits;
 
 trait handleAction
 {
-
-
-    public function handle()
-    {
-
-    }
-
+    public function handle() {}
 }

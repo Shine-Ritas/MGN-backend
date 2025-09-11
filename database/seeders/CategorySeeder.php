@@ -3,15 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
-class CategorySeeder extends Seeder {
-    /**
-    * Run the database seeds.
-    */
 
-    public function run(): void {
+class CategorySeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
         $genres = [
             'Action',
             'Adventure',
@@ -58,19 +59,19 @@ class CategorySeeder extends Seeder {
             'Super Power',
             'Cars',
             'Dementia',
-            'Doujinshi'
+            'Doujinshi',
         ];
 
         $data = [];
 
-        foreach ( $genres as $genre ) {
+        foreach ($genres as $genre) {
             $data[] = [
                 'title' => $genre,
-                'slug' => Str::slug( $genre ),
+                'slug' => Str::slug($genre),
             ];
         }
 
-        Category::insert( $data );
+        Category::insert($data);
 
         // Category::factory()->count( config( 'control.test.categories_count' ) )->create();
     }

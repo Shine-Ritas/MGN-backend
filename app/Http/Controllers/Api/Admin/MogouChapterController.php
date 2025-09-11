@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Mogou;
-use App\Models\SubMogou;
 use App\Repo\Admin\MogouChapter\MogouChapterRepo;
 use App\Repo\Admin\SubMogouRepo\SubMogouActionRepo;
 use App\Services\Report\ChapterReport;
@@ -16,9 +15,7 @@ class MogouChapterController extends Controller
     public function __construct(
         protected readonly MogouChapterRepo $mogouChapterRepo,
         protected readonly SubMogouActionRepo $subMogouActionRepo
-    ) {
-
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -28,7 +25,7 @@ class MogouChapterController extends Controller
 
         return response()->json(
             [
-            'mogou_chapters' => $mogouChapters
+                'mogou_chapters' => $mogouChapters,
             ]
         );
     }
@@ -37,8 +34,7 @@ class MogouChapterController extends Controller
     {
         $mogou = Mogou::where('slug', $request->mogou)->first();
 
-
-        $chapterReport =  (new ChapterReport($mogou));
+        $chapterReport = (new ChapterReport($mogou));
 
         $total_views = $chapterReport->getTotalViews();
         $total_chapters = $chapterReport->getTotalChapters();
@@ -46,17 +42,17 @@ class MogouChapterController extends Controller
         $res = [
             [
                 'label' => 'Total Views',
-                'value' => $total_views
+                'value' => $total_views,
             ],
             [
                 'label' => 'Total Chapters',
-                'value' => $total_chapters
-            ]
+                'value' => $total_chapters,
+            ],
         ];
 
         return response()->json(
             [
-            'chapter_analysis' => $res
+                'chapter_analysis' => $res,
             ]
         );
 

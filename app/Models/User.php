@@ -5,19 +5,19 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
@@ -37,7 +37,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'subscription'
+        'subscription',
     ];
 
     public function getRouteKeyName(): string
@@ -45,13 +45,16 @@ class User extends Authenticatable
         return 'id';
     }
 
-
-    public function getSubscriptionEndDateAttribute(string $value): string|null
+    public function getSubscriptionEndDateAttribute(?string $value): ?string
     {
+        if ($value == null) {
+            return null;
+        }
+
         $timestamp = strtotime($value);
+
         return $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : null;
     }
-
 
     /**
      * The attributes that should be cast.
@@ -125,7 +128,7 @@ class User extends Authenticatable
     /**
      * scopeSearch
      *
-     * @param  Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeSearch(Builder $query, ?string $search): Builder
@@ -133,13 +136,13 @@ class User extends Authenticatable
         return $query->when(
             $search,
             function ($query, $search) {
-                return $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
+                return $query->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%');
             }
         );
     }
 
-    public function getAvatarUrlAttribute(): string | null
+    public function getAvatarUrlAttribute(): ?string
     {
         return $this->avatar?->avatar_url_path;
     }
@@ -147,7 +150,7 @@ class User extends Authenticatable
     /**
      * scopeFilter
      *
-     * @param  Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeFilterSubscription(Builder $query): Builder
@@ -157,6 +160,7 @@ class User extends Authenticatable
         return $query->when($filter, function ($query) use ($filter) {
             if (is_string($filter) && strpos($filter, ',') !== false) {
                 $status = explode(',', $filter);
+
                 return $query->whereIn('current_subscription_id', $status);
             } else {
                 return $query->where('current_subscription_id', $filter);
@@ -167,8 +171,7 @@ class User extends Authenticatable
     /**
      * scopeExpiredSubscription
      *
-     * @param  Builder<static> $query
-     * @param  string $expired
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeExpiredSubscription(Builder $query, ?string $expired): Builder
@@ -184,8 +187,7 @@ class User extends Authenticatable
     /**
      * scopeFilterActiveUser
      *
-     * @param  Builder<static> $query
-     * @param  string $active
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeFilterActiveUser(Builder $query, ?string $active): Builder
@@ -196,7 +198,7 @@ class User extends Authenticatable
         });
     }
 
-    public function getSubscriptionNameAttribute(): string | null
+    public function getSubscriptionNameAttribute(): ?string
     {
         return $this->subscription?->title;
     }

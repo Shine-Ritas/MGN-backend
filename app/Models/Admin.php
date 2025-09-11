@@ -8,7 +8,6 @@ use App\Scope\AdminScope;
 use Database\Factories\AdminFactory;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -16,14 +15,12 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
-
 class Admin extends Authenticatable
 {
     /** @use HasFactory<AdminFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, AdminScope;
+    use AdminScope, HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected string $guard_name = 'admin';
-
 
     // append role_name
     protected $appends = ['role_name', 'role_id'];
@@ -63,7 +60,7 @@ class Admin extends Authenticatable
 
     public function getRoleNameAttribute(): string
     {
-        return ucFirst(optional($this->roles->first())->name);
+        return ucfirst(optional($this->roles->first())->name);
     }
 
     public function getRoleIdAttribute(): int
@@ -76,18 +73,17 @@ class Admin extends Authenticatable
         /** @var ?Role $firstRole */
         $firstRole = $this->roles->first();
 
-        if (!$firstRole) {
+        if (! $firstRole) {
             return [];
         }
 
         return array_values(array_unique($firstRole->permissions->pluck('name')->toArray()));
     }
 
-    public function getLastAccessedAtAttribute(string|null $value): string
+    public function getLastAccessedAtAttribute(?string $value): string
     {
-        return !is_null($value) ? (new DateTime($value))->format('Y-m-d H:i:s') : '';
+        return ! is_null($value) ? (new DateTime($value))->format('Y-m-d H:i:s') : '';
     }
-
 
     /**
      * chapters
@@ -96,7 +92,7 @@ class Admin extends Authenticatable
      */
     public function chapters(): Collection
     {
-        $subMoGou = new SubMogou();
+        $subMoGou = new SubMogou;
         $tables = $subMoGou->getCreatedPartitions();
         $models = [];
 

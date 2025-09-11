@@ -9,14 +9,13 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SocialInfoRepo
 {
-
     use HydraMedia;
 
     protected SocialInfo $model;
 
     public function __construct()
     {
-        $this->model = new SocialInfo();
+        $this->model = new SocialInfo;
     }
 
     /**
@@ -38,11 +37,10 @@ class SocialInfoRepo
     {
         return $this->model->where('type', SocialInfoType::Banner->value)->get();
     }
-    
+
     /**
      * getSocialInfoByType
      *
-     * @param string $type
      * @return Collection<int,SocialInfo>
      */
     public function getSocialInfoByType(string $type): Collection
@@ -59,11 +57,11 @@ class SocialInfoRepo
         return $this->model->create($data);
     }
 
-    public function update(string $id,array $data): SocialInfo
+    public function update(string $id, array $data): SocialInfo
     {
         $socialInfo = $this->model->findOrfail($id);
         if (isset($data['cover_photo'])) {
-            $this->removeMedia('public/social_info/' . $socialInfo->cover_photo);
+            $this->removeMedia('public/social_info/'.$socialInfo->cover_photo);
             $data['cover_photo'] = $this->storeMedia($data['cover_photo'], 'social_info', false);
             \Log::info($data['cover_photo']);
             $socialInfo->text_url = null;
@@ -78,10 +76,8 @@ class SocialInfoRepo
     public function delete(string $id): bool
     {
         $socialInfo = $this->model->findOrfail($id);
-        $this->removeMedia('public/social_info/' . $socialInfo->cover_photo);
+        $this->removeMedia('public/social_info/'.$socialInfo->cover_photo);
 
         return $socialInfo->delete();
     }
-
-
 }

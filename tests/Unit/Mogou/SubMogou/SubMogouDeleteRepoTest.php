@@ -9,9 +9,9 @@ use Tests\Support\TestStorage;
 uses()->group('unit', 'sub-mogou-delete');
 uses(TestStorage::class);
 
-beforeEach(function(){
+beforeEach(function () {
     $this->seed([
-        CategorySeeder::class
+        CategorySeeder::class,
     ]);
 
     $this->bootStorage();
@@ -19,7 +19,6 @@ beforeEach(function(){
     $this->mogou = Mogou::factory()->create();
 
 });
-
 
 it('deletes subMogou successfully', function () {
     // Create real model instances

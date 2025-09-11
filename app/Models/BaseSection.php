@@ -12,8 +12,7 @@ class BaseSection extends Model
     /** @use HasFactory<BaseSectionFactory> */
     use HasFactory;
 
-    protected $guarded=[];
-
+    protected $guarded = [];
 
     /**
      * childSections

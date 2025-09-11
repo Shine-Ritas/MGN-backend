@@ -23,12 +23,12 @@ class SubMogouStorageUploadRequest extends FormRequest
     {
         return [
             'mogou_id' => 'required|integer|exists:mogous,id',
-            'sub_mogou_slug' => 'required',
+            'ulid' => 'required',
             'upload_files' => 'required|array',
             // 'upload_files.*' => 'required|array',
             'upload_files.*.file' => 'required|image',
             // 'upload_files.*.position' => 'required',
-            'watermark_apply' => 'required|boolean'
+            'watermark_apply' => 'required',
         ];
     }
 }

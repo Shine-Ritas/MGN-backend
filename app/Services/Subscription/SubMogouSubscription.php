@@ -1,33 +1,29 @@
 <?php
-namespace App\Services\Subscription;
 
+namespace App\Services\Subscription;
 
 use App\Models\SubMogou;
 
 class SubMogouSubscription
 {
-    public function __construct(protected SubMogou $subMogou)
-    {
-
-    }
-
+    public function __construct(protected SubMogou $subMogou) {}
 
     /**
-     * @param array<int> $id
+     * @param  array<int>  $id
      */
-    public function appendSubscriptionId(int|array $id) :void
+    public function appendSubscriptionId(int|array $id): void
     {
         $ids = $this->subMogou->subscription_collection;
 
-        if(is_array($id)) {
+        if (is_array($id)) {
             $ids = array_merge($ids, $id);
-        }else{
+        } else {
             $ids[] = $id;
         }
 
         $this->subMogou->update(
             [
-            'subscription_collection' => json_encode($ids)
+                'subscription_collection' => json_encode($ids),
             ]
         );
 
@@ -36,25 +32,22 @@ class SubMogouSubscription
     }
 
     /**
-     * @param array<int> $id
+     * @param  array<int>  $id
      */
-    public function removeSubscriptionId(int|array $id) :void
+    public function removeSubscriptionId(int|array $id): void
     {
         $ids = $this->subMogou->subscription_collection;
 
-
-        is_array($id) ? $ids = array_diff($ids, $id) : $ids = array_filter($ids, fn($i) => $i != $id);
+        is_array($id) ? $ids = array_diff($ids, $id) : $ids = array_filter($ids, fn ($i) => $i != $id);
         $ids = array_values($ids);
 
         $this->subMogou->update(
             [
-            'subscription_collection' => json_encode($ids)
+                'subscription_collection' => json_encode($ids),
             ]
         );
 
         $this->subMogou->refresh();
 
     }
-
 }
-

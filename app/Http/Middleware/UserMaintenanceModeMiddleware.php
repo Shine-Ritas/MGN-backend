@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\ApplicationConfig;
 use App\Services\ApplicationConfig\CacheApplicationConfigService;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,13 +16,14 @@ class UserMaintenanceModeMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $applicationConfig = (new CacheApplicationConfigService())->getApplicationConfig();
+        $applicationConfig = (new CacheApplicationConfigService)->getApplicationConfig();
 
         if ($applicationConfig->user_side_is_maintenance_mode) {
             return response()->json([
-                'message' => 'The application is in maintenance mode. Please try again later.'
+                'message' => 'The application is in maintenance mode. Please try again later.',
             ], 503);
         }
+
         return $next($request);
     }
 }

@@ -4,20 +4,19 @@ namespace App\Services\RolePermissions;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Contracts\Role as RoleContract;
+use Spatie\Permission\Models\Role;
 
 class AlphaRole
 {
-    protected string $guard = "web";
+    protected string $guard = 'web';
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function setGuard(string $guard): AlphaRole
     {
         $this->guard = $guard;
+
         return $this;
     }
 
@@ -50,8 +49,8 @@ class AlphaRole
     /**
      * Create a role.
      *
-     * @param  array<string>|string $roles
-     * @param  array<string>|null $permissions
+     * @param  array<string>|string  $roles
+     * @param  array<string>|null  $permissions
      * @return Collection<int, RoleContract>|RoleContract
      */
     public function createRole(array|string $roles, ?array $permissions = null): Collection|RoleContract

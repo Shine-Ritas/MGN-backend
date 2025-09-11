@@ -3,8 +3,6 @@
 namespace App\Services\Report;
 
 use App\Models\Mogou;
-use App\Models\SubMogou;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ChapterReport
 {
@@ -25,6 +23,4 @@ class ChapterReport
     {
         return $this->submogouCollection->count();
     }
-
-
 }

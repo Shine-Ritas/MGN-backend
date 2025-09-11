@@ -1,11 +1,9 @@
 <?php
 
-use Database\Seeders\AdminPermissionSeeder;
 use Illuminate\Support\Facades\Route;
-
 use Tests\Support\UserAuthenticated;
 
-uses()->group('admin','api','admin-auth');
+uses()->group('admin', 'api', 'admin-auth');
 uses(UserAuthenticated::class);
 
 test('admin login route exists', function () {
@@ -22,11 +20,11 @@ test('request body is required', function () {
             'errors' => [
                 'email' => ['The email field is required.'],
                 'password' => ['The password field is required.'],
-            ]
+            ],
         ]);
 });
 
-test("invalid credentials", function () {
+test('invalid credentials', function () {
     $response = $this->json('POST', route('api.admin.login'), [
         'email' => 'wrong@gmail.com',
         'password' => 'password',
@@ -34,11 +32,11 @@ test("invalid credentials", function () {
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'These credentials do not match our records.'
+            'message' => 'These credentials do not match our records.',
         ]);
 });
 
-test("can login successfully",function(){
+test('can login successfully', function () {
     $admin = \App\Models\Admin::factory()->create();
     $admin->assignRole('admin');
     $response = $this->json('POST', route('api.admin.login'), [
@@ -49,20 +47,17 @@ test("can login successfully",function(){
     $response->assertStatus(200)
         ->assertJsonStructure([
             'token',
-            'user'
+            'user',
         ]);
 });
-
 
 test('change password route exists', function () {
     // check if the route exists in Route
     $this->assertTrue(Route::has('api.admin.change-password'));
 });
 
-
-
-test("can't change password without auth",function(){
-    $response = $this->postJson(route('api.admin.change-password'),[
+test("can't change password without auth", function () {
+    $response = $this->postJson(route('api.admin.change-password'), [
         'current_password' => 'password',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -70,30 +65,28 @@ test("can't change password without auth",function(){
 
     $response->assertStatus(401)
         ->assertJson([
-            'message' => 'Unauthenticated.'
+            'message' => 'Unauthenticated.',
         ]);
 });
 
-test("change password request body is required", function () {
+test('change password request body is required', function () {
     $this->setupAdmin();
-    $response = $this->authenticatedAdmin($this->admin)->postJson(route('api.admin.change-password'),[]);
-
+    $response = $this->authenticatedAdmin($this->admin)->postJson(route('api.admin.change-password'), []);
 
     $response->assertStatus(422)
         ->assertJsonStructure([
-            'message' ,
-            'errors'
+            'message',
+            'errors',
         ]);
 });
 
-test("change password with invalid current password", function () {
+test('change password with invalid current password', function () {
     $this->setupAdmin();
-    $response = $this->authenticatedAdmin($this->admin)->postJson(route('api.admin.change-password'),[
+    $response = $this->authenticatedAdmin($this->admin)->postJson(route('api.admin.change-password'), [
         'old_password' => 'wrongpassword',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
-
 
     $response->assertStatus(422)
         ->assertJson([
@@ -101,9 +94,9 @@ test("change password with invalid current password", function () {
         ]);
 });
 
-test("change password successfully", function () {
+test('change password successfully', function () {
     $this->setupAdmin();
-    $response = $this->authenticatedAdmin($this->admin)->postJson(route('api.admin.change-password'),[
+    $response = $this->authenticatedAdmin($this->admin)->postJson(route('api.admin.change-password'), [
         'old_password' => 'password',
         'password' => 'password',
         'password_confirmation' => 'password',

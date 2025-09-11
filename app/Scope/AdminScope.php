@@ -17,8 +17,8 @@ trait AdminScope
     {
         return $query->when(
             request('search'), function (Builder $query): Builder {
-                return $query->where('name', 'like', '%' . request('search') . '%')
-                    ->orWhere('email', 'like', '%' . request('search') . '%');
+                return $query->where('name', 'like', '%'.request('search').'%')
+                    ->orWhere('email', 'like', '%'.request('search').'%');
             }
         );
     }

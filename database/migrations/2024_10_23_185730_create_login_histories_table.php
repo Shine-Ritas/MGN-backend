@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('location', 125)->nullable();
             $table->string('country', 125)->nullable();
-            $table->string('device',85)->nullable();
+            $table->string('device', 85)->nullable();
             $table->timestamp('login_at');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->index('user_id');

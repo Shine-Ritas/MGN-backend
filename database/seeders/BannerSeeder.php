@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enum\SocialInfoType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BannerSeeder extends Seeder
@@ -24,17 +23,17 @@ class BannerSeeder extends Seeder
                 'redirect_url' => 'https://google.com',
             ],
             [
-                'name' => "Home Page Bottom Banner",
+                'name' => 'Home Page Bottom Banner',
                 'cover_photo' => 'banner-2.gif',
                 'type' => SocialInfoType::Banner->value,
-                'redirect_url' => 'https://google.com'
+                'redirect_url' => 'https://google.com',
 
             ],
             [
-                'name' => "Home Page Middle Banner",
+                'name' => 'Home Page Middle Banner',
                 'cover_photo' => 'banner-3.gif',
                 'type' => SocialInfoType::Banner->value,
-                'redirect_url' => 'https://google.com'
+                'redirect_url' => 'https://google.com',
             ],
         ];
 

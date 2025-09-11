@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Cache;
 
 class SectionManagementService
 {
-
     use CacheResponse;
 
     public function getBySection(string $type): BaseSection
@@ -23,7 +22,7 @@ class SectionManagementService
     {
         $mogous_ids = $this->getBySection($type)->childSections->pluck('is_visible', 'pivot_key')->toArray();
 
-        $mogou = Mogou::select("id", "title", "slug", "cover", "rotation_key", "description", "finish_status", 'mogou_type', 'status', "rating")
+        $mogou = Mogou::select('id', 'title', 'slug', 'cover', 'rotation_key', 'description', 'finish_status', 'mogou_type', 'status', 'rating')
             ->where('status', MogousStatus::PUBLISHED->value)
             ->whereIn('id', array_keys($mogous_ids)) // Using array_keys for 'pivot_key' IDs
             ->with('categories:title')
@@ -39,7 +38,7 @@ class SectionManagementService
 
     }
 
-    public function attachNewChild(string $type,string $child): BaseSection
+    public function attachNewChild(string $type, string $child): BaseSection
     {
         $baseSection = $this->getBySection($type);
         $max_limit = $baseSection->component_limit;
@@ -49,18 +48,18 @@ class SectionManagementService
         }
 
         ChildSection::create([
-            "pivot_key" => $child,
-            "base_section_id" => $baseSection->id
+            'pivot_key' => $child,
+            'base_section_id' => $baseSection->id,
         ]);
 
         $this->forgetCache($type);
 
-        \Log::info('de',[Cache::has($type)]);
+        \Log::info('de', [Cache::has($type)]);
 
         return $baseSection;
     }
 
-    public function removeChild(string $type,string $child): BaseSection
+    public function removeChild(string $type, string $child): BaseSection
     {
         $baseSection = $this->getBySection($type);
 
@@ -68,27 +67,28 @@ class SectionManagementService
 
         $this->forgetCache($type);
 
-        \Log::info('de',[Cache::has($type)]);
+        \Log::info('de', [Cache::has($type)]);
 
         return $baseSection;
     }
 
-    public function searchMogou(string|null $search,string $type): array
+    public function searchMogou(?string $search, string $type): array
     {
-        $mogous = Mogou::
-        select('id','title','slug','description','cover','total_chapters','created_at')
-        ->where('title', 'like', "$search%")
-        ->where("status", MogousStatus::PUBLISHED->value)
-        ->take(20)
-        ->get();
+        $mogous = Mogou::select('id', 'title', 'slug', 'description', 'cover', 'total_chapters', 'created_at')
+            ->where('title', 'like', "$search%")
+            ->where('status', MogousStatus::PUBLISHED->value)
+            ->take(20)
+            ->get();
 
         $existedMogou = BaseSection::where('section_name', $type)->firstOrFail()->childSections->pluck('pivot_key')->toArray();
 
         $mogous = $mogous->map(function ($mogou) use ($existedMogou) {
-             /** @phpstan-ignore-next-line */
+            /** @phpstan-ignore-next-line */
             $mogou->is_selected = in_array($mogou->id, $existedMogou);
+
             return $mogou;
         });
+
         return $mogous->toArray();
     }
 
@@ -110,7 +110,6 @@ class SectionManagementService
         $baseSection->childSections()->delete();
 
         $this->forgetCache($type);
-
 
         return $baseSection;
     }

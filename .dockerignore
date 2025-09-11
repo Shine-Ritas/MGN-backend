@@ -1,4 +1,52 @@
-node_modules
-*.log
-tests/
+# Git & VCS
 .git
+.gitignore
+.gitattributes
+.github
+
+# Node & front-end build artifacts
+node_modules
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+.vite
+build
+coverage
+
+# Composer vendor (installed in image)
+vendor
+composer.phar
+
+# Laravel & runtime caches
+storage/*
+!storage/.gitkeep
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Environment & local configs
+.env
+.env.*
+.phpunit.result.cache
+*.local
+
+# Docker & CI
+.docker
+.dockerignore
+Dockerfile.bak
+.docker-compose*
+
+docker/
+
+# IDE/editor
+.vscode
+.idea
+*.swp
+*.swo
+*.sublime*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc logs
+*.log

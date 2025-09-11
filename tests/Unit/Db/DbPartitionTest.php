@@ -6,30 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 // Group the test
 uses()->group('unit', 'dbTablePartition');
 
-beforeEach(function(){
+beforeEach(function () {
     TablePartition::setLockedRotation(2);
 
-    $this->model = new class() extends Model {
-
+    $this->model = new class extends Model
+    {
         use App\Traits\DbPartition;
 
         protected $table = 'sub_mogous';
     };
 });
 
-
-test("check given partition table exists with checkTablePartition in db",function(){
+test('check given partition table exists with checkTablePartition in db', function () {
     $dbPartition = $this->model;
 
     $this->assertFalse($dbPartition->checkTablePartition('unknown_table'));
 
 });
 
-
-test("create alpha partition table if not exists",function(){
+test('create alpha partition table if not exists', function () {
 
     $dbPartition = $this->model;
-
 
     $dbPartition->createPartition();
 
@@ -37,10 +34,9 @@ test("create alpha partition table if not exists",function(){
 
 });
 
-test("create beta partition table cuz alpha already exists",function(){
+test('create beta partition table cuz alpha already exists', function () {
 
     $dbPartition = $this->model;
-
 
     $dbPartition->createPartition(); // creating alpha partition table
     $dbPartition->createPartition();  // creating beta partition table
@@ -49,10 +45,9 @@ test("create beta partition table cuz alpha already exists",function(){
 
 });
 
-test("prevent creating partition table over locked",function(){
+test('prevent creating partition table over locked', function () {
 
     $dbPartition = $this->model;
-
 
     $dbPartition->createPartition(); // creating alpha partition table
     $dbPartition->createPartition();  // creating beta partition table
@@ -61,10 +56,9 @@ test("prevent creating partition table over locked",function(){
     $this->assertFalse($dbPartition->checkTablePartition('gamma_sub_mogous'));
 });
 
-test("increase the locked partition table to 3",function(){
+test('increase the locked partition table to 3', function () {
 
     $dbPartition = $this->model;
-
 
     $dbPartition->createPartition(); // creating alpha partition table
     $dbPartition->createPartition();  // creating beta partition table
@@ -76,8 +70,7 @@ test("increase the locked partition table to 3",function(){
     $this->assertTrue($dbPartition->checkTablePartition('gamma_sub_mogous'));
 });
 
-
-test("Model tables are match with locked count of tables in trait with dbConstructing",function(){
+test('Model tables are match with locked count of tables in trait with dbConstructing', function () {
     $dbPartition = $this->model;
 
     $dbPartition->dbConstructing();
@@ -85,12 +78,12 @@ test("Model tables are match with locked count of tables in trait with dbConstru
     $available_tables = TablePartition::availableRotationKey();
 
     foreach ($available_tables as $table) {
-        $this->assertTrue($dbPartition->checkTablePartition($table."_sub_mogous"));
+        $this->assertTrue($dbPartition->checkTablePartition($table.'_sub_mogous'));
     }
 
 });
 
-test("Model tables don't with locked count of tables in trait without dbConstructing",function(){
+test("Model tables don't with locked count of tables in trait without dbConstructing", function () {
     $dbPartition = $this->model;
 
     TablePartition::setLockedRotation(5);
@@ -98,7 +91,7 @@ test("Model tables don't with locked count of tables in trait without dbConstruc
     $available_tables = TablePartition::availableRotationKey();
 
     foreach ($available_tables as $table) {
-        $this->assertFalse($dbPartition->checkTablePartition($table."_sub_mogous"));
+        $this->assertFalse($dbPartition->checkTablePartition($table.'_sub_mogous'));
     }
 
 });

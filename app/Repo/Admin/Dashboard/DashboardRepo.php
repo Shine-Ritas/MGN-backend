@@ -4,20 +4,22 @@ namespace App\Repo\Admin\Dashboard;
 
 use App\Models\ChapterAnalysis;
 use App\Models\Mogou;
-use App\Models\Subscription;
 use App\Models\User;
 use App\Models\UserSubscription;
 use App\Repo\Admin\SubMogouRepo\MogouPartitionFind;
 use App\Services\ApplicationConfig\CacheApplicationConfigService;
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class DashboardRepo
 {
     protected string $currentStartDate;
+
     protected string $currentEndDate;
+
     protected string $prevStartDate;
+
     protected string $prevEndDate;
 
     public function __construct()
@@ -71,9 +73,9 @@ class DashboardRepo
         $dailyTrafficTarget = (new CacheApplicationConfigService)->getApplicationConfig()->daily_traffic_target ?? 10;
 
         foreach ($chapters as $key => $data) {
-            $subMogou =  (new MogouPartitionFind)->getSubMogouInstance("id", $data['mogou_id'])
-                ->where("id", $data['sub_mogou_id'])
-                ->where("mogou_id", $data['mogou_id'])
+            $subMogou = (new MogouPartitionFind)->getSubMogouInstance('id', $data['mogou_id'])
+                ->where('id', $data['sub_mogou_id'])
+                ->where('mogou_id', $data['mogou_id'])
                 ->select('title', 'mogou_id')
                 ->firstOrFail();
 
@@ -96,7 +98,7 @@ class DashboardRepo
             'current' => $current,
             'prev' => $previous,
             'status' => $diffInPercentage > 0 ? 'success' : 'destructive',
-            'percentage' => $diffInPercentage
+            'percentage' => $diffInPercentage,
         ];
     }
 
@@ -111,10 +113,9 @@ class DashboardRepo
             'current' => $todayTraffic,
             'prev' => $yesterdayTraffic,
             'status' => $diffInPercentage > 0 ? 'success' : 'destructive',
-            'percentage' => $diffInPercentage
+            'percentage' => $diffInPercentage,
         ];
     }
-
 
     protected function getMonthlySummary(Model $model): array
     {
@@ -128,11 +129,11 @@ class DashboardRepo
             'current' => $thisMonthCount,
             'prev' => $lastMonthCount,
             'status' => $status,
-            'percentage' => $diffInPercentage
+            'percentage' => $diffInPercentage,
         ];
     }
 
-    protected function getSummary(Model $model, string $startDate, string $endDate, string $key = "created_at"): int
+    protected function getSummary(Model $model, string $startDate, string $endDate, string $key = 'created_at'): int
     {
         return $model::whereBetween($key, [$startDate, $endDate])->count();
     }

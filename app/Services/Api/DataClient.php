@@ -4,7 +4,6 @@ namespace App\Services\Api;
 
 class DataClient
 {
-
     public static function getMangaData(): mixed
     {
         $client = app('MangaTestClient');
@@ -13,5 +12,4 @@ class DataClient
 
         return json_decode($response->getBody()->getContents(), true);
     }
-
 }

@@ -6,13 +6,13 @@ use App\Models\Admin;
 
 class AdminManagementRepo
 {
-    public function index() : mixed
+    public function index(): mixed
     {
         return Admin::searchAdmin()
-        ->paginate(10);
+            ->paginate(10);
     }
 
-    public function action(array $data) : Admin
+    public function action(array $data): Admin
     {
         $admin = Admin::updateOrCreate(
             ['id' => $data['action'] == 'update' ? $data['admin_id'] : null],
@@ -24,7 +24,7 @@ class AdminManagementRepo
         );
 
         // if action was update , delete all roles and assign new roles
-        if($data['action'] == 'update'){
+        if ($data['action'] == 'update') {
             $admin->roles()->detach();
         }
 
@@ -33,7 +33,7 @@ class AdminManagementRepo
         return $admin;
     }
 
-    public function delete(int $admin_id) : void
+    public function delete(int $admin_id): void
     {
         Admin::destroy($admin_id);
     }

@@ -3,7 +3,7 @@
 namespace App\Services\Auth;
 
 use App\Jobs\RecordLoginAddress;
-use App\Services\ClientIp\ClientIpAddressService;
+use App\Repo\Admin\UserRegistrationRepo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
@@ -17,8 +17,23 @@ class Authentication
 {
     protected string $authType = 'web';
 
-    public function __construct(protected Request $request)
+    protected Request $request;
+
+    public function __construct(?Request $request = null)
     {
+        if ($request) {
+            $this->request = $request;
+        }
+    }
+
+    /**
+     * Set the request object.
+     */
+    public function setRequest(Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
     }
 
     /**
@@ -27,6 +42,7 @@ class Authentication
     public function returnResponse(string $authType = 'web'): self
     {
         $this->authType = $authType;
+
         return $this;
     }
 
@@ -38,29 +54,33 @@ class Authentication
         try {
             $this->authenticate($guard);
             \Log::info('request ip', ['ip' => request()->ip()]);
-            RecordLoginAddress::dispatchIf( $guard == "web", auth()->user(),request()->ip())->onQueue('normal');
-            $guard == "admin" && auth('admin')->user()->update(['last_accessed_at' => now()->toDateTimeString()]);
+            RecordLoginAddress::dispatchIf($guard == 'web', auth()->user(), request()->ip())->onQueue('normal');
+            $guard == 'admin' && auth('admin')->user()->update(['last_accessed_at' => now()->toDateTimeString()]);
+
             return $this->signInResponse($path, $guard);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         }
     }
 
-     /**
-     * Handle the sign-up process and generate a redirect response.
+    /**
+     * Handle the user sign-up process and generate an appropriate response.
      *
-     * @param Model $model The model where the user data is being saved
-     * @param array<string, mixed> $body The body data to create a new user (field names and values)
-     * @param string $redirect The URL to redirect after successful sign-up
-     * @param string $message The success message to display (default: 'Registered Successfully!')
+     * Registers a new user using validated request data and returns either a redirect
+     * response for web authentication or a JSON response for API authentication.
      *
-     * @return RedirectResponse
+     * @param  string  $guard  The authentication guard to use (default: 'web')
+     * @param  string  $path  The path to redirect to after successful registration (default: '/dashboard')
+     * @return RedirectResponse|JsonResponse Returns a redirect response for web auth or JSON response for API auth
+     *
+     * @throws \Exception When user registration fails
      */
-    public function signUp(Model $model, array $body, string $redirect, string $message = 'Registered Successfully!'): RedirectResponse
+    public function signUp(string $guard = 'web', string $path = '/dashboard'): RedirectResponse|JsonResponse
     {
         try {
-            $model::create($body);
-            return $this->signUpSuccessResponse($redirect, $message);
+            $user = UserRegistrationRepo::registerUser($this->request, true);
+
+            return $this->signIn($guard, $path);
         } catch (\Exception $e) {
             return $this->handleSignUpException($e);
         }
@@ -89,7 +109,7 @@ class Authentication
         $user = $model::find(auth()->id());
         if ($user) {
             $user->update([
-                'password' => bcrypt( $request->password)
+                'password' => bcrypt($request->password),
             ]);
         } else {
             throw ValidationException::withMessages(['message' => 'User not found']);
@@ -97,7 +117,7 @@ class Authentication
 
         return response()->json(
             [
-            'message' => 'Password was updated successfully'
+                'message' => 'Password was updated successfully',
             ]
         );
     }
@@ -109,11 +129,11 @@ class Authentication
     {
         $throttle = $this->initializeThrottle($guard);
 
-        if (!$this->attemptLogin($guard)) {
+        if (! $this->attemptLogin($guard)) {
             $throttle->hit();
             throw ValidationException::withMessages(
                 [
-                'message' => trans('auth.failed'),
+                    'message' => trans('auth.failed'),
                 ]
             );
         }
@@ -127,7 +147,7 @@ class Authentication
     protected function signInResponse(string $path, string $guard = 'web'): RedirectResponse|JsonResponse
     {
         return $this->fnResponse(
-            fn() => $this->regenerateSessionAndRedirect($path),
+            fn () => $this->regenerateSessionAndRedirect($path),
             $this->generateApiResponseData($guard)
         );
     }
@@ -135,11 +155,11 @@ class Authentication
     /**
      * Handle the validation exception and generate a JSON response.
      */
-    protected function handleValidationException(ValidationException $e ): JsonResponse
+    protected function handleValidationException(ValidationException $e): JsonResponse
     {
         return response()->json(
             [
-            'message' => $e->getMessage() ?? 'Validation failed',
+                'message' => $e->getMessage() ?? 'Validation failed',
             ], $e->status ?? 403
         );
     }
@@ -151,7 +171,7 @@ class Authentication
     {
         throw ValidationException::withMessages(
             [
-            'message' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ]
         );
     }
@@ -159,15 +179,11 @@ class Authentication
     /**
      * Generate a success response for sign-up.
      */
-    protected function signUpSuccessResponse(string $redirect, string $message): RedirectResponse
+    protected function signUpSuccessResponse(string $path, string $guard = 'web'): RedirectResponse|JsonResponse
     {
-        return redirect($redirect)->with(
-            [
-            'alert' => [
-                'type' => 'success',
-                'message' => $message,
-            ]
-            ]
+        return $this->fnResponse(
+            fn () => $this->regenerateSessionAndRedirect($path),
+            $this->generateApiResponseData($guard)
         );
     }
 
@@ -176,10 +192,10 @@ class Authentication
      */
     protected function matchPassword(Model $model, string $old_password): void
     {
-        if (!Hash::check($old_password, $model::find(auth()->id())->password)) {
+        if (! Hash::check($old_password, $model::find(auth()->id())->password)) {
             throw ValidationException::withMessages(
                 [
-                'message' => 'Old Password is Incorrect'
+                    'message' => 'Old Password is Incorrect',
                 ]
             );
         }
@@ -190,19 +206,17 @@ class Authentication
      */
     protected function attemptLogin(string $guard): bool
     {
-         if($guard == "admin")
-         {
-            return Auth::guard("admin")->attempt(
+        if ($guard == 'admin') {
+            return Auth::guard('admin')->attempt(
                 $this->request->only('email', 'password'),
                 $this->request->boolean('remember')
             );
-         }
-         else{
-            return Auth::guard("web")->attempt(
+        } else {
+            return Auth::guard('web')->attempt(
                 $this->request->only('user_code', 'password'),
                 $this->request->boolean('remember')
             );
-         }
+        }
     }
 
     /**
@@ -211,6 +225,7 @@ class Authentication
     protected function regenerateSessionAndRedirect(string $path): RedirectResponse
     {
         $this->request->session()->regenerate();
+
         return redirect()->intended($path);
     }
 
@@ -222,7 +237,7 @@ class Authentication
         return [
             'token' => auth()->guard($guard)->user()->createToken($guard)->plainTextToken,
             'user' => auth()->guard($guard)->user(),
-            'role' => $guard == "admin" ? auth()->guard($guard)->user()->role_name : null
+            'role' => $guard == 'admin' ? auth()->guard($guard)->user()->role_name : null,
         ];
     }
 
@@ -243,7 +258,8 @@ class Authentication
      */
     protected function initializeThrottle(string $guard): AuthRequestThrottle
     {
-        $throttle_key = $guard == "admin" ? "email" : "user_code";
+        $throttle_key = $guard == 'admin' ? 'email' : 'user_code';
+
         return new AuthRequestThrottle($this->request->input($throttle_key), $this->request->ip());
     }
 
@@ -263,6 +279,7 @@ class Authentication
     {
         Auth::guard('web')->logout();
         $this->invalidateSession();
+
         return redirect($path);
     }
 
@@ -272,9 +289,10 @@ class Authentication
     protected function handleApiSignOut(): JsonResponse
     {
         auth()->user()->tokens()->delete();
+
         return response()->json(
             [
-            'message' => 'Logged out successfully'
+                'message' => 'Logged out successfully',
             ]
         );
     }

@@ -15,13 +15,15 @@ use Illuminate\Http\UploadedFile;
  * including retrieval, creation, updating, and deletion of avatars.
  *
  * @version 1.0.0
+ *
  * @company North Wolf
+ *
  * @developer Dede182
  */
 class UserAvatarService
 {
-
     use HydraMedia;
+
     /**
      * Retrieve all user avatars.
      *
@@ -34,27 +36,20 @@ class UserAvatarService
 
     /**
      * Retrieve a specific user avatar by its ID.
-     *
-     * @param string $id
-     * @return UserAvatar
      */
-    public function getUserAvatarById(string $id): UserAvatar|null
+    public function getUserAvatarById(string $id): ?UserAvatar
     {
         return UserAvatar::find($id);
     }
 
     /**
      * Create and store a new user avatar.
-     *
-     * @param  string $name
-     * @param  UploadedFile $file
-     * @return UserAvatar
      */
-    public function createNewAvatar(string $name,UploadedFile $file): UserAvatar
+    public function createNewAvatar(string $name, UploadedFile $file): UserAvatar
     {
         $mediaOption = MediaOption::create()->setQuality(100)->get();
 
-        $avatar = new UserAvatar();
+        $avatar = new UserAvatar;
         $avatar->avatar_name = $name;
         $mediaResult = $this->storeMedia($file, 'user_avatars', false, $mediaOption);
         if (is_string($mediaResult)) {
@@ -63,18 +58,14 @@ class UserAvatarService
             throw new \UnexpectedValueException('Expected a string for avatar path but got an array.');
         }
         $avatar->save();
+
         return $avatar;
     }
 
     /**
      * Update an existing user avatar.
-     *
-     * @param  string $id
-     * @param  string $name
-     * @param  UploadedFile $file
-     * @return UserAvatar
      */
-    public function updateUserAvatar(string $id,string $name,UploadedFile $file): UserAvatar
+    public function updateUserAvatar(string $id, string $name, UploadedFile $file): UserAvatar
     {
         $mediaOption = MediaOption::create()->setQuality(100)->get();
 
@@ -91,14 +82,12 @@ class UserAvatarService
         }
 
         $avatar->save();
+
         return $avatar;
     }
 
     /**
      * Delete a user avatar by its ID.
-     *
-     * @param string $id
-     * @return bool
      */
     public function deleteUserAvatar(string $id): bool
     {
@@ -111,9 +100,6 @@ class UserAvatarService
 
     /**
      * Bulk delete user avatars by their IDs.
-     *
-     * @param  array $ids
-     * @return bool
      */
     public function bulkDeleteUserAvatars(array $ids): bool
     {
@@ -122,6 +108,7 @@ class UserAvatarService
             $this->removeMedia("public/user_avatars/$avatar->avatar_path");
             $avatar->delete();
         }
+
         return true;
     }
 }

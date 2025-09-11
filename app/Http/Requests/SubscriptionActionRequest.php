@@ -25,7 +25,7 @@ class SubscriptionActionRequest extends FormRequest
             'title' => 'required|string',
             'price' => 'required|numeric',
             'max' => 'required|integer|max:4294967',
-            'duration' => 'required|integer|max:4294967'
+            'duration' => 'required|integer|max:4294967',
         ];
     }
 }

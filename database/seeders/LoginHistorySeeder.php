@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\LoginHistory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class LoginHistorySeeder extends Seeder
@@ -13,7 +12,7 @@ class LoginHistorySeeder extends Seeder
      */
     public function run(): void
     {
-        $user_count = config("control.test.users_count");
+        $user_count = config('control.test.users_count');
 
         $data = [];
 

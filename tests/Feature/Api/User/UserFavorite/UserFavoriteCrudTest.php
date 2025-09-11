@@ -7,10 +7,10 @@ use Database\Seeders\UserSeeder;
 use Tests\Support\UserAuthenticated;
 
 // Group the test
-uses()->group('user','api','user-favorite');
+uses()->group('user', 'api', 'user-favorite');
 uses(UserAuthenticated::class);
 
-beforeEach(function() {
+beforeEach(function () {
     // Set configuration
     config(['control.test.mogous_count' => 20]);
 
@@ -26,11 +26,10 @@ beforeEach(function() {
 
 });
 
-test("list user favorites",function()
-{
+test('list user favorites', function () {
 
-    $this->postJson(route('api.users.user-favorites.store',[
-        'mogou_id' => 1
+    $this->postJson(route('api.users.user-favorites.store', [
+        'mogou_id' => 1,
     ]));
 
     $response = $this->getJson(route('api.users.user-favorites.index'));
@@ -38,65 +37,61 @@ test("list user favorites",function()
     $response->assertOk();
 
     $response->assertJsonStructure([
-        'favorites'
+        'favorites',
     ]);
 
 });
 
-test("user can add favorite",function()
-{
-    $response = $this->postJson(route('api.users.user-favorites.store',[
-        'mogou_id' => 1
+test('user can add favorite', function () {
+    $response = $this->postJson(route('api.users.user-favorites.store', [
+        'mogou_id' => 1,
     ]));
 
     $response->assertOk();
     $response->assertJson([
-        'message' => 'Favorite added'
+        'message' => 'Favorite added',
     ]);
 });
 
-test("duplicate favorite doesn't add to favorites",function()
-{
-    $this->postJson(route('api.users.user-favorites.store',[
-        'mogou_id' => 1
+test("duplicate favorite doesn't add to favorites", function () {
+    $this->postJson(route('api.users.user-favorites.store', [
+        'mogou_id' => 1,
     ]));
 
-    $response = $this->postJson(route('api.users.user-favorites.store',[
-        'mogou_id' => 1
+    $response = $this->postJson(route('api.users.user-favorites.store', [
+        'mogou_id' => 1,
     ]));
 
     $response->assertStatus(400);
 
     $response->assertJson([
-        'message' => 'Already added'
+        'message' => 'Already added',
     ]);
 
 });
 
-test("user can remove favorite",function()
-{
-    $this->postJson(route('api.users.user-favorites.store',[
-        'mogou_id' => 1
+test('user can remove favorite', function () {
+    $this->postJson(route('api.users.user-favorites.store', [
+        'mogou_id' => 1,
     ]));
 
-    $response = $this->postJson(route('api.users.user-favorites.delete',[
-        'mogou_id' => 1
+    $response = $this->postJson(route('api.users.user-favorites.delete', [
+        'mogou_id' => 1,
     ]));
 
     $response->assertOk();
     $response->assertJson([
-        'message' => 'Favorite removed'
+        'message' => 'Favorite removed',
     ]);
 });
 
-test("user can't remove non-existing favorite",function()
-{
-    $response = $this->postJson(route('api.users.user-favorites.delete',[
-        'mogou_id' => 30303
+test("user can't remove non-existing favorite", function () {
+    $response = $this->postJson(route('api.users.user-favorites.delete', [
+        'mogou_id' => 30303,
     ]));
 
     $response->assertStatus(422);
     $response->assertJson([
-        'message' => 'The selected mogou id is invalid.'
+        'message' => 'The selected mogou id is invalid.',
     ]);
 });

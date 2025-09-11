@@ -17,9 +17,9 @@ class ApplicationConfigFactory extends Factory
     public function definition(): array
     {
         return [
-            "title" => "Test Title",
-            "logo" => "Test Logo",
-            "user_side_is_maintenance_mode" => 0,
+            'title' => 'Test Title',
+            'logo' => 'Test Logo',
+            'user_side_is_maintenance_mode' => 0,
         ];
     }
 }

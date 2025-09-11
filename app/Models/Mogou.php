@@ -19,8 +19,9 @@ class Mogou extends Model
 {
     /** @use HasFactory<MogouFactory> */
     use HasFactory;
-    use MogouScope;
+
     use HydraMedia;
+    use MogouScope;
 
     protected $fillable = [
         'rotation_key',
@@ -48,7 +49,7 @@ class Mogou extends Model
         'mogou_type' => MogouTypeEnum::class,
     ];
 
-    protected $appends = ['status_name','mogou_type_name','finish_status_name'];
+    protected $appends = ['status_name', 'mogou_type_name', 'finish_status_name'];
 
     protected static function boot(): void
     {
@@ -75,7 +76,7 @@ class Mogou extends Model
 
     protected function getStatusNameAttribute(): string
     {
-        return  $this->status ? MogousStatus::getStatusName($this->status) : "";
+        return $this->status ? MogousStatus::getStatusName($this->status) : '';
     }
 
     protected function getCoverAttribute(string $value): string
@@ -87,13 +88,13 @@ class Mogou extends Model
     protected function getMogouTypeNameAttribute(): string
     {
 
-        return $this->mogou_type ?  MogouTypeEnum::getMogouTypeName($this->mogou_type) : "";
+        return $this->mogou_type ? MogouTypeEnum::getMogouTypeName($this->mogou_type) : '';
 
     }
 
     protected function getFinishStatusNameAttribute(): string
     {
-        return $this->finish_status ? MogouFinishStatus::getKey($this->finish_status) : "";
+        return $this->finish_status ? MogouFinishStatus::getKey($this->finish_status) : '';
 
     }
 
@@ -117,19 +118,17 @@ class Mogou extends Model
     /**
      * subMogous
      *
-     * @param string $table_name
      * @return HasMany<SubMogou, $this>
      */
-    public function subMogous(string $table_name="alpha"): HasMany
+    public function subMogous(string $table_name = 'alpha'): HasMany
     {
-        $instance = new SubMogou();
-        $instance->setTable($table_name."_sub_mogous");
+        $instance = new SubMogou;
+        $instance->setTable($table_name.'_sub_mogous');
 
         return $this->newHasMany(
             $instance->newQuery(), $this, $instance->getTable().'.mogou_id', 'id'
         );
     }
-
 
     public function getReleasedAtAttribute(?string $value): string
     {
@@ -140,5 +139,4 @@ class Mogou extends Model
     {
         return date('d M,Y', strtotime($value));
     }
-
 }

@@ -4,7 +4,7 @@ namespace App\Enum;
 
 use App\Contracts\SmartEnum;
 
-enum SocialMediaType :int implements SmartEnum
+enum SocialMediaType: int implements SmartEnum
 {
     case Telegram = 1;
     case Discord = 2;
@@ -20,31 +20,30 @@ enum SocialMediaType :int implements SmartEnum
     public static function getKeys(): array
     {
         return [
-            self::Telegram->value => "Telegram",
-            self::Discord->value => "Discord",
+            self::Telegram->value => 'Telegram',
+            self::Discord->value => 'Discord',
         ];
     }
 
-    public static function getByLabel( string $label ): int
+    public static function getByLabel(string $label): int
     {
-        return match ( $label ) {
-            "Telegram" => self::Telegram->value,
-            "Discord" => self::Discord->value,
+        return match ($label) {
+            'Telegram' => self::Telegram->value,
+            'Discord' => self::Discord->value,
             default => 0
         };
     }
 
-    public static function getKey( SocialMediaType $value ): string
+    public static function getKey(SocialMediaType $value): string
     {
-        return match ( $value ) {
-            self::Telegram => "Telegram",
-            self::Discord => "Discord",
+        return match ($value) {
+            self::Telegram => 'Telegram',
+            self::Discord => 'Discord',
         };
     }
 
     public static function requiredInValidationMessage(): string
     {
-        return 'Social info type must be one of the following: ' . implode(',', self::getValues());
+        return 'Social info type must be one of the following: '.implode(',', self::getValues());
     }
-
 }

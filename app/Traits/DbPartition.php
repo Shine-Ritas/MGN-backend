@@ -14,7 +14,7 @@ trait DbPartition
 
         foreach ($available_tables as $av) {
             $modelInstance = self::class;
-            (new $modelInstance)->firstOrCreate($av . "_" . (new $modelInstance)->getTable());
+            (new $modelInstance)->firstOrCreate($av.'_'.(new $modelInstance)->getTable());
         }
     }
 
@@ -33,10 +33,9 @@ trait DbPartition
         $this->checkTablePartition($table) ?: $this->createPartition();
     }
 
-
     public function getPartition(string $rotation_key): string
     {
-        return  $rotation_key . '_' . $this->partition_prefix;
+        return $rotation_key.'_'.$this->partition_prefix;
     }
 
     /**
@@ -61,8 +60,8 @@ trait DbPartition
                 } else {
                     DB::statement($sql);
                 }
-                $created_partitions[] = $partition . "_" . $this->getTable();
-            }  catch (\Exception $e) {
+                $created_partitions[] = $partition.'_'.$this->getTable();
+            } catch (\Exception $e) {
                 if (str_contains($e->getMessage(), 'already exists')) {
                     continue;
                 } else {
@@ -70,6 +69,7 @@ trait DbPartition
                 }
             }
         }
+
         return $created_partitions;
     }
 
@@ -85,19 +85,17 @@ trait DbPartition
         return match (config('database.default')) {
             'mysql' => "CREATE TABLE {$partition}_{$table} LIKE {$table}",
             'sqlite' => "CREATE TABLE {$partition}_{$table} AS SELECT * FROM {$table} WHERE 0",
-            "pgsql" => json_encode([
+            'pgsql' => json_encode([
                 "CREATE TABLE {$partition}_{$table} (LIKE {$table} INCLUDING ALL)",
                 "CREATE SEQUENCE {$partition}_{$table}_id_seq AS integer",
                 "ALTER TABLE {$partition}_{$table} ALTER COLUMN id SET DEFAULT nextval('{$partition}_{$table}_id_seq')",
                 "ALTER SEQUENCE {$partition}_{$table}_id_seq OWNED BY {$partition}_{$table}.id",
-                "SELECT setval('{$partition}_{$table}_id_seq', COALESCE(MAX(id), 1)) FROM {$partition}_{$table}" // Sync the sequence with the current max 'id'
+                "SELECT setval('{$partition}_{$table}_id_seq', COALESCE(MAX(id), 1)) FROM {$partition}_{$table}", // Sync the sequence with the current max 'id'
             ]),
-
 
             default => "CREATE TABLE {$partition}_{$table} LIKE {$table}",
         };
     }
-
 
     public function getCreatedPartitions(): array
     {
@@ -105,10 +103,11 @@ trait DbPartition
 
         $created_partitions = [];
         foreach ($available_partitions as $partition) {
-            if ($this->checkTablePartition($partition . "_" . $this->getTable())) {
-                $created_partitions[] = $partition . "_" . $this->getTable();
+            if ($this->checkTablePartition($partition.'_'.$this->getTable())) {
+                $created_partitions[] = $partition.'_'.$this->getTable();
             }
         }
+
         return $created_partitions;
     }
 }

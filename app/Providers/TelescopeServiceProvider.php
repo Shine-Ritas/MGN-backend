@@ -45,9 +45,9 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         Telescope::hideRequestHeaders(
             [
-            'cookie',
-            'x-csrf-token',
-            'x-xsrf-token',
+                'cookie',
+                'x-csrf-token',
+                'x-xsrf-token',
             ]
         );
     }
@@ -63,7 +63,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             'viewTelescope', function ($user) {
                 return in_array(
                     $user->email, [
-                    //
+                        //
                     ]
                 );
             }

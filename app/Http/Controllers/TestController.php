@@ -15,10 +15,9 @@ class TestController extends Controller
     {
         $option = MediaOption::create();
 
-        $media = $this->removeMedia("public/user_avatars/user_sample_5.png");
+        $media = $this->removeMedia('public/user_avatars/user_sample_5.png');
 
         return response()->json($media);
 
     }
-
 }

@@ -8,29 +8,27 @@ use Illuminate\Http\Request;
 
 class ReportIndexRepo
 {
-
     /**
      * index
      *
-     * @param  Request $request
      * @return LengthAwarePaginator<Report>
      */
-    public function index(Request $request) : LengthAwarePaginator
+    public function index(Request $request): LengthAwarePaginator
     {
         return Report::search($request->search)
-        ->status($request->status)
-        ->sortBy($request->sort_by ?? 'asc')
-        ->paginate(6);
+            ->status($request->status)
+            ->sortBy($request->sort_by ?? 'asc')
+            ->paginate(6);
     }
 
-    public function show(string $id) : Report
+    public function show(string $id): Report
     {
-        return Report::where("id",$id)->firstOrFail();
+        return Report::where('id', $id)->firstOrFail();
     }
 
-    public function updateStatus(Request $request, string $id) : void
+    public function updateStatus(Request $request, string $id): void
     {
-        $report = Report::where("id",$id)->firstOrFail();
+        $report = Report::where('id', $id)->firstOrFail();
         $report->status = $request->status;
         $report->save();
     }

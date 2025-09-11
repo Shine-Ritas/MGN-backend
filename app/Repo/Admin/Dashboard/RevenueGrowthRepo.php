@@ -13,7 +13,8 @@ class RevenueGrowthRepo
 
     public function getMonthlySubscriptions(): array
     {
-        $applicationConfig = (new CacheApplicationConfigService())->getApplicationConfig();
+        $applicationConfig = (new CacheApplicationConfigService)->getApplicationConfig();
+
         return [
             'target' => $applicationConfig->monthly_subscriptions_target,
             'subscriptions' => UserSubscription::whereBetween('created_at', [$this->startDate, $this->endDate])->count(),
@@ -24,7 +25,7 @@ class RevenueGrowthRepo
     {
         return UserSubscription::join('subscriptions', 'subscriptions.id', '=', 'user_subscriptions.subscription_id')
             ->whereBetween('user_subscriptions.created_at', [$this->startDate, $this->endDate])
-            ->select('subscriptions.title', DB::raw("count(*) as total"))
+            ->select('subscriptions.title', DB::raw('count(*) as total'))
             ->groupBy('subscriptions.title') // Use subscriptions.name instead of subscription_id
             ->get()
             ->toArray();
@@ -60,7 +61,7 @@ class RevenueGrowthRepo
         }
 
         // Step 4: Convert to array of objects for easy usage in charts
-        return collect($allDates)->map(fn($revenue, $date) => [
+        return collect($allDates)->map(fn ($revenue, $date) => [
             'date' => $date,
             'revenue' => $revenue,
             'random' => $revenue + rand(1, 100), // Add random data for testing

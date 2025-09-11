@@ -11,7 +11,7 @@ class LoginHistory extends Model
     /** @use HasFactory<LoginHistoryFactory> */
     use HasFactory;
 
-    protected $guarded=[];
+    protected $guarded = [];
 
     public $timestamps = false;
 

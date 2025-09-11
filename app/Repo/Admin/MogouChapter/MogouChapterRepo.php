@@ -14,6 +14,7 @@ class MogouChapterRepo
     public function update(array $data, SubMogou $mogouChapter): SubMogou
     {
         $mogouChapter->update($data);
+
         return $mogouChapter;
     }
 

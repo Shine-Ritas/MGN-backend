@@ -1,16 +1,16 @@
 <?php
 
+use App\Models\User;
+use App\Repo\User\Favorite\UserFavoriteRepo;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\MogouSeeder;
 use Database\Seeders\SubscriptionSeeder;
 use Database\Seeders\UserSeeder;
-use App\Models\User;
-use App\Repo\User\Favorite\UserFavoriteRepo;
 
 // Group the test
 uses()->group('unit', 'user-favorite-repo');
 
-beforeEach(function() {
+beforeEach(function () {
     // Set configuration
     config(['control.test.mogous_count' => 20]);
 
@@ -33,7 +33,6 @@ test('set method successfully sets user', function () {
 
     expect($userFavoriteRepo->user)->toBe($this->individual_user);
 });
-
 
 test('addFavorite method successfully adds favorite', function () {
     $userFavoriteRepo = new UserFavoriteRepo(null);

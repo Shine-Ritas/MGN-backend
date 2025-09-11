@@ -4,9 +4,8 @@ namespace App\Services\ChapterAnalysis;
 
 use App\Models\ChapterAnalysis;
 use App\Models\SubMogou;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class ChapterAnalysisService
 {

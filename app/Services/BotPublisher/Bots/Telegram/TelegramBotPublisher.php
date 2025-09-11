@@ -3,23 +3,20 @@
 namespace App\Services\BotPublisher\Bots\Telegram;
 
 use App\Contracts\PublisherInterface;
-use GuzzleHttp\Client;
+use App\Models\Mogou;
+use App\Models\SocialChannel;
+use App\Models\SubMogou;
+use App\Services\BotPublisher\Bots\BasePublisher;
 use Illuminate\Database\Eloquent\Collection;
 use WeStacks\TeleBot\TeleBot;
 
-class TelegramBotPublisher implements PublisherInterface
+class TelegramBotPublisher extends BasePublisher implements PublisherInterface
 {
-    protected TeleBot $serviceBot;
-    protected Client $httpClient;
-
     public function __construct(protected string $api_key)
     {
+        parent::__construct();
         $this->serviceBot = new TeleBot($api_key);
-        $this->httpClient = $this->createHttpClient();
-    }
-
-    public function self(): mixed{
-        return $this->serviceBot;
+        $this->providerName = 'Telegram';
     }
 
     public static function provider(string $api_key): self
@@ -27,20 +24,10 @@ class TelegramBotPublisher implements PublisherInterface
         return new self($api_key);
     }
 
-    public function getPublisherDetail(): mixed
-    {
-        $botDetails = $this->individualChannel('-1002198423534')->getTotalMembers();
-        return json_encode($botDetails);
-    }
-
-    public function individualChannel(string $channel_id): SingleChannel
-    {
-        return new SingleChannel($this->serviceBot, $channel_id);
-    }
-
     public function checkIsExistOnProvider(string $id): bool
     {
         $response = $this->makeTelegramRequest("bot{$id}/getMe");
+
         return $response->getStatusCode() === 200;
     }
 
@@ -48,28 +35,76 @@ class TelegramBotPublisher implements PublisherInterface
     {
         return $channels->map(function ($channel) {
             $channel->providers = $this->individualChannel($channel->token_key)->getChatInfo();
+
             return $channel;
         });
     }
 
     public function checkChannelExistOnProvider(int $id, string $channel_token_key): mixed
     {
-        return  $this->individualChannel($channel_token_key)->getChatDetail();
+        return $this->individualChannel($channel_token_key)->getChatDetail();
     }
 
     protected function makeTelegramRequest(string $endpoint, array $queryParams = []): \Psr\Http\Message\ResponseInterface
     {
         $url = "https://api.telegram.org/{$endpoint}";
+
         return $this->httpClient->get($url, ['query' => $queryParams]);
     }
 
-    protected function createHttpClient(): Client
+    public function publishContent(Mogou|SubMogou $content, SocialChannel $socialChannel, ?string $textContent = ''): bool
     {
-        return new Client([
-            'http_errors' => false,
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]);
+        try {
+            $chapterHrefHtml = '';
+            $mougou = null;
+            if ($content instanceof Mogou) {
+                $mougou = $content;
+                $latestThreeChapters = $content->subMogous($mougou->rotation_key)->latest('chapter_number')->limit(3)->get();
+                $title = $content->title;
+                $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}";
+            } else {
+                $mougou = $content->mogou;
+                $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)->latest('chapter_number')
+                    ->where('chapter_number', '<', $content->chapter_number)
+                    ->limit(3)->get();
+                $title = "$mougou->title - Chapter {$content->chapter_number}";
+                $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$content->slug}";
+            }
+
+            foreach ($latestThreeChapters as $chapter) {
+                $chapterHrefHtml .= "<a href='{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$chapter->slug}'>Chapter {$chapter->chapter_number}</a>\n";
+            }
+            $chapterHrefHtml = "<b>Chapters:</b>\n".$chapterHrefHtml;
+
+            if ($textContent) {
+                $textContent = "\n\n".$textContent."\n\n";
+            }
+
+            \Log::info('debug', ['deb' => $content->mogou->subMogous]);
+
+            $this->serviceBot->sendPhoto([
+                'chat_id' => $socialChannel->token_key,
+                'photo' => $mougou->cover,
+                'parse_mode' => 'html',
+                'caption' => "{$title}\n\n{$content->description}{$textContent}{$chapterHrefHtml}",
+                'reply_markup' => [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => 'Read Here', 'url' => $reply_url],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString());
+
+            return true;
+
+        } catch (\Exception $e) {
+            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString(), 'error');
+            $this->outputLog($e->getMessage(), 'error');
+
+            return false;
+        }
     }
 }

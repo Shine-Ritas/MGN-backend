@@ -17,8 +17,7 @@ class RecordSummaryChapterAnalysis implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-
-    public function __construct( protected DateTime $start_time, protected DateTime $end_time)
+    public function __construct(protected DateTime $start_time, protected DateTime $end_time)
     {
         //
     }
@@ -42,7 +41,7 @@ class RecordSummaryChapterAnalysis implements ShouldQueue
      *
      * @return \Illuminate\Support\Collection<int, ChapterAnalysis>
      */
-    protected function getGroupedChapters() : \Illuminate\Support\Collection
+    protected function getGroupedChapters(): \Illuminate\Support\Collection
     {
         return ChapterAnalysis::query()
             ->select('mogou_id', 'sub_mogou_id', DB::raw('count(*) as total_views'))
@@ -51,10 +50,9 @@ class RecordSummaryChapterAnalysis implements ShouldQueue
             ->get();
     }
 
-
-    protected function processChapter(ChapterAnalysis $chapter) : void
+    protected function processChapter(ChapterAnalysis $chapter): void
     {
-        DB::transaction(function() use ($chapter) {
+        DB::transaction(function () use ($chapter) {
             $this->updateOrCreateSummary($chapter);
             $this->deleteChapterAnalysis($chapter);
             $this->logChapterSummary($chapter);
@@ -63,10 +61,8 @@ class RecordSummaryChapterAnalysis implements ShouldQueue
 
     /**
      * Update or create chapter analysis summary.
-     *
-     * @param $chapter
      */
-    protected function updateOrCreateSummary(ChapterAnalysis $chapter) : void
+    protected function updateOrCreateSummary(ChapterAnalysis $chapter): void
     {
         ChapterAnalysisSummary::updateOrCreate(
             [
@@ -76,17 +72,15 @@ class RecordSummaryChapterAnalysis implements ShouldQueue
             [
                 'total_views' => $chapter->total_views ?? 0,
                 'start_date' => $this->start_time,
-                'end_date' => $this->end_time
+                'end_date' => $this->end_time,
             ]
         );
     }
 
     /**
      * Delete chapter analysis records.
-     *
-     * @param $chapter
      */
-    protected function deleteChapterAnalysis(ChapterAnalysis $chapter) : void
+    protected function deleteChapterAnalysis(ChapterAnalysis $chapter): void
     {
         ChapterAnalysis::where('mogou_id', $chapter->mogou_id)
             ->where('sub_mogou_id', $chapter->sub_mogou_id)
@@ -94,18 +88,16 @@ class RecordSummaryChapterAnalysis implements ShouldQueue
             ->delete();
     }
 
-
-    protected function logChapterSummary(ChapterAnalysis $chapter) : void
+    protected function logChapterSummary(ChapterAnalysis $chapter): void
     {
         $total_views = $chapter->total_views ?? 0;
-        Log::channel("chapter_summary")
+        Log::channel('chapter_summary')
             ->info("Chapter Summary for Mogou ID: {$chapter->mogou_id} and Sub Mogou ID: {$chapter->sub_mogou_id} with count: {$total_views } has been updated.");
     }
 
-
-    protected function logSummaryRecorded() : void
+    protected function logSummaryRecorded(): void
     {
-        Log::channel("chapter_summary")
-            ->info("Chapter Summary has been successfully recorded for week " . now()->weekOfYear);
+        Log::channel('chapter_summary')
+            ->info('Chapter Summary has been successfully recorded for week '.now()->weekOfYear);
     }
 }

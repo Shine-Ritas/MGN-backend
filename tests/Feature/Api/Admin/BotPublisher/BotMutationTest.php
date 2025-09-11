@@ -1,21 +1,17 @@
 <?php
 
 use App\Enum\SocialMediaType;
-use App\Models\BotPublisher;
-use App\Services\BotPublisher\CreateBot;
-use Mockery\MockInterface;
 use Tests\Support\UserAuthenticated;
 
-uses()->group('admin','api','bot-publisher','bot-mutation');
+uses()->group('admin', 'api', 'bot-publisher', 'bot-mutation');
 uses(UserAuthenticated::class);
 
-
-beforeEach(function(){
+beforeEach(function () {
     $this->setupAdmin();
 });
 
-test("Body validation was validate for creating new bot",function(){
-    $response = $this->postJson(route('api.admin.bot-publisher.store'),[]);
+test('Body validation was validate for creating new bot', function () {
+    $response = $this->postJson(route('api.admin.bot-publisher.store'), []);
 
     $response->assertStatus(422);
     $response->assertJsonValidationErrors([
@@ -24,7 +20,6 @@ test("Body validation was validate for creating new bot",function(){
         'type',
     ]);
 });
-
 
 // test("Bot publisher was created successfully", function () {
 

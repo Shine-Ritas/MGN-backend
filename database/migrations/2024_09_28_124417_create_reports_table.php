@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->string('title',100);
+            $table->string('title', 100);
             $table->text('description');
-            $table->string("current_url");
-            $table->unsignedSmallInteger("status")->default(0);
-            $table->string("image")->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users','id')->nullOnDelete();
+            $table->string('current_url');
+            $table->unsignedSmallInteger('status')->default(0);
+            $table->string('image')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users', 'id')->nullOnDelete();
             $table->timestamps();
         });
     }

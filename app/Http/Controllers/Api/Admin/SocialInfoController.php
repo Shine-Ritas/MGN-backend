@@ -12,10 +12,7 @@ use Illuminate\Http\Request;
 
 class SocialInfoController extends Controller
 {
-    public function __construct(protected SocialInfoRepo $socialInfoRepo)
-    {
-
-    }
+    public function __construct(protected SocialInfoRepo $socialInfoRepo) {}
 
     /**
      * index
@@ -30,15 +27,16 @@ class SocialInfoController extends Controller
     public function store(SocialInfoRequest $request): JsonResponse
     {
         $socialInfo = $this->socialInfoRepo->create($request->all());
+
         return response()->json(
             [
-            'success' => true,
-            'social_info' => $socialInfo
+                'success' => true,
+                'social_info' => $socialInfo,
             ], 201
         );
     }
 
-    public function update(Request $request,string $id): JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
 
         $request->validate(
@@ -46,35 +44,35 @@ class SocialInfoController extends Controller
             ]
         );
 
-
         $socialInfo = $this->socialInfoRepo->update($id, $request->all());
+
         return response()->json(
             [
-            'success' => true,
-            'social_info' => $socialInfo
+                'success' => true,
+                'social_info' => $socialInfo,
             ], 200
         );
     }
 
-    public function delete(Request $request,string $id): JsonResponse
+    public function delete(Request $request, string $id): JsonResponse
     {
-         $this->socialInfoRepo->delete($id);
+        $this->socialInfoRepo->delete($id);
 
         return response()->json(
             [
-            'success' => true,
+                'success' => true,
             ], 200
         );
     }
-
 
     public function social_infos(): JsonResponse
     {
         $data = $this->socialInfoRepo->getSocialInfoByType(request('type'));
+
         return response()->json(
             [
-            'success' => true,
-            'data' => $data
+                'success' => true,
+                'data' => $data,
             ], 200
         );
     }

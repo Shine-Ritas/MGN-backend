@@ -1,20 +1,17 @@
 <?php
 
 use App\Models\Admin;
-use Database\Seeders\AdminPermissionSeeder;
 use Illuminate\Support\Facades\Route;
-
 use Tests\Support\UserAuthenticated;
 
-uses()->group('admin','api','admin-roles');
+uses()->group('admin', 'api', 'admin-roles');
 uses(UserAuthenticated::class);
 
-
-test("can get role route exists",function(){
+test('can get role route exists', function () {
     $this->assertTrue(Route::has('api.admin.roles.index'));
 });
 
-test('can get roles',function(){
+test('can get roles', function () {
     $this->setupAdmin();
 
     $response = $this->authenticatedAdmin()->getJson(route('api.admin.roles.index'))
@@ -23,16 +20,16 @@ test('can get roles',function(){
     $response->assertStatus(200);
 
     $response->assertJsonStructure([
-        'roles' =>[
-            '0'
-        ]
-        ]);
+        'roles' => [
+            '0',
+        ],
+    ]);
 });
 
-test("can create role",function(){
+test('can create role', function () {
     $this->setupAdmin();
 
-    $response = $this->authenticatedAdmin()->postJson(route('api.admin.roles.store'),[
+    $response = $this->authenticatedAdmin()->postJson(route('api.admin.roles.store'), [
         'name' => 'test_role',
     ]);
 
@@ -41,20 +38,18 @@ test("can create role",function(){
     $response->assertJson([
         'role' => [
             'name' => 'test_role',
-            'guard_name' =>  'admin'
-        ]
+            'guard_name' => 'admin',
+        ],
     ]);
 
-    $this->assertDatabaseHas('roles',[
+    $this->assertDatabaseHas('roles', [
         'name' => 'test_role',
-        'guard_name' => 'admin'
+        'guard_name' => 'admin',
     ]);
 
 });
 
-
-
-test('can get permissions',function(){
+test('can get permissions', function () {
     $this->setupAdmin();
 
     $response = $this->authenticatedAdmin()->getJson(route('api.admin.permissions.index'))
@@ -63,14 +58,14 @@ test('can get permissions',function(){
     $status = $response->assertStatus(200);
 
     $response->assertJsonStructure([
-        'permissions' =>[
-            '0'
-        ]
-        ]);
+        'permissions' => [
+            '0',
+        ],
+    ]);
 
 });
 
-test("get members with roles and pagination",function(int $count){
+test('get members with roles and pagination', function (int $count) {
     $this->createOrgAdmin($count);
 
     $response = $this->setupAdmin()->getJson(route('api.admin.members.index'))
@@ -83,10 +78,10 @@ test("get members with roles and pagination",function(int $count){
 
     expect($role_collection)->toBeArray();
 
-    foreach($role_collection as $role){
-        expect($role)->toBeIn(['uploader','admin']);
+    foreach ($role_collection as $role) {
+        expect($role)->toBeIn(['uploader', 'admin']);
     }
 })->with([
     10,
-    20
+    20,
 ]);

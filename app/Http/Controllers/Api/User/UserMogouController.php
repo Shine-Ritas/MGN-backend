@@ -16,9 +16,6 @@ class UserMogouController extends Controller
 {
     /**
      * Display the specified Mogou.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function show(Request $request): JsonResponse
     {
@@ -44,9 +41,6 @@ class UserMogouController extends Controller
 
     /**
      * Get more chapters of the specified Mogou.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getMoreChapters(Request $request): JsonResponse
     {
@@ -62,9 +56,6 @@ class UserMogouController extends Controller
 
     /**
      * Get related posts for the specified Mogou.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function relatedPostPerMogou(Request $request): JsonResponse
     {
@@ -84,7 +75,7 @@ class UserMogouController extends Controller
 
     public function getChapter(Request $request): JsonResponse
     {
-        $mogou = Mogou::select('id','rotation_key','title','slug','cover')->where('slug', $request->mogou)->firstOrFail();
+        $mogou = Mogou::select('id', 'rotation_key', 'title', 'slug', 'cover')->where('slug', $request->mogou)->firstOrFail();
 
         $currentChapter = $mogou->subMogous($mogou->rotation_key)
             ->where('slug', $request->chapter)
@@ -92,45 +83,45 @@ class UserMogouController extends Controller
 
         $applicationConfig = (new CacheApplicationConfigService)->getApplicationConfig();
 
-        $currentChapter['images'] = (new SubMogouImageRepo)->getImages($currentChapter,$mogou->rotation_key)->get();
-        
+        $currentChapter['images'] = (new SubMogouImageRepo)->getImages($currentChapter, $mogou->rotation_key)->get();
+
         $intro = [
-            "id" => Str::uuid(),
-            "path" => $applicationConfig->intro_a,
-            "sub_mogou_id" => $currentChapter->id,
-            "mogou_id" => $mogou->id,
-            "position" => 0
+            'id' => Str::uuid(),
+            'path' => $applicationConfig->intro_a,
+            'sub_mogou_id' => $currentChapter->id,
+            'mogou_id' => $mogou->id,
+            'position' => 0,
         ];
 
         $outro = [
-            "id" => Str::uuid(),
-            "path" => $applicationConfig->outro_a,
-            "sub_mogou_id" => $currentChapter->id,
-            "mogou_id" => $mogou->id,
-            "position" => $currentChapter['images']?->last()?->position . "z"
+            'id' => Str::uuid(),
+            'path' => $applicationConfig->outro_a,
+            'sub_mogou_id' => $currentChapter->id,
+            'mogou_id' => $mogou->id,
+            'position' => $currentChapter['images']?->last()?->position.'z',
         ];
 
         $currentChapter['images']->prepend($intro);
         $currentChapter['images']->push($outro);
 
         $allChapters = $mogou->subMogous($mogou->rotation_key)
-            ->select("id","title","slug","chapter_number")
+            ->select('id', 'title', 'slug', 'chapter_number')
             ->latest('chapter_number')
             ->get() ?? null;
 
         $nextChapter = $mogou->subMogous($mogou->rotation_key)
-            ->select("id","title","slug","chapter_number")
+            ->select('id', 'title', 'slug', 'chapter_number')
             ->where('chapter_number', '>', $currentChapter->chapter_number)
             ->oldest('chapter_number')
             ->first() ?? null;
         $previousChapter = $mogou->subMogous($mogou->rotation_key)
-            ->select("id","title","slug","chapter_number")
+            ->select('id', 'title', 'slug', 'chapter_number')
             ->where('chapter_number', '<', $currentChapter->chapter_number)
             ->latest('chapter_number')
             ->first() ?? null;
 
         $nextChapter = $mogou->subMogous($mogou->rotation_key)
-            ->select("id","title","slug","chapter_number")
+            ->select('id', 'title', 'slug', 'chapter_number')
             ->where('chapter_number', '>', $currentChapter->chapter_number)
             ->oldest('chapter_number')
             ->first() ?? null;
@@ -161,6 +152,7 @@ class UserMogouController extends Controller
             return response()->json(['message' => 'success']);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['message' => 'failed', 'error' => $e->getMessage()], 500);
         }
     }

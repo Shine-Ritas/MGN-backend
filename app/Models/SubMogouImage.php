@@ -4,17 +4,17 @@ namespace App\Models;
 
 use App\Traits\DbPartition;
 use Database\Factories\SubMogouImageFactory;
-use Dede\Lexorank\LexoRankTrait;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
+use Ritas\Lexorank\LexoRankTrait;
 
 class SubMogouImage extends Model
 {
     /** @use HasFactory<SubMogouImageFactory> */
-    use HasFactory,DbPartition,HydraMedia,LexoRankTrait;
+    use DbPartition,HasFactory,HydraMedia,LexoRankTrait;
 
     protected $table = 'sub_mogou_images';
 
@@ -24,23 +24,19 @@ class SubMogouImage extends Model
 
     protected string $baseTable = 'sub_mogou_images';
 
-
     /**
      * applySortableQuery
      *
-     * @param  Builder<static> $query
-     * @param  SubMogouImage $model
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
-
-    protected static function applySortableQuery(Builder $query,SubMogouImage $model) : Builder
+    protected static function applySortableQuery(Builder $query, SubMogouImage $model): Builder
     {
-        $query->where("mogou_id", $model->mogou_id)
-                ->where("sub_mogou_id", $model->sub_mogou_id);
+        $query->where('mogou_id', $model->mogou_id)
+            ->where('sub_mogou_id', $model->sub_mogou_id);
 
         return $query;
     }
-
 
     protected static function boot(): void
     {
@@ -58,7 +54,7 @@ class SubMogouImage extends Model
 
     public function getPathAttribute(string $value): string
     {
-        return $this->getMedia($value,"mogou/$this->mogou_id/$this->sub_mogou_id");
+        return $this->getMedia($value, "mogou/$this->mogou_id/$this->sub_mogou_id");
     }
 
     /**

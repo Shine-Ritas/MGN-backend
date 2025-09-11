@@ -20,22 +20,22 @@ class SocialInfo extends Model
         'icon',
         'meta',
         'cover_photo',
-        "text_url",
+        'text_url',
         'redirect_url',
-        'active'
+        'active',
     ];
 
     protected $appends = [
-        'cover_photo_url'
+        'cover_photo_url',
     ];
 
     protected $casts = [
         'type' => SocialInfoType::class,
-        'active' => SocialInfoStatus::class
+        'active' => SocialInfoStatus::class,
     ];
 
-    public function getCoverPhotoUrlAttribute(): string | null
+    public function getCoverPhotoUrlAttribute(): ?string
     {
-        return isset($this->cover_photo) ?  $this->getMedia($this->cover_photo, "/social_info") : null;
+        return isset($this->cover_photo) ? $this->getMedia($this->cover_photo, '/social_info') : null;
     }
 }

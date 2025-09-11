@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class MogouRepo implements \App\Contracts\ModelRepoInterface
 {
-
     protected Request $request;
 
     /**
@@ -21,10 +20,10 @@ class MogouRepo implements \App\Contracts\ModelRepoInterface
         $this->collection = Mogou::query();
     }
 
-    public function get( Request $request, bool $withFilter = true ) : mixed
+    public function get(Request $request, bool $withFilter = true): mixed
     {
 
-        if ($withFilter ) {
+        if ($withFilter) {
             $this->collection();
         }
 
@@ -32,7 +31,7 @@ class MogouRepo implements \App\Contracts\ModelRepoInterface
 
     }
 
-    public function collection() : mixed
+    public function collection(): mixed
     {
         $this->collection = $this->collection
             ->search()
@@ -42,47 +41,50 @@ class MogouRepo implements \App\Contracts\ModelRepoInterface
             ->orderByRating()
             ->byFinishStatus()
             ->byMogouType()
-            ->bySorting()
             ->byTotalChapters()
+            ->bySorting()
             ->year();
 
         return $this->collection;
     }
 
-    public function getCollection() : mixed
+    public function getCollection(): mixed
     {
         return $this->collection;
     }
 
-    public function rawCollection(callable $callback) : mixed
+    public function rawCollection(callable $callback): mixed
     {
         $this->collection = $callback($this->collection);
+
         return $this->collection;
     }
 
-    public function withFilterGenres() : self
+    public function withFilterGenres(): self
     {
         $this->collection = $this->collection->filterGenres();
+
         return $this;
     }
 
-    public function withLegalOnly() : self
+    public function withLegalOnly(): self
     {
         $this->collection = $this->collection->legalOnly();
+
         return $this;
     }
 
-    public function withCategories() : self
+    public function withCategories(): self
     {
         $this->collection = $this->collection->with('categories:id,title');
+
         return $this;
     }
 
-
-    public function publishedOnly() : self
+    public function publishedOnly(): self
     {
         $this->collection = $this->collection->publishedOnly(true);
+
         return $this;
     }
-
 }

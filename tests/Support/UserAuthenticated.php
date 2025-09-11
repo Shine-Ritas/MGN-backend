@@ -1,9 +1,10 @@
 <?php
 
 namespace Tests\Support;
+
 use App\Enum\AdminRole;
-use App\Models\User;
 use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 trait UserAuthenticated
@@ -20,7 +21,7 @@ trait UserAuthenticated
         return $this->authenticated($this->user);
     }
 
-    public function authenticated(Authenticatable $user = null)
+    public function authenticated(?Authenticatable $user = null)
     {
         return $this->actingAs($user ?? $this->user);
     }
@@ -29,19 +30,20 @@ trait UserAuthenticated
     {
         $this->admin = Admin::factory()->create($body);
         $this->admin->assignRole(AdminRole::Admin->value);
+
         return $this->authenticatedAdmin($this->admin);
     }
 
-    public function authenticatedAdmin(Authenticatable $admin = null)
+    public function authenticatedAdmin(?Authenticatable $admin = null)
     {
         return $this->actingAs($admin ?? $this->admin);
     }
 
-    public function createOrgAdmin(int $count =1)
+    public function createOrgAdmin(int $count = 1)
     {
         $assistant_admins = Admin::factory()->count($count)->create();
 
-        foreach($assistant_admins as $assistant_admin){
+        foreach ($assistant_admins as $assistant_admin) {
             $assistant_admin->assignRole(AdminRole::Uploader->value);
         }
 

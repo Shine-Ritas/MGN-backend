@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BotPublisherPost extends Model
 {
     /** @use HasFactory<BotPublisherPostFactory> */
-
     use HasFactory;
 
     protected $fillable = [
@@ -34,5 +33,4 @@ class BotPublisherPost extends Model
     {
         return $this->belongsTo(BotPublisher::class);
     }
-
 }

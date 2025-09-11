@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AdminPermissionSeeder extends Seeder
@@ -32,7 +31,7 @@ class AdminPermissionSeeder extends Seeder
             'apps',
             'setting',
             'report',
-            'admins'
+            'admins',
         ];
 
         $adminPermissions = $parent_permissions;
@@ -52,10 +51,10 @@ class AdminPermissionSeeder extends Seeder
         \Spatie\Permission\Models\Role::where('name', 'admin')->first()->syncPermissions($adminPermissions);
         \Spatie\Permission\Models\Role::where('name', 'uploader')->first()->syncPermissions($uploaderPermissions);
 
-        if(Admin::count() > 0){
+        if (Admin::count() > 0) {
             Admin::where('email', 'admin@gmail.com')->first()->assignRole('admin');
 
-            Admin::where('email', '!=','admin@gmaill.com')->each(function($admin){
+            Admin::where('email', '!=', 'admin@gmaill.com')->each(function ($admin) {
                 $admin->assignRole('uploader');
             });
         }

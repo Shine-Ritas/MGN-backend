@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enum\MogouFinishStatus;
 use App\Vaildations\MogouValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +25,7 @@ class MogouActionRequest extends FormRequest
         return [
             'title' => 'required',
             'description' => 'required',
-            'status' =>  MogouValidation::status(),
+            'status' => MogouValidation::status(),
             'author' => 'nullable',
             'cover' => 'nullable|image',
             'legal_age' => 'required|boolean',

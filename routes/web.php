@@ -19,5 +19,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
 Route::get('/admin', [AdminController::class, 'roles']);

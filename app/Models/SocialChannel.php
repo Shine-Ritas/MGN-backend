@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use App\Enum\SocialMediaType;
-use Database\Factories\SocialChannelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @property mixed $providers
  */
 class SocialChannel extends Model
 {
-    /** @use HasFactory<SocialChannelFactory> */
+    /** @use HasFactory<\Database\Factories\SocialChannelFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -42,16 +42,28 @@ class SocialChannel extends Model
         });
     }
 
+    public function getCreatedAtAttribute(string $value): string
+    {
+        return date('Y-m-d H:i:s', strtotime($value));
+    }
+
     public function getBotTypeAttribute(): string
     {
         return SocialMediaType::getKey($this->type);
     }
 
-    public function getMetaDataAttribute(?string $value): array | null
+    /** @phpstan-ignore-next-line */
+    public function botProvider(): HasOneThrough
     {
-        if (!$value) {
+        return $this->hasOneThrough(BotPublisher::class, BotSocialChannel::class, 'social_channel_id', 'id', 'id', 'bot_publisher_id');
+    }
+
+    public function getMetaDataAttribute(?string $value): ?array
+    {
+        if (! $value) {
             return null;
         }
+
         return json_decode($value, true);
     }
 }

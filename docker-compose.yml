@@ -7,7 +7,7 @@ services:
                     - "node.labels.db == true"
         container_name: mgn-db
         volumes:
-             -  ./docker/postgres/data:/var/lib/postgresql/data
+             - db_data:/var/lib/postgresql/data
              -  ./deployment/config/postgres/postgresql.conf:/var/lib/postgresql/postgresql.conf
         ports:
             - "${DB_HOST_PORT:-5438}:5432"
@@ -42,7 +42,7 @@ services:
                 constraints:
                     - "node.labels.db == true"
         volumes:
-            - ./docker/redisdata:/data
+            - redisdata:/data
         ports:
             - "${REDIS_HOST_PORT:-6378}:6379"
         networks:
@@ -63,7 +63,7 @@ services:
             - ./bootstrap/cache:/var/www/mgn/bootstrap/cache
             - ./public:/var/www/mgn/public:rw
             - ./.env:/var/www/mgn/.env
-            - ./deploy/logs:/var/log
+            - ./deploy/logs:/var/log:rw
         tty: true
         ports:
             - "${LARAVEL_PORT:-9001}:80"
@@ -99,6 +99,8 @@ services:
 
 volumes:
     db_data:
+        driver: local
+    redisdata:
         driver: local
 
 networks:

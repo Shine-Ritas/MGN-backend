@@ -106,12 +106,13 @@ FROM template AS worker
 RUN apk add supervisor netcat-openbsd python3 py3-pip && \
     pip3 install --upgrade setuptools==80.0.0 supervisor --break-system-packages
 
-# Create log directory and set permissions
+# Create log directories and set permissions
 RUN set -eux; \
-    mkdir -p /var/log/supervisor; \
-    touch /var/log/{supervisord.log,laravel-queue.log,wait-for-redis.log}; \
-    chown -R $APP_USER:$APP_USER /var/log; \
-    chmod -R 755 /var/log; \
+    mkdir -p /var/log/supervisor /usr/local/var/log; \
+    touch /var/log/{supervisord.log,laravel-queue.log,wait-for-redis.log,fpm-php.www.log,php_errors.log}; \
+    touch /usr/local/var/log/php-fpm.log; \
+    chown -R $APP_USER:$APP_USER /var/log /usr/local/var/log; \
+    chmod -R 755 /var/log /usr/local/var/log; \
     chmod -R 775 /var/log/supervisor
 
 # Copy supervisor configuration

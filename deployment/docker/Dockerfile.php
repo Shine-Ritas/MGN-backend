@@ -135,8 +135,7 @@ RUN composer install --optimize-autoloader \
     && php artisan route:clear \
     && php artisan view:clear
 
-# Expose supervisor port
-EXPOSE 9001
+# Note: No port exposure needed for worker container
 
 # Start supervisor as $APP_USER user
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

@@ -104,7 +104,7 @@ RUN composer install --optimize-autoloader  \
     && php artisan config:clear \
     && php artisan optimize
 
-EXPOSE 9001
+EXPOSE 80
 
 CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.d/www.conf", "-R"]
 

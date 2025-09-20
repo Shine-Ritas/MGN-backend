@@ -91,10 +91,10 @@ FROM template AS api
 # Create log directories and set permissions for PHP-FPM
 RUN set -eux; \
     mkdir -p /var/log /usr/local/var/log; \
-    touch /var/log/{fpm-php.www.log,php_errors.log}; \
+    touch /var/log/fpm-php.www.log /var/log/php_errors.log; \
     touch /usr/local/var/log/php-fpm.log; \
-    chown -R $APP_USER:$APP_USER /var/log /usr/local/var/log; \
-    chmod -R 755 /var/log /usr/local/var/log
+    chown -R $APP_USER:$APP_USER /var/log /usr/local/var; \
+    chmod -R 775 /var/log /usr/local/var
 
 USER $APP_USER
 # Install PHP and Node dependencies
@@ -117,11 +117,11 @@ RUN apk add supervisor netcat-openbsd python3 py3-pip && \
 # Create log directories and set permissions
 RUN set -eux; \
     mkdir -p /var/log/supervisor /usr/local/var/log; \
-    touch /var/log/{supervisord.log,laravel-queue.log,wait-for-redis.log,fpm-php.www.log,php_errors.log}; \
+    touch /var/log/supervisord.log /var/log/laravel-queue.log /var/log/wait-for-redis.log; \
+    touch /var/log/fpm-php.www.log /var/log/php_errors.log; \
     touch /usr/local/var/log/php-fpm.log; \
-    chown -R $APP_USER:$APP_USER /var/log /usr/local/var/log; \
-    chmod -R 755 /var/log /usr/local/var/log; \
-    chmod -R 775 /var/log/supervisor
+    chown -R $APP_USER:$APP_USER /var/log /usr/local/var; \
+    chmod -R 775 /var/log /usr/local/var
 
 # Copy supervisor configuration
 COPY deployment/config/supervisor/supervisord.conf /etc/supervisord.conf

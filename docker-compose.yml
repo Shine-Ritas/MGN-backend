@@ -1,6 +1,6 @@
 services:
     db:
-        image: postgres:15
+        image: postgres:17
         deploy:
             placement:
                 constraints:
@@ -20,27 +20,6 @@ services:
             - mgn-network
         command: ["postgres", "-c", "config_file=/var/lib/postgresql/postgresql.conf"]
 
-    laravel:
-        build:
-            context: .
-            dockerfile: Dockerfile
-            target: api
-            args:
-                - user=radian
-                - uid=1000
-        container_name: mgn-app
-        tty: true
-        volumes:
-            - .:/var/www/mgn
-        ports:
-            - "${LARAVEL_PORT:-9001}:80"
-        networks:
-            - mgn-network
-
-        depends_on:
-            - db
-            - redis
-
     nginx:
         image: nginx:alpine
         container_name: mgn-nginx
@@ -56,7 +35,7 @@ services:
             - mgn-network
 
     redis:
-        image: redis:alpine
+        image: redis:7-alpine
         container_name: mgn-redis
         deploy:
             placement:
@@ -69,20 +48,52 @@ services:
         networks:
             - mgn-network
 
-    supervisor:
+    laravel:
         build:
             context: .
-            dockerfile: Dockerfile
-            target: worker
-        container_name: mgn-supervisor
-        command: ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+            dockerfile: deployment/docker/Dockerfile.php
+            target: api
+            args:
+                - user=radian
+                - uid=1000
+        container_name: mgn-app
+        working_dir: /var/www/mgn
         volumes:
-            - .:/var/www/mgn
-            - ./deployment/config/supervisor:/etc/supervisor/conf.d
+            - ./storage:/var/www/mgn/storage:rw
+            - ./bootstrap/cache:/var/www/mgn/bootstrap/cache
+            - ./public:/var/www/mgn/public:rw
+            - ./.env:/var/www/mgn/.env
+            - ./deploy/logs:/var/log
+        tty: true
+        ports:
+            - "${LARAVEL_PORT:-9001}:80"
+        networks:
+            - mgn-network
+
+        depends_on:
+            - db
+            - redis
+
+    horizon:
+        build:
+            context: .
+            dockerfile: deployment/docker/Dockerfile.php
+            target: worker
+            args:
+                - user=radian
+                - uid=1000
+        container_name: mgn-horizon
+        working_dir: /var/www/mgn
+        volumes:
+            - ./storage:/var/www/mgn/storage:rw
+            - ./bootstrap/cache:/var/www/mgn/bootstrap/cache
+            - ./public:/var/www/mgn/public:rw
+            - ./.env:/var/www/mgn/.env
+            - ./deploy/logs:/var/log
+        tty: true
         networks:
             - mgn-network
         depends_on:
-            - laravel
             - db
             - redis
 

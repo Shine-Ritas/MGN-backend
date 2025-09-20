@@ -6,13 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SocialInfoRequest;
 use App\Models\SocialInfo;
 use App\Repo\Admin\SocialInfo\SocialInfoRepo;
+use App\Traits\CacheResponse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SocialInfoController extends Controller
 {
-    public function __construct(protected SocialInfoRepo $socialInfoRepo) {}
+    use CacheResponse;  
+
+    private string $applicationCacheKey = '';
+    public function __construct(protected SocialInfoRepo $socialInfoRepo) {
+        $this->applicationCacheKey = $this->generateCacheKey('social_info');
+    }
 
     /**
      * index
@@ -27,6 +33,8 @@ class SocialInfoController extends Controller
     public function store(SocialInfoRequest $request): JsonResponse
     {
         $socialInfo = $this->socialInfoRepo->create($request->all());
+
+        $this->forgetCache($this->applicationCacheKey);
 
         return response()->json(
             [
@@ -46,6 +54,8 @@ class SocialInfoController extends Controller
 
         $socialInfo = $this->socialInfoRepo->update($id, $request->all());
 
+        $this->forgetCache($this->applicationCacheKey);
+
         return response()->json(
             [
                 'success' => true,
@@ -58,6 +68,8 @@ class SocialInfoController extends Controller
     {
         $this->socialInfoRepo->delete($id);
 
+        $this->forgetCache($this->applicationCacheKey);
+
         return response()->json(
             [
                 'success' => true,
@@ -68,6 +80,8 @@ class SocialInfoController extends Controller
     public function social_infos(): JsonResponse
     {
         $data = $this->socialInfoRepo->getSocialInfoByType(request('type'));
+
+        $this->forgetCache($this->applicationCacheKey);
 
         return response()->json(
             [

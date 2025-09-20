@@ -88,6 +88,14 @@ RUN set -eux; \
 
 FROM template AS api
 
+# Create log directories and set permissions for PHP-FPM
+RUN set -eux; \
+    mkdir -p /var/log /usr/local/var/log; \
+    touch /var/log/{fpm-php.www.log,php_errors.log}; \
+    touch /usr/local/var/log/php-fpm.log; \
+    chown -R $APP_USER:$APP_USER /var/log /usr/local/var/log; \
+    chmod -R 755 /var/log /usr/local/var/log
+
 USER $APP_USER
 # Install PHP and Node dependencies
 RUN composer install --optimize-autoloader  \

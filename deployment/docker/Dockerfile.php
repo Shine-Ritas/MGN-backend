@@ -98,7 +98,7 @@ RUN composer install --optimize-autoloader  \
 
 EXPOSE 9001
 
-CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.d/custom-php-fpm.conf", "-R"]
+CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.d/www.conf", "-R"]
 
 FROM template AS worker
 

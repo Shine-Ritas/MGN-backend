@@ -89,7 +89,7 @@ services:
             - ./bootstrap/cache:/var/www/mgn/bootstrap/cache
             - ./public:/var/www/mgn/public:rw
             - ./.env:/var/www/mgn/.env
-            - ./deploy/logs:/var/log
+            - ./deploy/logs:/var/log:rw
         tty: true
         networks:
             - mgn-network

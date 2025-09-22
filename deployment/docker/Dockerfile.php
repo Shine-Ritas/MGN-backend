@@ -110,32 +110,24 @@ CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.d/www.conf", "-R"]
 
 FROM template AS worker
 
-# Install supervisor, netcat, and Python/pip
 RUN apk add --no-cache supervisor netcat-openbsd python3 py3-pip && \
     pip3 install --upgrade setuptools==80.0.0 supervisor --break-system-packages
 
-# Create log directories and set permissions
+# Create log directories and give radian ownership
 RUN set -eux; \
     mkdir -p /var/log/supervisor /usr/local/var/log; \
     touch /var/log/supervisord.log /var/log/laravel-queue.log /var/log/wait-for-redis.log; \
-    touch /var/log/fpm-php.www.log /var/log/php_errors.log; \
     touch /usr/local/var/log/php-fpm.log; \
-    # Create supervisor log files to ensure they exist
-    touch /var/log/supervisor/laravel-schedule.log /var/log/supervisor/laravel-horizon.log; \
     chown -R $APP_USER:$APP_USER /var/log /usr/local/var; \
     chmod -R 775 /var/log /usr/local/var
 
-# Copy supervisor configuration
 COPY deployment/config/supervisor/supervisord.conf /etc/supervisord.conf
 
-# Switch to non-root user
 USER $APP_USER
 
-# Install PHP dependencies
 RUN composer install --optimize-autoloader \
     && php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
 
-# Start supervisor (directory already owned by APP_USER)
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

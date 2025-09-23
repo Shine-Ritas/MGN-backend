@@ -88,11 +88,13 @@ RUN set -eux; \
     chmod -R 775 /var/log /usr/local/var; \
     chmod -R g+rwX /var/www/mgn/storage /var/www/mgn/bootstrap/cache
 
-USER $APP_USER
 
 # Copy entrypoint
 COPY deployment/docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+USER $APP_USER
+
 
 # Install dependencies
 RUN umask 0002 && composer install --optimize-autoloader \

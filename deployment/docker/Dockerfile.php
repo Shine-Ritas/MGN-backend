@@ -117,8 +117,9 @@ RUN set -eux; \
     touch /var/log/supervisord.log /var/log/laravel-queue.log /var/log/wait-for-redis.log; \
     touch /usr/local/var/log/php-fpm.log; \
     chown -R $APP_USER:$APP_USER /var/log /usr/local/var; \
-    chmod -R 775 /var/log /usr/local/var \
+    chmod -R 775 /var/log /usr/local/var; \
     chmod -R g+rwX /var/www/mgn/storage /var/www/mgn/bootstrap/cache
+
 
 COPY deployment/config/supervisor/supervisord.conf /etc/supervisord.conf
 

@@ -58,7 +58,7 @@ services:
     container_name: mgn-app
     working_dir: /var/www/mgn
     volumes:
-      - mgn-storage:/var/www/mgn/storage
+      - ./storage:/var/www/mgn/storage:rw
       - mgn-cache:/var/www/mgn/bootstrap/cache
       - ./public:/var/www/mgn/public:rw
       - ./.env:/var/www/mgn/.env
@@ -83,7 +83,7 @@ services:
     container_name: mgn-horizon
     working_dir: /var/www/mgn
     volumes:
-      - mgn-storage:/var/www/mgn/storage
+      - ./storage:/var/www/mgn/storage:rw
       - mgn-cache:/var/www/mgn/bootstrap/cache
       - ./public:/var/www/mgn/public:rw
       - ./.env:/var/www/mgn/.env
@@ -102,7 +102,6 @@ volumes:
     driver: local
   redisdata:
     driver: local
-  mgn-storage:
   mgn-cache:
 
 networks:

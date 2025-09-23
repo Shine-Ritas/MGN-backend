@@ -53,9 +53,6 @@ services:
             context: .
             dockerfile: deployment/docker/Dockerfile.php
             target: api
-            args:
-                - user=radian
-                - uid=1000
         container_name: mgn-app
         working_dir: /var/www/mgn
         volumes:
@@ -79,9 +76,6 @@ services:
             context: .
             dockerfile: deployment/docker/Dockerfile.php
             target: worker
-            args:
-                - user=radian
-                - uid=1000
         container_name: mgn-horizon
         working_dir: /var/www/mgn
         volumes:

@@ -1,14 +1,8 @@
 # Use PHP 8.2
 FROM php:8.2-fpm-alpine AS template
 
-ARG user=radian
-ARG uid=1099
-ARG gid=1099
-
-# Environment so user is also available at runtime
-ENV APP_USER=$user \
-    APP_UID=$uid \
-    APP_GID=$gid \
+# Use www-data user for proper web server permissions
+ENV APP_USER=www-data \
     COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /var/www/mgn
@@ -60,10 +54,8 @@ COPY deployment/config/fpm/custom-php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 # Copy composer (temporarily used during build)
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Create group and user dynamically
+# www-data user already exists in PHP image, just ensure home directory
 RUN set -eux; \
-    addgroup -g "$APP_GID" "$APP_USER"; \
-    adduser -u "$APP_UID" -G "$APP_USER" -D -s /bin/bash "$APP_USER"; \
     mkdir -p /home/"$APP_USER"/.composer; \
     chown -R "$APP_USER":"$APP_USER" /home/"$APP_USER"
 

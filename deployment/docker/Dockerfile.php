@@ -97,8 +97,13 @@ RUN set -eux; \
     chmod -R 775 /var/log /usr/local/var
 
 USER $APP_USER
+
+# Set proper umask for directory creation
+RUN echo "umask 0002" >> /home/$APP_USER/.bashrc && \
+    echo "umask 0002" >> /home/$APP_USER/.profile
+
 # Install PHP and Node dependencies
-RUN composer install --optimize-autoloader  \
+RUN umask 0002 && composer install --optimize-autoloader  \
     && php artisan view:clear \
     && php artisan route:clear \
     && php artisan config:clear \
@@ -106,7 +111,7 @@ RUN composer install --optimize-autoloader  \
 
 EXPOSE 9001
 
-CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.d/www.conf", "-R"]
+CMD sh -c 'umask 0002 && exec php-fpm -y /usr/local/etc/php-fpm.d/www.conf -R'
 
 FROM template AS worker
 
@@ -125,9 +130,13 @@ COPY deployment/config/supervisor/supervisord.conf /etc/supervisord.conf
 
 USER $APP_USER
 
-RUN composer install --optimize-autoloader \
+# Set proper umask for directory creation  
+RUN echo "umask 0002" >> /home/$APP_USER/.bashrc && \
+    echo "umask 0002" >> /home/$APP_USER/.profile
+
+RUN umask 0002 && composer install --optimize-autoloader \
     && php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD sh -c 'umask 0002 && exec /usr/bin/supervisord -c /etc/supervisord.conf'

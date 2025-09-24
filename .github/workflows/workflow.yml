@@ -2,8 +2,9 @@ name: Deploy to Heroku
 
 on:
   push:
+    branches:
+      - development
       # - master
-      # - development
 
 jobs:
   # Job 1: Build and Test

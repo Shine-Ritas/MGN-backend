@@ -51,7 +51,11 @@ class PublishingService
     {
         $botProvider = $socialChannel->botProvider;
         $bot = ((new GetBotServices)->getBot((int) $botProvider->id))->getPublisher();
-        $bot->publishContent($modal, $socialChannel, $content);
+        $publishing = $bot->publishContent($modal, $socialChannel, $content);
+
+        if(!$publishing){
+            throw new \Exception('Publishing failed');
+        }
 
         $Mogou = $modal instanceof Mogou ? $modal : $modal->mogou;
 

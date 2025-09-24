@@ -6,7 +6,7 @@ on:
       - development
 
 jobs:
-  # Job 1: Build and Test
+  # Job 1: Build and Tests
   build-and-test:
     runs-on: ubuntu-latest
     steps:

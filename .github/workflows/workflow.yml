@@ -33,7 +33,7 @@ jobs:
           php artisan key:generate --env=testing
 
       - name: Run Laravel Pint (fix)
-        run:  ./vendor/bin/pint --test --parallel
+        run:  ./vendor/bin/pint --parallel
       
       - name: Commit Pint fixes
         run: |

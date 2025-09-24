@@ -1,10 +1,9 @@
-name: Deploy to Heroku
+name: Development Workflow
 
 on:
   push:
     branches:
       - development
-      # - master
 
 jobs:
   # Job 1: Build and Test

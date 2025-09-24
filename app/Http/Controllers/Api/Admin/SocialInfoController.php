@@ -13,10 +13,12 @@ use Illuminate\Http\Request;
 
 class SocialInfoController extends Controller
 {
-    use CacheResponse;  
+    use CacheResponse;
 
     private string $applicationCacheKey = '';
-    public function __construct(protected SocialInfoRepo $socialInfoRepo) {
+
+    public function __construct(protected SocialInfoRepo $socialInfoRepo)
+    {
         $this->applicationCacheKey = $this->generateCacheKey('social_info');
     }
 

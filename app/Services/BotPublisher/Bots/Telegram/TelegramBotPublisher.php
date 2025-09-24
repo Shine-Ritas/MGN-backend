@@ -64,7 +64,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}";
             } else {
                 $mougou = $content->mogou;
-                
+
                 // If user selects first chapter, show the next 3 chapters after it
                 if ($content->chapter_number == 1) {
                     $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)
@@ -77,7 +77,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                         ->where('chapter_number', '<', $content->chapter_number)
                         ->limit(3)->get();
                 }
-                
+
                 $title = "$mougou->title - Chapter {$content->chapter_number}";
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$content->slug}";
             }
@@ -95,7 +95,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
 
             $contentDescription = $content->description;
 
-            if($contentDescription){
+            if ($contentDescription) {
                 $contentDescription = "\n\n".$contentDescription;
             }
 
@@ -113,16 +113,17 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 ],
             ]);
 
-            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString(),'info');
+            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString(), 'info');
 
             return true;
 
         } catch (\Exception $e) {
-            $this->errorLog("debug detail", [
+            $this->errorLog('debug detail', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return false;
         }
     }

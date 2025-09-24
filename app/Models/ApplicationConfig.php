@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use AllowDynamicProperties;
 use Database\Factories\ApplicationConfigFactory;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

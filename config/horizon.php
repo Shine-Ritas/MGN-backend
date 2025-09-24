@@ -186,7 +186,7 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default','normal','summary'],
+            'queue' => ['default', 'normal', 'summary'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 5,

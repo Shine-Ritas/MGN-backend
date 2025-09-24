@@ -69,7 +69,7 @@ if (! function_exists('ensureDirectoryPermissions')) {
     {
         if (is_dir($path)) {
             chmod($path, 0775);
-            
+
             // Also fix parent directories if they exist and are too restrictive
             $parentPath = dirname($path);
             if ($parentPath !== $path && is_dir($parentPath)) {

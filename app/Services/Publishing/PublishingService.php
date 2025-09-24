@@ -53,7 +53,7 @@ class PublishingService
         $bot = ((new GetBotServices)->getBot((int) $botProvider->id))->getPublisher();
         $publishing = $bot->publishContent($modal, $socialChannel, $content);
 
-        if(!$publishing){
+        if (! $publishing) {
             throw new \Exception('Publishing failed');
         }
 

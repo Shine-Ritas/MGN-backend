@@ -49,7 +49,7 @@ class SubMogouSeeder extends Seeder
 
             foreach ($wp as $key => $mogou) {
                 $sub_mogou_insert = [];
-                $sub_mogou_images_insert = [];
+                // $sub_mogou_images_insert = [];
                 for ($i = 0; $i < count($mogou); $i++) {
                     $total_chapter = rand(1, 20);
                     Mogou::where('id', $mogou[$i])->update(['total_chapters' => $total_chapter]);
@@ -67,18 +67,18 @@ class SubMogouSeeder extends Seeder
 
                         ];
 
-                        $total_images = rand(20, 40);
-                        for ($k = 1; $k <= $total_images; $k++) {
-                            $sub_mogou_images_insert[] = [
-                                'mogou_id' => $mogou[$i],
-                                'sub_mogou_id' => $j,
-                                'path' => 'image.jpg',
-                            ];
-                        }
+                        // $total_images = rand(20, 40);
+                        // for ($k = 1; $k <= $total_images; $k++) {
+                        //     $sub_mogou_images_insert[] = [
+                        //         'mogou_id' => $mogou[$i],
+                        //         'sub_mogou_id' => $j,
+                        //         'path' => 'image.jpg',
+                        //     ];
+                        // }
                     }
                 }
                 SubMogou::insert($sub_mogou_insert);
-                SubMogouImage::insert($sub_mogou_images_insert);
+                // SubMogouImage::insert($sub_mogou_images_insert);
                 DB::statement('insert into '.$key.'_sub_mogous select * from sub_mogous');
                 DB::statement('insert into '.$key.'_sub_mogou_images select * from sub_mogou_images');
 

@@ -7,7 +7,7 @@ on:
 
 jobs:
   # Job 1: Build and Tests
-  build-and-test:
+  test-and-pint-and-commit:
     runs-on: ubuntu-latest
     steps:
       # Checkout the code

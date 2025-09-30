@@ -28,7 +28,9 @@ class OwnershipStampCommand extends Command
      * Default owner information
      */
     private const DEFAULT_OWNER = '@Htet_Shine';
+
     private const DEFAULT_EMAIL = 'whoishsh@gmail.com';
+
     private const PROJECT_NAME = 'MGN-Backend';
 
     /**
@@ -36,10 +38,10 @@ class OwnershipStampCommand extends Command
      */
     private const EXCLUDED_DIRECTORIES = [
         'vendor',
-        'public', 
+        'public',
         'storage',
         'bootstrap/cache',
-        'node_modules'
+        'node_modules',
     ];
 
     /**
@@ -54,22 +56,23 @@ class OwnershipStampCommand extends Command
         if ($newOwner) {
             $this->info("Replacing owner name to: @{$newOwner}");
         } else {
-            $this->info("Adding ownership headers with default owner: " . self::DEFAULT_OWNER);
+            $this->info('Adding ownership headers with default owner: '.self::DEFAULT_OWNER);
         }
 
         if ($dryRun) {
-            $this->warn("DRY RUN MODE - No files will be modified");
+            $this->warn('DRY RUN MODE - No files will be modified');
         }
 
         $basePath = base_path($directory);
-        
-        if (!File::exists($basePath)) {
+
+        if (! File::exists($basePath)) {
             $this->error("Directory does not exist: {$directory}");
+
             return 1;
         }
 
         $this->info("Processing directory: {$directory}");
-        
+
         $files = $this->getPhpFiles($basePath);
         $processedCount = 0;
         $modifiedCount = 0;
@@ -81,10 +84,10 @@ class OwnershipStampCommand extends Command
 
             $processedCount++;
             $modified = $this->processFile($file, $newOwner, $dryRun);
-            
+
             if ($modified) {
                 $modifiedCount++;
-                $relativePath = str_replace(base_path() . '/', '', $file);
+                $relativePath = str_replace(base_path().'/', '', $file);
                 $this->line("✓ {$relativePath}");
             }
         }
@@ -104,14 +107,14 @@ class OwnershipStampCommand extends Command
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS)
         );
-        
+
         $phpFiles = new RegexIterator($iterator, '/^.+\.php$/i', RegexIterator::MATCH);
-        
+
         $files = [];
         foreach ($phpFiles as $file) {
             $files[] = $file->getRealPath();
         }
-        
+
         return $files;
     }
 
@@ -120,14 +123,14 @@ class OwnershipStampCommand extends Command
      */
     private function shouldSkipFile(string $file): bool
     {
-        $relativePath = str_replace(base_path() . '/', '', $file);
-        
+        $relativePath = str_replace(base_path().'/', '', $file);
+
         foreach (self::EXCLUDED_DIRECTORIES as $excludedDir) {
-            if (str_starts_with($relativePath, $excludedDir . '/')) {
+            if (str_starts_with($relativePath, $excludedDir.'/')) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -152,7 +155,7 @@ class OwnershipStampCommand extends Command
         }
 
         // Write changes if not in dry-run mode
-        if (!$dryRun) {
+        if (! $dryRun) {
             File::put($file, $content);
         }
 
@@ -165,7 +168,7 @@ class OwnershipStampCommand extends Command
     private function addOwnershipHeader(string $content): string
     {
         // Check if ownership header already exists
-        if (str_contains($content, 'Project: ' . self::PROJECT_NAME)) {
+        if (str_contains($content, 'Project: '.self::PROJECT_NAME)) {
             return $content;
         }
 
@@ -182,7 +185,7 @@ class OwnershipStampCommand extends Command
             );
         } else {
             // Prepend header to the beginning
-            $content = "<?php\n{$header}\n\n" . $content;
+            $content = "<?php\n{$header}\n\n".$content;
         }
 
         return $content;
@@ -194,15 +197,15 @@ class OwnershipStampCommand extends Command
     private function replaceOwnership(string $content, string $newOwner): string
     {
         // Pattern to match ownership headers - more flexible pattern
-        $pattern = '/\/\*\*\s*\n\s*\*\s*Project:\s*' . preg_quote(self::PROJECT_NAME, '/') . '\s*\n\s*\*\s*Owner:\s*@\w+\s*\n\s*\*\s*Email:.*?\n\s*\*\s*\n\s*\*\s*This file is part of the proprietary source code owned by @\w+\.\s*\n\s*\*\s*Unauthorized copying, distribution, or modification is prohibited\.\s*\n\s*\*\//s';
-        
+        $pattern = '/\/\*\*\s*\n\s*\*\s*Project:\s*'.preg_quote(self::PROJECT_NAME, '/').'\s*\n\s*\*\s*Owner:\s*@\w+\s*\n\s*\*\s*Email:.*?\n\s*\*\s*\n\s*\*\s*This file is part of the proprietary source code owned by @\w+\.\s*\n\s*\*\s*Unauthorized copying, distribution, or modification is prohibited\.\s*\n\s*\*\//s';
+
         if (preg_match($pattern, $content)) {
             // Replace existing header
             $newHeader = $this->generateOwnershipHeader("@{$newOwner}", self::DEFAULT_EMAIL);
             $content = preg_replace($pattern, $newHeader, $content);
         } else {
             // Look for any @owner pattern and replace it
-            $content = preg_replace('/@' . preg_quote(trim(self::DEFAULT_OWNER, '@'), '/') . '/', "@{$newOwner}", $content);
+            $content = preg_replace('/@'.preg_quote(trim(self::DEFAULT_OWNER, '@'), '/').'/', "@{$newOwner}", $content);
         }
 
         return $content;
@@ -213,8 +216,8 @@ class OwnershipStampCommand extends Command
      */
     private function generateOwnershipHeader(string $owner, string $email): string
     {
-        return "/**
- * Project: " . self::PROJECT_NAME . "
+        return '/**
+ * Project: '.self::PROJECT_NAME."
  * Owner: {$owner}
  * Email: {$email}
  * 

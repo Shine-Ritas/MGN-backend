@@ -2,11 +2,11 @@ name: Deploy to Server
 
 on:
   workflow_run:
-    workflows: ["Development Workflow"]
-    types:
-      - completed
-    branches:
-      - development
+    # workflows: ["Development Workflow"]
+    # types:
+    #   - completed
+    # branches:
+    #   - development
 
 jobs:
   deploy-to-server:

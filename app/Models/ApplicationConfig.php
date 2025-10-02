@@ -38,10 +38,12 @@ class ApplicationConfig extends Model
         'outro_a',
         'intro_b',
         'outro_b',
+        'prefix_active',
     ];
 
     protected $casts = [
         'user_side_is_maintenance_mode' => 'boolean',
+        'prefix_active' => 'boolean',
     ];
 
     public function getLogoAttribute(string $value): string

@@ -33,11 +33,11 @@ class DatabaseSeeder extends Seeder
             // MogouSeeder::class,
             MogousCategorySeeder::class,
             // SubMogouSeeder::class,
-            UserFavoriteSeeder::class,
+            // UserFavoriteSeeder::class,
             BannerSeeder::class,
             BaseSectionSeeder::class,
             ReportSeeder::class,
-            ChapterAnalysisSeeder::class,
+            // ChapterAnalysisSeeder::class,
             // BotSocialChannelSeeder::class
         ]);
     }

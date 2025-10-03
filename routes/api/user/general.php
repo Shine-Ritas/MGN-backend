@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\UserAvatarController;
+use App\Http\Controllers\Api\User\Comment\CommentController;
 use App\Http\Controllers\Api\User\FilterPageController;
 use App\Http\Controllers\Api\User\GeneralController;
 use App\Http\Controllers\Api\User\HomePageController;
@@ -30,6 +31,17 @@ Route::middleware(['user.maintenance'])->group(function () {
             Route::get('/user-avatars', 'get')->name('avatars');
         });
 
+        Route::controller(CommentController::class)->group(function () {
+            Route::post('/mogous/{mogou}/comments', 'store')->name('comments.store');
+            Route::post('/mogous/{mogou}/chapters/{chapter}/comments', 'store')->name('chapter-comments.store');
+
+            Route::post('/mogous/{mogou}/comments/reply', 'reply')->name('comments.reply');
+            Route::post('/mogous/{mogou}/chapters/{chapter}/reply', 'reply')->name('chapter-comments.reply');
+
+            Route::post('/mogous/{mogou}/comments/delete', 'delete')->name('comments.delete');
+            Route::post('/mogous/{mogou}/chapters/{chapter}/delete', 'delete')->name('chapter-comments.delete');
+        });
+
     });
 
     Route::prefix('users')->name('users.')->group(function () {
@@ -47,6 +59,11 @@ Route::middleware(['user.maintenance'])->group(function () {
             Route::get('/mogous/{mogou}/chapters/{chapter}', 'getChapter')->name('mogous.getChapter');
             Route::get('/mogous/{mogou}/chapters/{chapter}/viewed', 'getViewed')->name('mogous.getViewed');
             Route::get('/mogous/{mogou}/related', 'relatedPostPerMogou')->name('mogous.relateMogou');
+        });
+
+        Route::controller(CommentController::class)->group(function () {
+            Route::get('/mogous/{mogou}/comments', 'index')->name('comments.index');
+            Route::get('/mogous/{mogou}/chapters/{chapter}/comments', 'index')->name('chapter-comments.index');
         });
 
         Route::controller(FilterPageController::class)->group(function () {

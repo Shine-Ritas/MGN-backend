@@ -2,6 +2,7 @@
 
 namespace App\Repo\User\Comments;
 
+use App\Http\Requests\CommentStoreRequest;
 use App\Models\Comment;
 use App\Models\Mogou;
 use App\Models\SubMogou;
@@ -24,6 +25,28 @@ class UserCommentRepo
     {
         $this->model = new Comment;
         $this->image_folder_path = 'comments';
+    }
+
+    public function store(CommentStoreRequest $request): Comment
+    {
+        $isReply = $request->parent_comment_id != null;
+
+        $data = [
+            'content' => $request->text,
+            'image_path' => $request->image_path,
+            'mogou_id' => $request->mogou_id,
+            'sub_mogou_id' => $request->sub_mogou_id,
+            'parent_comment_id' => $request->parent_comment_id,
+            'user_id' => $request->user()->id,
+        ];
+
+        if ($isReply) {
+            $parentComment = Comment::findOrFail($request->parent_comment_id);
+
+            return $this->replyComment($parentComment, $data);
+        } else {
+            return $this->storeComment($data);
+        }
     }
 
     /**
@@ -67,7 +90,7 @@ class UserCommentRepo
         return $this->getInstance($subMogou)->where('parent_comment_id', null)->get();
     }
 
-    public function create(array $data): Comment
+    public function storeComment(array $data): Comment
     {
         if (isset($data['image_path'])) {
             $data['image_path'] = $this->storeImage($data['image_path'], $data['mogou_id'], $data['sub_mogou_id']);

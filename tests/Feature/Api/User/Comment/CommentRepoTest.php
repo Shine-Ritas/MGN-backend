@@ -48,7 +48,7 @@ beforeEach(function () {
 
 it('user can store comment on mogou post', function () {
     $expectedComment = 'Test Comment 1';
-    $this->repo->create($this->text_comment);
+    $this->repo->storeComment($this->text_comment);
 
     $this->assertDatabaseHas('comments', [
         'content' => $expectedComment,
@@ -60,7 +60,7 @@ it('user can store comment on mogou post', function () {
 });
 
 it('another User Can reply to the comment', function () {
-    $comment = $this->repo->create($this->text_comment);
+    $comment = $this->repo->storeComment($this->text_comment);
 
     $this->repo->replyComment($comment, $this->photoComment);
 
@@ -75,7 +75,7 @@ it('another User Can reply to the comment', function () {
 });
 
 it('user can remove comment', function () {
-    $comment = $this->repo->create($this->text_comment);
+    $comment = $this->repo->storeComment($this->text_comment);
 
     $this->repo->remove($comment);
 
@@ -86,7 +86,7 @@ it('user can remove comment', function () {
 
 it('user can comment with photo', function () {
     $this->photoComment['sub_mogou_id'] = null;
-    $comment = $this->repo->create($this->photoComment);
+    $comment = $this->repo->storeComment($this->photoComment);
 
     $this->assertDatabaseHas('comments', [
         'id' => $comment->id,
@@ -98,7 +98,7 @@ it('user can comment with photo', function () {
 
 it('can get the comments with nested reply', function () {
     $this->text_comment['sub_mogou_id'] = null;
-    $comment = $this->repo->create($this->text_comment);
+    $comment = $this->repo->storeComment($this->text_comment);
 
     $this->text_comment['content'] = 'Test Comment 2';
 

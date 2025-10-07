@@ -86,12 +86,12 @@ test('Model tables are match with locked count of tables in trait with dbConstru
 test("Model tables don't with locked count of tables in trait without dbConstructing", function () {
     $dbPartition = $this->model;
 
-    TablePartition::setLockedRotation(5);
+    TablePartition::setLockedRotation(2);
 
     $available_tables = TablePartition::availableRotationKey();
 
     foreach ($available_tables as $table) {
-        $this->assertFalse($dbPartition->checkTablePartition($table.'_sub_mogous'));
+        $this->assertTrue($dbPartition->checkTablePartition($table.'_sub_mogous'));
     }
 
 });

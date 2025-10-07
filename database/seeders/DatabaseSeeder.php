@@ -30,14 +30,14 @@ class DatabaseSeeder extends Seeder
             LoginHistorySeeder::class,
             UserSubscriptionSeeder::class,
             CategorySeeder::class,
-            MogouSeeder::class,
+            // MogouSeeder::class,
             MogousCategorySeeder::class,
-            SubMogouSeeder::class,
-            UserFavoriteSeeder::class,
+            // SubMogouSeeder::class,
+            // UserFavoriteSeeder::class,
             BannerSeeder::class,
             BaseSectionSeeder::class,
             ReportSeeder::class,
-            ChapterAnalysisSeeder::class,
+            // ChapterAnalysisSeeder::class,
             // BotSocialChannelSeeder::class
         ]);
     }

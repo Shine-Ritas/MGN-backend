@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('intro_b')->nullable();
             $table->string('outro_b')->nullable();
             $table->integer('user_side_is_maintenance_mode')->default(0);
+            $table->integer('prefix_active')->default(0);
             $table->timestamps();
         });
     }

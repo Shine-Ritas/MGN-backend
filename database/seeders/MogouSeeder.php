@@ -28,7 +28,8 @@ class MogouSeeder extends Seeder
             $file_name = 'manga.json';
 
             if (! file_exists($outsource_folder)) {
-                mkdir($outsource_folder, 0777, true);
+                mkdir($outsource_folder, 0775, true);
+                chmod($outsource_folder, 0775);
             }
 
             if (! file_exists($outsource_folder.'/'.$file_name)) {

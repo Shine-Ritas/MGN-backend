@@ -1,13 +1,13 @@
-name: Deploy to Heroku
+name: Development Workflow
 
 on:
   push:
-      # - master
-      # - development
+    branches:
+      - development
 
 jobs:
-  # Job 1: Build and Test
-  build-and-test:
+  # Job 1: Build and Tests
+  test-and-pint-and-commit:
     runs-on: ubuntu-latest
     steps:
       # Checkout the code
@@ -30,10 +30,9 @@ jobs:
           cp .env.example .env.testing
           echo "DB_CONNECTION=sqlite" >> .env.testing
           echo "DB_DATABASE=:memory:" >> .env.testing
-          php artisan key:generate --env=testing
 
       - name: Run Laravel Pint (fix)
-        run:  ./vendor/bin/pint --test --parallel
+        run:  ./vendor/bin/pint --parallel
       
       - name: Commit Pint fixes
         run: |

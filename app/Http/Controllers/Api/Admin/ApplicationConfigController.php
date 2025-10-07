@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Enum\SocialInfoType;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationConfig;
+use App\Models\SocialInfo;
 use App\Repo\Admin\ApplicationConfig\ApplicationConfigUploadRepo;
 use App\Traits\CacheResponse;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +28,10 @@ class ApplicationConfigController extends Controller
 
         $app = $this->cacheResponse(
             $key, 300, function () {
-                return ApplicationConfig::first();
+                $application = ApplicationConfig::first();
+                $application->socials = SocialInfo::where('type', SocialInfoType::ReferSocial->value)->get();
+
+                return $application;
             }
         );
 

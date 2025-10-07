@@ -20,7 +20,8 @@ class BasePublisher
     public function __construct()
     {
         $this->httpClient = $this->createHttpClient();
-        $this->clientAppUrl = config('control.client_app_url');
+        $this->clientAppUrl = app()->environment() == 'production' ? config('control.client_app_url') : 'https://mgn-mu.vercel.app';
+
     }
 
     public function self(): mixed
@@ -50,8 +51,13 @@ class BasePublisher
         ]);
     }
 
-    public function outputLog(string $message, string $level = 'info'): void
+    public function errorLog(string $message, ?array $context = []): void
     {
-        Log::channel('automation')->$level("{$this->providerName} - {$message}");
+        Log::channel('automation')->error("{$this->providerName} - {$message}", $context);
+    }
+
+    public function outputLog(string $message, string $level = 'info', ?array $context = []): void
+    {
+        Log::channel('automation')->$level("{$this->providerName} - {$message}", $context);
     }
 }

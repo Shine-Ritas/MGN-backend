@@ -64,9 +64,20 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}";
             } else {
                 $mougou = $content->mogou;
-                $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)->latest('chapter_number')
-                    ->where('chapter_number', '<', $content->chapter_number)
-                    ->limit(3)->get();
+
+                // If user selects first chapter, show the next 3 chapters after it
+                if ($content->chapter_number == 1) {
+                    $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)
+                        ->where('chapter_number', '>', $content->chapter_number)
+                        ->orderBy('chapter_number', 'asc')
+                        ->limit(3)->get();
+                } else {
+                    // For other chapters, show the previous 3 chapters
+                    $latestThreeChapters = $content->mogou->subMogous($mougou->rotation_key)->latest('chapter_number')
+                        ->where('chapter_number', '<', $content->chapter_number)
+                        ->limit(3)->get();
+                }
+
                 $title = "$mougou->title - Chapter {$content->chapter_number}";
                 $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$content->slug}";
             }
@@ -77,16 +88,22 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             $chapterHrefHtml = "<b>Chapters:</b>\n".$chapterHrefHtml;
 
             if ($textContent) {
-                $textContent = "\n\n".$textContent."\n\n";
+                $textContent = "
+                \n".$textContent."
+                \n";
             }
 
-            \Log::info('debug', ['deb' => $content->mogou->subMogous]);
+            $contentDescription = $content->description;
+
+            if ($contentDescription) {
+                $contentDescription = "\n\n".$contentDescription;
+            }
 
             $this->serviceBot->sendPhoto([
                 'chat_id' => $socialChannel->token_key,
                 'photo' => $mougou->cover,
                 'parse_mode' => 'html',
-                'caption' => "{$title}\n\n{$content->description}{$textContent}{$chapterHrefHtml}",
+                'caption' => "{$title}{$contentDescription}{$textContent}{$chapterHrefHtml}",
                 'reply_markup' => [
                     'inline_keyboard' => [
                         [
@@ -96,13 +113,16 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 ],
             ]);
 
-            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString());
+            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString(), 'info');
 
             return true;
 
         } catch (\Exception $e) {
-            $this->outputLog("{$socialChannel->name} - {$content->id} at - ".now()->toDateTimeString(), 'error');
-            $this->outputLog($e->getMessage(), 'error');
+            $this->errorLog('debug detail', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
             return false;
         }

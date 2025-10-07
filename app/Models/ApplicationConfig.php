@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Project: MGN-Backend
+ * Owner: @Htet_Shine
+ * Email: whoishsh@gmail.com
+ *
+ * This file is part of the proprietary source code owned by @Htet_Shine.
+ * Unauthorized copying, distribution, or modification is prohibited.
+ */
+
 namespace App\Models;
 
 use Database\Factories\ApplicationConfigFactory;
@@ -7,6 +16,9 @@ use HydraStorage\HydraStorage\Traits\HydraMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property mixed $socials;
+ */
 class ApplicationConfig extends Model
 {
     /** @use HasFactory<ApplicationConfigFactory> */
@@ -26,10 +38,12 @@ class ApplicationConfig extends Model
         'outro_a',
         'intro_b',
         'outro_b',
+        'prefix_active',
     ];
 
     protected $casts = [
         'user_side_is_maintenance_mode' => 'boolean',
+        'prefix_active' => 'boolean',
     ];
 
     public function getLogoAttribute(string $value): string

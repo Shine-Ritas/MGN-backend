@@ -60,6 +60,28 @@ if (! function_exists('enumValue')) {
     }
 }
 
+if (! function_exists('ensureDirectoryPermissions')) {
+    /**
+     * Ensure a directory has proper permissions (775)
+     * This fixes the umask issue where directories are created with 700 permissions
+     */
+    function ensureDirectoryPermissions(string $path): void
+    {
+        if (is_dir($path)) {
+            chmod($path, 0775);
+
+            // Also fix parent directories if they exist and are too restrictive
+            $parentPath = dirname($path);
+            if ($parentPath !== $path && is_dir($parentPath)) {
+                $currentPerms = fileperms($parentPath) & 0777;
+                if ($currentPerms < 0755) {
+                    chmod($parentPath, 0775);
+                }
+            }
+        }
+    }
+}
+
 if (! function_exists('fGetUptime')) {
     function fGetUptime(): string
     {

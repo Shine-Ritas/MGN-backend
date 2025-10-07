@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\UserAvatarController;
+use App\Http\Controllers\Api\User\Comment\CommentController;
 use App\Http\Controllers\Api\User\FilterPageController;
 use App\Http\Controllers\Api\User\GeneralController;
 use App\Http\Controllers\Api\User\HomePageController;
@@ -30,13 +31,23 @@ Route::middleware(['user.maintenance'])->group(function () {
             Route::get('/user-avatars', 'get')->name('avatars');
         });
 
+        Route::controller(CommentController::class)->group(function () {
+            Route::post('/mogous/comments', 'store')->name('comments.store');
+
+            Route::post('/mogous/{mogou}/comments/reply', 'reply')->name('comments.reply');
+            Route::post('/mogous/{mogou}/chapters/{chapter}/reply', 'reply')->name('chapter-comments.reply');
+
+            Route::post('/mogous/{mogou}/comments/delete', 'delete')->name('comments.delete');
+            Route::post('/mogous/{mogou}/chapters/{chapter}/delete', 'delete')->name('chapter-comments.delete');
+        });
+
     });
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::controller(HomePageController::class)->group(function () {
             Route::get('/carousel', 'carousel')->name('carousel');
             Route::get('/carousel/most-viewed', 'mostViewed')->name('most-viewed');
-            Route::get('/carousel/recommended', 'recommended')->name('last-uploaded');
+            Route::get('/carousel/recommended', 'recommended')->name('recommended');
             Route::get('/last-uploaded', 'lastUploaded')->name('last-uploaded');
             Route::get('/banners', 'banners')->name('banners');
         });
@@ -47,6 +58,11 @@ Route::middleware(['user.maintenance'])->group(function () {
             Route::get('/mogous/{mogou}/chapters/{chapter}', 'getChapter')->name('mogous.getChapter');
             Route::get('/mogous/{mogou}/chapters/{chapter}/viewed', 'getViewed')->name('mogous.getViewed');
             Route::get('/mogous/{mogou}/related', 'relatedPostPerMogou')->name('mogous.relateMogou');
+        });
+
+        Route::controller(CommentController::class)->group(function () {
+            Route::get('/comments/get', 'index')->name('comments.index');
+            Route::get('/comments/getReplies', 'childComments')->name('comments.child-comments');
         });
 
         Route::controller(FilterPageController::class)->group(function () {

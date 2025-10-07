@@ -43,7 +43,6 @@ class Comment extends Model
         return date('Y-m-d h:i:s A', strtotime($value));
     }
 
-
     protected function getImagePathUrlAttribute(string $value): string
     {
         return $this->getMedia($value, "public/comments/{$this->mogou_id}");

@@ -60,7 +60,7 @@ class UserCommentRepo
      */
     public function getInstance(Mogou|SubMogou $mainModel): Builder
     {
-        return $this->model->query()->with( ['subMogou','user:id,name,background_color,avatar_id','user.avatar'])
+        return $this->model->query()->with(['subMogou', 'user:id,name,background_color,avatar_id', 'user.avatar'])
             ->withCount('childComments')
             ->when($mainModel instanceof SubMogou, function ($query) use ($mainModel) {
                 $query->where('mogou_id', $mainModel->mogou_id);
@@ -75,33 +75,32 @@ class UserCommentRepo
             ->orderBy('created_at', 'desc');
     }
 
- 
     /**
      * Summary of getComments
-     * @param \Illuminate\Http\Request $request
+     *
      * @return LengthAwarePaginator<Comment>
      */
     public function getComments(Request $request): LengthAwarePaginator
     {
         $model = Mogou::findOrFail($request->mogou_id);
-        if($request->sub_mogou_id){
+        if ($request->sub_mogou_id) {
             $model = $model->subMogous($model->rotation_key)->findOrFail($request->sub_mogou_id);
         }
-        
+
         return $this->getInstance($model)->where('parent_comment_id', null)->paginate(10);
     }
 
     /**
      * Summary of loadChildComments
-     * @param \App\Models\Comment $comment
+     *
      * @return Collection<int, Comment>
      */
-    public function loadChildComments(Comment $comment): Collection 
+    public function loadChildComments(Comment $comment): Collection
     {
         return $this->model->query()->where('parent_comment_id', $comment->id)
-        ->with( ['subMogou','user:id,name,background_color,avatar_id','user.avatar'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->with(['subMogou', 'user:id,name,background_color,avatar_id', 'user.avatar'])
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**

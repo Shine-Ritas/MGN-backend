@@ -62,7 +62,7 @@ Route::middleware(['user.maintenance'])->group(function () {
 
         Route::controller(CommentController::class)->group(function () {
             Route::get('/comments/get', 'index')->name('comments.index');
-            Route::get("/comments/getReplies", 'childComments')->name('comments.child-comments');
+            Route::get('/comments/getReplies', 'childComments')->name('comments.child-comments');
         });
 
         Route::controller(FilterPageController::class)->group(function () {

@@ -48,4 +48,4 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Clean the old build cache
-        uses: docker builder prune -af || true
+        run: docker builder prune -af || true

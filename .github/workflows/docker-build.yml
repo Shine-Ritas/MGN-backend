@@ -3,10 +3,6 @@ name: Build Ci/CD with Docker
 on:
   workflow_run:
     workflows: ["Development Workflow"]
-    types:
-      - completed
-    branches:
-      - development
 
 jobs:
   build-and-push:

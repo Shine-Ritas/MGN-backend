@@ -5,8 +5,6 @@ on:
     workflows: ["Development Workflow"]
     types:
       - completed
-    branches:
-      - development
 
 jobs:
   build-and-push:
@@ -34,7 +32,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Step 4: Build and push Docker image (API or Worker)
-      - name: Build and push ${{ matrix.image.target }} Image
+      - name: Build and push ${{ matrix.image.target }} image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -48,5 +46,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Clean the old build cache
+      # Step 5: Clean the old build cache
+      - name: Clean Docker build cache
         run: docker builder prune -af || true

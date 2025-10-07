@@ -5,6 +5,8 @@ on:
     workflows: ["Development Workflow"]
     types:
       - completed
+    branches:
+      - development
 
 jobs:
   build-and-push:

@@ -32,8 +32,7 @@ Route::middleware(['user.maintenance'])->group(function () {
         });
 
         Route::controller(CommentController::class)->group(function () {
-            Route::post('/mogous/{mogou}/comments', 'store')->name('comments.store');
-            Route::post('/mogous/{mogou}/chapters/{chapter}/comments', 'store')->name('chapter-comments.store');
+            Route::post('/mogous/comments', 'store')->name('comments.store');
 
             Route::post('/mogous/{mogou}/comments/reply', 'reply')->name('comments.reply');
             Route::post('/mogous/{mogou}/chapters/{chapter}/reply', 'reply')->name('chapter-comments.reply');
@@ -62,8 +61,8 @@ Route::middleware(['user.maintenance'])->group(function () {
         });
 
         Route::controller(CommentController::class)->group(function () {
-            Route::get('/mogous/{mogou}/comments', 'index')->name('comments.index');
-            Route::get('/mogous/{mogou}/chapters/{chapter}/comments', 'index')->name('chapter-comments.index');
+            Route::get('/comments/get', 'index')->name('comments.index');
+            Route::get("/comments/getReplies", 'childComments')->name('comments.child-comments');
         });
 
         Route::controller(FilterPageController::class)->group(function () {

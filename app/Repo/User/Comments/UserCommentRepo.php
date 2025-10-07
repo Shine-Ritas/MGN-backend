@@ -3,6 +3,7 @@
 namespace App\Repo\User\Comments;
 
 use App\Http\Requests\CommentStoreRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Mogou;
 use App\Models\SubMogou;
@@ -11,7 +12,10 @@ use HydraStorage\HydraStorage\Service\Option\MediaOption;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Testing\File;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserCommentRepo
 {
@@ -27,7 +31,7 @@ class UserCommentRepo
         $this->image_folder_path = 'comments';
     }
 
-    public function store(CommentStoreRequest $request): Comment
+    public function store(CommentStoreRequest $request): JsonResource
     {
         $isReply = $request->parent_comment_id != null;
 
@@ -56,7 +60,8 @@ class UserCommentRepo
      */
     public function getInstance(Mogou|SubMogou $mainModel): Builder
     {
-        return $this->model->query()->with('childComments', 'subMogou')
+        return $this->model->query()->with( ['subMogou','user:id,name,background_color,avatar_id','user.avatar'])
+            ->withCount('childComments')
             ->when($mainModel instanceof SubMogou, function ($query) use ($mainModel) {
                 $query->where('mogou_id', $mainModel->mogou_id);
                 $query->where('sub_mogou_id', $mainModel->id);
@@ -70,14 +75,33 @@ class UserCommentRepo
             ->orderBy('created_at', 'desc');
     }
 
+ 
     /**
      * Summary of getComments
-     *
+     * @param \Illuminate\Http\Request $request
+     * @return LengthAwarePaginator<Comment>
+     */
+    public function getComments(Request $request): LengthAwarePaginator
+    {
+        $model = Mogou::findOrFail($request->mogou_id);
+        if($request->sub_mogou_id){
+            $model = $model->subMogous($model->rotation_key)->findOrFail($request->sub_mogou_id);
+        }
+        
+        return $this->getInstance($model)->where('parent_comment_id', null)->paginate(10);
+    }
+
+    /**
+     * Summary of loadChildComments
+     * @param \App\Models\Comment $comment
      * @return Collection<int, Comment>
      */
-    public function getComments(Mogou $mogou): Collection
+    public function loadChildComments(Comment $comment): Collection 
     {
-        return $this->getInstance($mogou)->where('parent_comment_id', null)->get();
+        return $this->model->query()->where('parent_comment_id', $comment->id)
+        ->with( ['subMogou','user:id,name,background_color,avatar_id','user.avatar'])
+        ->orderBy('created_at', 'desc')
+        ->get();
     }
 
     /**
@@ -90,13 +114,13 @@ class UserCommentRepo
         return $this->getInstance($subMogou)->where('parent_comment_id', null)->get();
     }
 
-    public function storeComment(array $data): Comment
+    public function storeComment(array $data): JsonResource
     {
         if (isset($data['image_path'])) {
             $data['image_path'] = $this->storeImage($data['image_path'], $data['mogou_id'], $data['sub_mogou_id']);
         }
 
-        return $this->model->create($data);
+        return CommentResource::make($this->model->create($data));
     }
 
     public function storeImage(UploadedFile|File $file, int|string $mogou_id, int|string|null $sub_mogou_id = null): string
@@ -124,12 +148,12 @@ class UserCommentRepo
         return $comment->delete();
     }
 
-    public function replyComment(Comment $comment, array $data): Comment
+    public function replyComment(Comment $comment, array $data): JsonResource
     {
         if (isset($data['image_path']) && $data['image_path'] instanceof UploadedFile) {
             $data['image_path'] = $this->storeImage($data['image_path'], $comment->mogou_id, $comment->subMogou);
         }
 
-        return $comment->childComments()->create($data);
+        return CommentResource::make($comment->childComments()->create($data));
     }
 }

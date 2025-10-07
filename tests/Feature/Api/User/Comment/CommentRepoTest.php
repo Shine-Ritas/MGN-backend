@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Comment;
 use App\Models\Mogou;
 use App\Models\SubMogou;
 use App\Repo\User\Comments\UserCommentRepo;
@@ -61,8 +62,9 @@ it('user can store comment on mogou post', function () {
 
 it('another User Can reply to the comment', function () {
     $comment = $this->repo->storeComment($this->text_comment);
+    $commentInstance = Comment::where('id', $comment->id)->first();
 
-    $this->repo->replyComment($comment, $this->photoComment);
+    $this->repo->replyComment($commentInstance, $this->photoComment);
 
     $this->assertDatabaseHas('comments', [
         'content' => $this->photoComment['content'],
@@ -70,17 +72,18 @@ it('another User Can reply to the comment', function () {
 
     $this->assertDatabaseHas('comments', [
         'content' => $this->text_comment['content'],
-        'parent_comment_id' => $comment->id,
+        'parent_comment_id' => $commentInstance->id,
     ]);
 });
 
 it('user can remove comment', function () {
     $comment = $this->repo->storeComment($this->text_comment);
+    $commentInstance = Comment::where('id', $comment->id)->first();
 
-    $this->repo->remove($comment);
+    $this->repo->remove($commentInstance);
 
     $this->assertDatabaseMissing('comments', [
-        'id' => $comment->id,
+        'id' => $commentInstance->id,
     ]);
 });
 
@@ -99,16 +102,13 @@ it('user can comment with photo', function () {
 it('can get the comments with nested reply', function () {
     $this->text_comment['sub_mogou_id'] = null;
     $comment = $this->repo->storeComment($this->text_comment);
+    $commentInstance = Comment::where('id', $comment->id)->first();
 
     $this->text_comment['content'] = 'Test Comment 2';
 
-    $this->repo->replyComment($comment, $this->text_comment);
+    $this->repo->replyComment($commentInstance, $this->text_comment);
 
-    $comments = $this->repo->getInstance($comment->mogou)->get()->toArray();
+    $comments = $this->repo->loadChildComments($commentInstance)->toArray();
 
-    // check that comments is nested
     $this->assertCount(1, $comments);
-    $this->assertCount(1, $comments[0]['child_comments']);
-    $this->assertEquals($comments[0]['id'], $comments[0]['child_comments'][0]['parent_comment_id']);
-
 });

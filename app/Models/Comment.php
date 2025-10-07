@@ -32,6 +32,18 @@ class Comment extends Model
         return $this->belongsTo(Mogou::class);
     }
 
+    // get created attrtibute
+    protected function getCreatedAtAttribute(string $value): string
+    {
+        return date('Y-m-d h:i:s A', strtotime($value));
+    }
+
+    protected function getUpdatedAtAttribute(string $value): string
+    {
+        return date('Y-m-d h:i:s A', strtotime($value));
+    }
+
+
     protected function getImagePathUrlAttribute(string $value): string
     {
         return $this->getMedia($value, "public/comments/{$this->mogou_id}");

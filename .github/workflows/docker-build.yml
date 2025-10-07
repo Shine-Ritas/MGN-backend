@@ -1,9 +1,12 @@
 name: Build Ci/CD with Docker
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Development Workflow"]
+    types:
+      - completed
     branches:
-      - docker-master
+      - development
 
 jobs:
   build-and-push:
@@ -11,8 +14,8 @@ jobs:
     strategy:
       matrix:
         image:
-          - { target: "api", tag: "mgn-api" }
-          - { target: "worker", tag: "mgn-worker" }
+          - { target: "api", tag: "mgn-laravel" }
+          - { target: "worker", tag: "mgn-supervisor" }
     steps:
       # Step 1: Checkout the repository
       - name: Checkout repository
@@ -43,3 +46,6 @@ jobs:
             uid=1000
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Clean the old build cache
+        uses: docker builder prune -af || true

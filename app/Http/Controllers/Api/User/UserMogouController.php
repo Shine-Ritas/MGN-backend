@@ -2,41 +2,29 @@
 
 namespace App\Http\Controllers\Api\User;
 
-use App\Events\ChapterViewed;
 use App\Http\Controllers\Controller;
-use App\Models\Mogou;
-use App\Repo\Admin\SubMogouRepo\SubMogouImageRepo;
-use App\Services\ApplicationConfig\CacheApplicationConfigService;
+use App\Services\Mogou\UserMogouService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class UserMogouController extends Controller
 {
+    public function __construct(
+        protected UserMogouService $mogouService
+    ) {}
+
     /**
      * Display the specified Mogou.
      */
     public function show(Request $request): JsonResponse
     {
-        $mogou = Mogou::where('slug', $request->mogou)
-            ->with('categories')
-            ->firstOrFail()
-            ->append('total_view_count');
+        /** @var \App\Models\User|null $user */
+        $user = auth('sanctum')->user();
+        $userId = $user?->id;
+        $data = $this->mogouService->getMogouDetails($request->mogou, $userId);
 
-        $subMogous = $mogou->subMogous($mogou->rotation_key)
-            ->select('id', 'title', 'slug', 'chapter_number', 'created_at', 'subscription_only', 'third_party_url', 'third_party_redirect')
-            ->latest('chapter_number')
-            ->limit(10)
-            ->get();
-
-        $isFavorite = (auth('sanctum')->user() instanceof \App\Models\User) && auth('sanctum')->user()->favorites()->where('mogou_id', $mogou->id)->exists();
-
-        return response()->json([
-            'mogou' => $mogou,
-            'is_favorite' => $isFavorite,
-            'chapters' => $subMogous,
-        ]);
+        return response()->json($data);
     }
 
     /**
@@ -44,14 +32,9 @@ class UserMogouController extends Controller
      */
     public function getMoreChapters(Request $request): JsonResponse
     {
-        $mogou = Mogou::where('slug', $request->mogou)->firstOrFail();
+        $chapters = $this->mogouService->getAllChapters($request->mogou);
 
-        $subMogous = $mogou->subMogous($mogou->rotation_key)
-            ->select('id', 'title', 'slug', 'chapter_number', 'created_at', 'subscription_only', 'third_party_url', 'third_party_redirect')
-            ->latest('chapter_number')
-            ->get();
-
-        return response()->json(['chapters' => $subMogous]);
+        return response()->json(['chapters' => $chapters]);
     }
 
     /**
@@ -59,93 +42,30 @@ class UserMogouController extends Controller
      */
     public function relatedPostPerMogou(Request $request): JsonResponse
     {
-        $mogou = Mogou::where('slug', $request->mogou)->firstOrFail();
-
-        $relatedMogous = Mogou::select('id', 'title', 'rotation_key', 'slug', 'author', 'cover', 'total_chapters')
-            ->where('id', '!=', $mogou->id)
-            ->whereHas('categories', function ($query) use ($mogou) {
-                $query->whereIn('category_id', $mogou->categories->pluck('id'));
-            })
-            ->latest()
-            ->limit(6)
-            ->get();
+        $relatedMogous = $this->mogouService->getRelatedMogous($request->mogou);
 
         return response()->json(['mogous' => $relatedMogous]);
     }
 
+    /**
+     * Get chapter details with images and navigation.
+     */
     public function getChapter(Request $request): JsonResponse
     {
-        $mogou = Mogou::select('id', 'rotation_key', 'title', 'slug', 'cover')->where('slug', $request->mogou)->firstOrFail();
+        $data = $this->mogouService->getChapterDetails($request->mogou, $request->chapter);
 
-        $currentChapter = $mogou->subMogous($mogou->rotation_key)
-            ->where('slug', $request->chapter)
-            ->firstOrFail();
-
-        $applicationConfig = (new CacheApplicationConfigService)->getApplicationConfig();
-
-        $currentChapter['images'] = (new SubMogouImageRepo)->getImages($currentChapter, $mogou->rotation_key)->get();
-
-        $intro = [
-            'id' => Str::uuid(),
-            'path' => $applicationConfig->intro_a,
-            'sub_mogou_id' => $currentChapter->id,
-            'mogou_id' => $mogou->id,
-            'position' => 0,
-        ];
-
-        $outro = [
-            'id' => Str::uuid(),
-            'path' => $applicationConfig->outro_a,
-            'sub_mogou_id' => $currentChapter->id,
-            'mogou_id' => $mogou->id,
-            'position' => $currentChapter['images']?->last()?->position.'z',
-        ];
-
-        $currentChapter['images']->prepend($intro);
-        $currentChapter['images']->push($outro);
-
-        $allChapters = $mogou->subMogous($mogou->rotation_key)
-            ->select('id', 'title', 'slug', 'chapter_number')
-            ->latest('chapter_number')
-            ->get() ?? null;
-
-        $nextChapter = $mogou->subMogous($mogou->rotation_key)
-            ->select('id', 'title', 'slug', 'chapter_number')
-            ->where('chapter_number', '>', $currentChapter->chapter_number)
-            ->oldest('chapter_number')
-            ->first() ?? null;
-        $previousChapter = $mogou->subMogous($mogou->rotation_key)
-            ->select('id', 'title', 'slug', 'chapter_number')
-            ->where('chapter_number', '<', $currentChapter->chapter_number)
-            ->latest('chapter_number')
-            ->first() ?? null;
-
-        $nextChapter = $mogou->subMogous($mogou->rotation_key)
-            ->select('id', 'title', 'slug', 'chapter_number')
-            ->where('chapter_number', '>', $currentChapter->chapter_number)
-            ->oldest('chapter_number')
-            ->first() ?? null;
-
-        return response()->json([
-            'current_chapter' => $currentChapter,
-            'prev_chapter' => $previousChapter,
-            'next_chapter' => $nextChapter,
-            'all_chapters' => $allChapters,
-            'mogou' => $mogou,
-        ]);
+        return response()->json($data);
     }
 
+    /**
+     * Record chapter view event.
+     */
     public function getViewed(Request $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
-            $mogou = Mogou::where('id', $request->mogou)->firstOrFail();
-            $chapter = $mogou->subMogous($mogou->rotation_key)
-                ->where('id', $request->chapter)
-                ->firstOrFail();
-
-            event(new ChapterViewed($chapter));
+            $this->mogouService->recordChapterView($request->mogou, $request->chapter);
 
             DB::commit();
 

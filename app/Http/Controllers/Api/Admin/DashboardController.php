@@ -90,11 +90,12 @@ class DashboardController extends Controller
         $startDate = date('Y-m-01', strtotime($date));
         $endDate = date('Y-m-t', strtotime($date));
 
-        [$countBySubscriptions,$monthlySubscriptions,$revenueByDaysOfTheMonth] = Concurrency::run(
+        [$countBySubscriptions,$monthlySubscriptions,$revenueByDaysOfTheMonth,$revenueByWeeks] = Concurrency::run(
             [
                 fn () => (new RevenueGrowthRepo($startDate, $endDate))->getCountBySubscriptions(),
                 fn () => (new RevenueGrowthRepo($startDate, $endDate))->getMonthlySubscriptions(),
                 fn () => (new RevenueGrowthRepo($startDate, $endDate))->getRevenueByDaysOfTheMonth(),
+                fn () => (new RevenueGrowthRepo($startDate, $endDate))->getRevenueByWeeks(),
             ]
         );
 
@@ -103,6 +104,7 @@ class DashboardController extends Controller
                 'count_by_subscriptions' => $countBySubscriptions,
                 'monthly_subscriptions' => $monthlySubscriptions,
                 'revenue_by_days_of_the_month' => $revenueByDaysOfTheMonth,
+                'revenue_by_weeks' => $revenueByWeeks,
             ]
         );
     }

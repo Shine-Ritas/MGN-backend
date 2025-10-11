@@ -54,7 +54,11 @@ class SubMogouStorageUploadRepo
 
         if ($request->has('watermark_apply') && $request->watermark_apply == '1') {
             $applicationConfig = ApplicationConfig::firstOrFail();
-            $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage(), $applicationConfig->watermark_position, 100);
+
+            \Log::info('check watermark exists', [$this->checkWaterMarkExists($applicationConfig)]);
+            if ($this->checkWaterMarkExists($applicationConfig)) {
+                $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage($applicationConfig), $applicationConfig->watermark_position, 100);
+            }
         }
         $mediaOption = $mediaOption->get();
         $subMogouImage = new SubMogouImage;
@@ -89,11 +93,21 @@ class SubMogouStorageUploadRepo
 
     }
 
-    public function getWaterMarkImage(): ?string
+    public function checkWaterMarkExists(ApplicationConfig $app): bool
     {
-        $app = ApplicationConfig::firstOrFail();
+        $provider = config('hydrastorage.provider');
 
-        // get original water_mark path
+        $water_mark = $app->getRawOriginal('water_mark');
+        // if water mark is null
+        if ($water_mark == null) {
+            return false;
+        }
+
+        return Storage::disk($provider)->exists('public/config/'.$water_mark);
+    }
+
+    public function getWaterMarkImage(ApplicationConfig $app): ?string
+    {
         $water_mark = $app->getRawOriginal('water_mark');
 
         $provider = config('hydrastorage.provider');

@@ -64,7 +64,61 @@ class RevenueGrowthRepo
         return collect($allDates)->map(fn ($revenue, $date) => [
             'date' => $date,
             'revenue' => $revenue,
-            'random' => $revenue + rand(1, 100), // Add random data for testing
+            'outcome' => 0, // Add random data for testing
         ])->values()->toArray();
+    }
+
+    public function getRevenueByWeeks(): array
+    {
+        // Step 1: Generate all weeks in the range
+        $allWeeks = [];
+        $current = Carbon::parse($this->startDate);
+        $end = Carbon::parse($this->endDate);
+        $weekNumber = 1;
+
+        while ($current->lte($end)) {
+            $weekStart = $current->toDateString();
+            $weekEnd = $current->copy()->endOfWeek()->lte($end)
+                ? $current->copy()->endOfWeek()->toDateString()
+                : $end->toDateString();
+
+            $allWeeks[] = [
+                'label' => "Week {$weekNumber}",
+                'week_start' => $weekStart,
+                'week_end' => $weekEnd,
+                'revenue' => 0,
+            ];
+
+            $current->addWeek()->startOfWeek();
+            $weekNumber++;
+        }
+
+        // Step 2: Query actual revenue from subscriptions (PostgreSQL compatible)
+        $subscriptions = UserSubscription::whereBetween('user_subscriptions.created_at', [$this->startDate, $this->endDate])
+            ->join('subscriptions', 'subscriptions.id', '=', 'user_subscriptions.subscription_id')
+            ->select('user_subscriptions.created_at', 'subscriptions.price')
+            ->get();
+
+        // Step 3: Map revenues to their respective weeks
+        /** @var \stdClass $subscription */
+        foreach ($subscriptions as $subscription) {
+            $createdAt = Carbon::parse($subscription->created_at);
+
+            foreach ($allWeeks as $index => &$week) {
+                $weekStart = Carbon::parse($week['week_start']);
+                $weekEnd = Carbon::parse($week['week_end']);
+
+                if ($createdAt->between($weekStart, $weekEnd)) {
+                    $week['revenue'] += (float) $subscription->price;
+                    break;
+                }
+            }
+        }
+
+        // Step 4: Return simplified array with only label and revenue
+        return collect($allWeeks)->map(fn ($week) => [
+            'label' => $week['label'],
+            'revenue' => (float) $week['revenue'],
+        ])->toArray();
     }
 }

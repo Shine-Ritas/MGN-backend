@@ -25,7 +25,7 @@
         "opcodesio/log-viewer": "^3.14",
         "platformcommunity/flysystem-bunnycdn": "*",
         "predis/predis": "^2.2",
-        "ritas/lexorank": "^0.6.2",
+        "ritas/lexorank": "^0.6.4",
         "spatie/fork": "^1.2",
         "spatie/laravel-backup": "^9.1",
         "spatie/laravel-permission": "^6.13",

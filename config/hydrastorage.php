@@ -7,5 +7,5 @@ return [
 
     'compressed_quality' => env('COMPRESSED_QUALITY', 60),
 
-    'public_prefix' => true
+    'public_prefix' => true,
 ];

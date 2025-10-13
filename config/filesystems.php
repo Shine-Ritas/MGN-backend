@@ -88,13 +88,13 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'root' => 'backup', // specify the root directory for backups
         ],
-        
+
         'bunnycdn' => [
             'driver' => 'bunnycdn',
             'storage_zone' => env('BUNNYCDN_STORAGE_ZONE'),
             'pull_zone' => env('BUNNYCDN_PULL_ZONE'),
             'api_key' => env('BUNNYCDN_API_KEY'),
-            'region' => env('BUNNYCDN_REGION', \PlatformCommunity\Flysystem\BunnyCDN\BunnyCDNRegion::DEFAULT)
+            'region' => env('BUNNYCDN_REGION', \PlatformCommunity\Flysystem\BunnyCDN\BunnyCDNRegion::DEFAULT),
         ],
 
     ],

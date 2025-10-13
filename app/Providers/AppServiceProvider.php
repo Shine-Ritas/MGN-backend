@@ -3,7 +3,14 @@
 namespace App\Providers;
 
 use App\Services\IpAddressService;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+
+use League\Flysystem\Filesystem;
+use PlatformCommunity\Flysystem\BunnyCDN\BunnyCDNAdapter;
+use PlatformCommunity\Flysystem\BunnyCDN\BunnyCDNClient;
+use PlatformCommunity\Flysystem\BunnyCDN\BunnyCDNRegion;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,22 +24,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Storage::extend('bunnycdn', function ($app, $config) {
-        //     $adapter = new BunnyCDNAdapter(
-        //         new BunnyCDNClient(
-        //             $config['storage_zone'],
-        //             $config['api_key'],
-        //             $config['region']
-        //         ),
-        //         $config['pull_zone']
-        //     );
+        Storage::extend('bunnycdn', function ($app, $config) {
+            $adapter = new BunnyCDNAdapter(
+                new BunnyCDNClient(
+                    $config['storage_zone'],
+                    $config['api_key'],
+                    $config['region']
+                ),
+                $config['pull_zone']
+            );
 
-        //     return new FilesystemAdapter(
-        //         new Filesystem($adapter, $config),
-        //         $adapter,
-        //         $config
-        //     );
-        // });
+            return new FilesystemAdapter(
+                new Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
 
         $this->app->singleton(IpAddressService::class, function ($app) {
             return new IpAddressService;

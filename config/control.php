@@ -9,7 +9,7 @@ return [
         'categories_count' => 22,
         'chapter_analysis_count' => 120,
     ],
-    'mongou_storage' => 'local',
+    'mongou_storage' => 'bunnycdn',
 
     'cacheMode' => false,
 

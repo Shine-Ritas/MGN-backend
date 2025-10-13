@@ -67,6 +67,12 @@ class SocialInfoRepo
             $socialInfo->text_url = null;
         }
 
+        if(isset($data['text_url'])){
+            \Log::info('reach test');
+            $this->removeMedia('public/social_info/'.$socialInfo->cover_photo);
+            $data['cover_photo'] = null;
+        }
+
         $socialInfo->update($data);
         $socialInfo->refresh();
 

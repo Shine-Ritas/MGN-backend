@@ -80,7 +80,7 @@ class ApplicationConfigUploadRepo
 
         $mediaResult = $this->storeMedia($request->file($property), 'config');
 
-        if (!is_string($mediaResult)) {
+        if (! is_string($mediaResult)) {
             throw new UnexpectedValueException('Expected a string path but got an array.');
         }
 

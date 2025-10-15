@@ -109,7 +109,7 @@ class Mogou extends Model
 
     public function getTotalViewCountAttribute(): int
     {
-        return (int) $this->subMogous()->sum('views');
+        return (int) $this->subMogous($this->rotation_key)->sum('views');
     }
 
     // relationship

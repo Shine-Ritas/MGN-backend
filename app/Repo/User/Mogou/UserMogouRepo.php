@@ -47,6 +47,8 @@ class UserMogouRepo
     {
         return Mogou::select('id', 'title', 'rotation_key', 'slug', 'author', 'cover', 'total_chapters')
             ->where('id', '!=', $mogou->id)
+            ->publishedOnly()
+            ->legalOnly()
             ->whereHas('categories', function ($query) use ($mogou) {
                 $query->whereIn('category_id', $mogou->categories->pluck('id'));
             })

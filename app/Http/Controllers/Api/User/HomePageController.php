@@ -32,6 +32,8 @@ class HomePageController extends Controller
                 ->pluck('pivot_key');
 
             return Mogou::select('id', 'title', 'slug', 'cover', 'rotation_key', 'description', 'finish_status', 'mogou_type', 'status', 'rating')
+                ->publishedOnly()
+                ->legalOnly()
                 ->where('status', MogousStatus::PUBLISHED->value)
                 ->with('categories:title')
                 ->whereIn('id', $mogous_ids)
@@ -55,7 +57,8 @@ class HomePageController extends Controller
                 ->pluck('pivot_key');
 
             return Mogou::select('id', 'title', 'slug', 'cover', 'rotation_key', 'description', 'finish_status', 'mogou_type', 'status', 'rating')
-                ->where('status', MogousStatus::PUBLISHED->value)
+                ->publishedOnly()
+                ->legalOnly()
                 ->with('categories:title')
                 ->whereIn('id', $mogous_ids)
                 ->take(20)
@@ -69,13 +72,9 @@ class HomePageController extends Controller
         );
     }
 
-    public function mostViewed(): JsonResponse
+    public function mostViewed(Request $request): JsonResponse
     {
-        $mogous = Mogou::select('id', 'title', 'slug', 'cover')
-            ->where('status', MogousStatus::PUBLISHED->value)
-            ->with('categories:title')
-            ->take(20)
-            ->get();
+        $mogous = $this->mogouRepo->withCategories()->publishedOnly()->get($request, true, false)->limit(10)->get();
 
         return response()->json(
             [

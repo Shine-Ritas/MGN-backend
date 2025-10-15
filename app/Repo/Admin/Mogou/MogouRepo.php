@@ -20,14 +20,16 @@ class MogouRepo implements \App\Contracts\ModelRepoInterface
         $this->collection = Mogou::query();
     }
 
-    public function get(Request $request, bool $withFilter = true): mixed
+    public function get(Request $request, bool $withFilter = true, bool $withPagination = true): mixed
     {
 
         if ($withFilter) {
             $this->collection();
         }
 
-        return $this->collection->latest('id')->paginate($request->input('limit', 10));
+        return $this->collection->latest('id')->when($withPagination, function ($query) use ($request) {
+            return $query->paginate($request->input('limit', 10));
+        });
 
     }
 

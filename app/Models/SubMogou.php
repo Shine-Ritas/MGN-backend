@@ -69,8 +69,13 @@ class SubMogou extends Model
         static::creating(
             function ($sub_mogou) {
                 $sub_mogou->slug = Str::slug($sub_mogou->title);
-                Mogou::where('id', $sub_mogou->mogou_id)->increment('total_chapters');
                 $sub_mogou->ulid = Str::ulid();
+            }
+        );
+
+        static::created(
+            function ($sub_mogou) {
+                Mogou::where('id', $sub_mogou->mogou_id)->increment('total_chapters');
             }
         );
 

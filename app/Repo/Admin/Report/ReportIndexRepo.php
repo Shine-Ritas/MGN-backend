@@ -17,7 +17,7 @@ class ReportIndexRepo
     {
         return Report::search($request->search)
             ->status($request->status)
-            ->sortBy($request->sort_by ?? 'asc')
+            ->sortBy($request->sort_by ?? 'desc')
             ->paginate(6);
     }
 

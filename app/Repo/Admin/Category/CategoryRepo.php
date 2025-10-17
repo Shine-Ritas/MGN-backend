@@ -30,7 +30,7 @@ class CategoryRepo implements \App\Contracts\ModelRepoInterface
         $request->validate(
             [
                 'title' => 'unique:categories,title',
-                
+
             ]
         );
 

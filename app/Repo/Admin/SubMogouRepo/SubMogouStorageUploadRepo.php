@@ -60,6 +60,7 @@ class SubMogouStorageUploadRepo
                 $mediaOption = $mediaOption->setWaterMark($this->getWaterMarkImage($applicationConfig), $applicationConfig->watermark_position, 100);
             }
         }
+
         $mediaOption = $mediaOption->get();
         $subMogouImage = new SubMogouImage;
 

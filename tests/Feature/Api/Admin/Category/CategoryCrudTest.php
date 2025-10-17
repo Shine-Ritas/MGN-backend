@@ -85,6 +85,7 @@ test('category was successfully created & slug was correctly-formatted', functio
     $title = 'New Category';
     $response = $this->authenticatedAdmin()->postJson(route('api.admin.categories.store'), [
         'title' => $title,
+        'is_adult' => true,
     ]);
 
     $slug = \Illuminate\Support\Str::slug($title);
@@ -98,6 +99,7 @@ test('category was successfully created & slug was correctly-formatted', functio
         'category' => [
             'title' => $title,
             'slug' => $slug,
+            'is_adult' => true,
         ],
     ]);
 
@@ -117,6 +119,7 @@ test('can update category successfully', function () {
     $new_title = 'New Title';
     $response = $this->authenticatedAdmin()->putJson(route('api.admin.categories.update', 1), [
         'title' => $new_title,
+        'is_adult' => true,
     ]);
 
     $slug = \Illuminate\Support\Str::slug($new_title);
@@ -130,6 +133,7 @@ test('can update category successfully', function () {
         'category' => [
             'title' => $new_title,
             'slug' => $slug,
+            'is_adult' => true,
         ],
     ]);
 });
@@ -137,6 +141,7 @@ test('can update category successfully', function () {
 test("can't update due to non-existed cateegoory", function () {
     $response = $this->authenticatedAdmin()->putJson(route('api.admin.categories.update', 100), [
         'title' => 'New Title',
+        'is_adult' => true,
     ]);
 
     $response->assertStatus(404)

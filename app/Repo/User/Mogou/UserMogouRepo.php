@@ -56,4 +56,9 @@ class UserMogouRepo
             ->limit($limit)
             ->get();
     }
+
+    public function getRandomMogou(): Mogou
+    {
+        return Mogou::inRandomOrder()->firstOrFail();
+    }
 }

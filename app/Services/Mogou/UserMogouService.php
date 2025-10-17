@@ -179,4 +179,9 @@ class UserMogouService
 
         return $user->favorites()->where('mogou_id', $mogouId)->exists();
     }
+
+    public function getRandomMogou(): Mogou
+    {
+        return $this->mogouRepo->getRandomMogou();
+    }
 }

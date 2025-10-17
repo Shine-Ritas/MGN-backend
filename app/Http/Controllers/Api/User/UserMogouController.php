@@ -57,6 +57,13 @@ class UserMogouController extends Controller
         return response()->json($data);
     }
 
+    public function randomMogou(): JsonResponse
+    {
+        $mogou = $this->mogouService->getRandomMogou();
+
+        return response()->json(['mogou' => $mogou]);
+    }
+
     /**
      * Record chapter view event.
      */

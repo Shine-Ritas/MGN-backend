@@ -27,6 +27,13 @@ class CategoryRepo implements \App\Contracts\ModelRepoInterface
 
     public function create(CategoryActionRequest $request): Category
     {
+        $request->validate(
+            [
+                'title' => 'unique:categories,title',
+                
+            ]
+        );
+
         return Category::create($request->validated());
     }
 

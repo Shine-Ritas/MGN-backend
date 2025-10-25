@@ -53,7 +53,7 @@ class HomePageController extends Controller
         $legal_only = request()->get('legal_only', false);
         $cacheKey = config('control.cache_key.homepage.recommend').'_'.$legal_only;
 
-        $mogous = $this->cacheResponse($cacheKey, 300, function ()  {
+        $mogous = $this->cacheResponse($cacheKey, 300, function () {
             $mogous_ids = $this->sms->getBySection('main_page_recommended')->childSections
                 ->where('is_visible', 1)
                 ->pluck('pivot_key');

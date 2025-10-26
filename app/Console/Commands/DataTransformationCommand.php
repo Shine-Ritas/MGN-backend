@@ -33,7 +33,7 @@ class DataTransformationCommand extends Command
                     'slug' => Str::slug($subMogou->title).'-'.$subMogou->ulid,
                 ]);
             });
-            
+
             $this->info('Mogou slug updated: '.$mogou->slug);
         });
 

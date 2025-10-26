@@ -25,7 +25,7 @@ class DataTransformationCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         Mogou::each(function ($mogou) {
             $mogou->subMogous($mogou->rotation_key)->each(function ($subMogou) {

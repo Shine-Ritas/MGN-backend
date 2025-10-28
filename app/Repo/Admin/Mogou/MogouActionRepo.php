@@ -49,7 +49,10 @@ class MogouActionRepo
 
         if ($request->hasFile('cover')) {
 
-            $this->removeMedia("public/mogou/cover/{$mogou->cover}");
+            $cover = $mogou->getRawOriginal('cover');
+            if ($cover) {
+                $this->removeMedia("public/mogou/cover/{$cover}");
+            }
 
             $mediaOption = MediaOption::create()->setQuality(70)->get();
             $data['cover'] = $this->storeMedia($request->file('cover'), 'mogou/cover', true, $mediaOption);
@@ -69,9 +72,13 @@ class MogouActionRepo
 
         $cover_prefix = config('control.mogou.cover.path');
 
-        $full_path = 'public/'.$cover_prefix.'/'.$mogou->cover;
+        $cover = $mogou->getRawOriginal('cover');
+        if ($cover) {
 
-        $this->removeMedia($full_path);
+            $full_path = 'public/'.$cover_prefix.'/'.$cover;
+
+            $this->removeMedia($full_path);
+        }
 
         $mogou->delete();
     }

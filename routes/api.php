@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\Admin\ApplicationConfigController;
 use App\Http\Controllers\Api\Admin\CategoryController;
-use App\Repo\Admin\SubMogouRepo\SubMogouStorageUploadRepo;
 use HydraStorage\HydraStorage\Service\Option\MediaOption;
 use HydraStorage\HydraStorage\Traits\HydraMedia;
 use Illuminate\Http\UploadedFile;
@@ -30,10 +29,12 @@ Route::prefix('v1')
         Route::get('/public/categories', [CategoryController::class, 'all']);
     });
 
-Route::get('/test', function () {
-    $watermark = Storage::disk('local')->get('public/wm.png');
+Route::get('/tesdt', function () {
 
-    dd((new SubMogouStorageUploadRepo)->getWaterMarkImage());
+    Storage::disk('bunnycdn')->put('index.html', '<html>Hello World</html>');
+
+    dd('done');
+
     $path = storage_path('app/public/template.jpg');
     $uploadedFile = new UploadedFile(
         $path,
@@ -44,7 +45,7 @@ Route::get('/test', function () {
     );
     $mediaOption = MediaOption::create()
         ->setQuality(60);
-
+    $watermark = '';
     // if($request->has('water_mark')){
     $mediaOption = $mediaOption->setWaterMark($watermark, 'center', 100);
     // }

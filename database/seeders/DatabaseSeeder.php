@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             // SubMogouSeeder::class,
             // UserFavoriteSeeder::class,
             BannerSeeder::class,
-            // BaseSectionSeeder::class,
+            BaseSectionSeeder::class,
             // ReportSeeder::class,
             // ChapterAnalysisSeeder::class,
             // BotSocialChannelSeeder::class

@@ -121,7 +121,6 @@ class UserCommentRepo
             $data['image_path'] = $this->storeImage($data['image_path'], $data['mogou_id'], $data['sub_mogou_id']);
         }
 
-
         return CommentResource::make($this->model->create($data));
     }
 

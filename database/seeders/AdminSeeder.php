@@ -45,6 +45,6 @@ class AdminSeeder extends Seeder
         //         'password' => bcrypt('password'),
         //     ],
         // ];
-        Admin::insert(array_merge([$admin],[]));
+        Admin::insert(array_merge([$admin], []));
     }
 }

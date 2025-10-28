@@ -18,33 +18,33 @@ class AdminSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => bcrypt('password'),
         ];
-        $uploader = [
-            [
-                'name' => 'Uploader One',
-                'email' => 'uploaderOne@gmail.com',
-                'password' => bcrypt('password'),
-            ],
-            [
-                'name' => 'Uploader Two',
-                'email' => 'uploaderTwo@gmail.com',
-                'password' => bcrypt('password'),
-            ],
-            [
-                'name' => 'Uploader Three',
-                'email' => 'uploaderThree@gmail.com',
-                'password' => bcrypt('password'),
-            ],
-            [
-                'name' => 'Uploader Four',
-                'email' => 'uploaderFour@gmail.com',
-                'password' => bcrypt('password'),
-            ],
-            [
-                'name' => 'Uploader Five',
-                'email' => 'uploaderFive@gmail.com',
-                'password' => bcrypt('password'),
-            ],
-        ];
-        Admin::insert(array_merge([$admin], $uploader));
+        // $uploader = [
+        //     [
+        //         'name' => 'Uploader One',
+        //         'email' => 'uploaderOne@gmail.com',
+        //         'password' => bcrypt('password'),
+        //     ],
+        //     [
+        //         'name' => 'Uploader Two',
+        //         'email' => 'uploaderTwo@gmail.com',
+        //         'password' => bcrypt('password'),
+        //     ],
+        //     [
+        //         'name' => 'Uploader Three',
+        //         'email' => 'uploaderThree@gmail.com',
+        //         'password' => bcrypt('password'),
+        //     ],
+        //     [
+        //         'name' => 'Uploader Four',
+        //         'email' => 'uploaderFour@gmail.com',
+        //         'password' => bcrypt('password'),
+        //     ],
+        //     [
+        //         'name' => 'Uploader Five',
+        //         'email' => 'uploaderFive@gmail.com',
+        //         'password' => bcrypt('password'),
+        //     ],
+        // ];
+        Admin::insert(array_merge([$admin],[]));
     }
 }

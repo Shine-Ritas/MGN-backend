@@ -14,6 +14,7 @@ RUN set -eux; \
         libzip \
         libpng \
         libjpeg-turbo \
+        libwebp \
         libpq \
         imagemagick; \
     apk add --no-cache --virtual .build-deps \
@@ -24,13 +25,14 @@ RUN set -eux; \
         freetype-dev \
         libjpeg-turbo-dev \
         libpng-dev \
+        libwebp-dev \
         libzip-dev \
         libpq-dev \
         oniguruma-dev \
         imagemagick-dev \
         git \
         unzip; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-install -j"$(nproc)" \
         bcmath \
         exif \

@@ -74,7 +74,7 @@ class UserMogouService
     {
         $mogou = $this->mogouRepo->findBySlug(
             $mogouSlug,
-            ['id', 'rotation_key', 'title', 'slug', 'cover']
+            ['id', 'rotation_key', 'title', 'slug', 'cover','mogou_type']
         );
 
         $currentChapter = $this->subMogouRepo->findChapterBySlug($mogou, $chapterSlug);

@@ -16,10 +16,12 @@ class SocialInfoController extends Controller
     use CacheResponse;
 
     private string $applicationCacheKey = '';
+    private string $applicationConfigCacheKey = '';
 
     public function __construct(protected SocialInfoRepo $socialInfoRepo)
     {
         $this->applicationCacheKey = $this->generateCacheKey('social_info');
+        $this->applicationConfigCacheKey = $this->generateCacheKey('application_config');
     }
 
     /**
@@ -34,9 +36,10 @@ class SocialInfoController extends Controller
 
     public function store(SocialInfoRequest $request): JsonResponse
     {
+
         $socialInfo = $this->socialInfoRepo->create($request->all());
 
-        $this->forgetCache($this->applicationCacheKey);
+        $this->forgetCache([$this->applicationCacheKey, $this->applicationConfigCacheKey]);
 
         return response()->json(
             [
@@ -48,15 +51,11 @@ class SocialInfoController extends Controller
 
     public function update(Request $request, string $id): JsonResponse
     {
-
-        $request->validate(
-            [
-            ]
-        );
+        $ck = $this->generateCacheKey('application_config');
 
         $socialInfo = $this->socialInfoRepo->update($id, $request->all());
 
-        $this->forgetCache($this->applicationCacheKey);
+        $this->forgetCache([$this->applicationCacheKey, $this->applicationConfigCacheKey]);
 
         return response()->json(
             [
@@ -83,7 +82,7 @@ class SocialInfoController extends Controller
     {
         $data = $this->socialInfoRepo->getSocialInfoByType(request('type'));
 
-        $this->forgetCache($this->applicationCacheKey);
+        $this->forgetCache([$this->applicationCacheKey, $this->applicationConfigCacheKey]);
 
         return response()->json(
             [

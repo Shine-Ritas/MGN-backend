@@ -42,8 +42,8 @@ trait CacheResponse
 
     public function forgetCache(string|array $key): void
     {
-        if(is_array($key)) {
-            foreach($key as $k) {
+        if (is_array($key)) {
+            foreach ($key as $k) {
                 Cache::forget($k);
             }
         } else {
@@ -91,8 +91,8 @@ trait CacheResponse
      */
     public function forgetCacheTags(array|string $tags, string $key): void
     {
-        if(is_array($tags)) {
-            foreach($tags as $tag) {
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
                 Cache::tags($tag)->forget($key);
             }
         } else {

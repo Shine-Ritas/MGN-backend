@@ -16,6 +16,7 @@ class SocialInfoController extends Controller
     use CacheResponse;
 
     private string $applicationCacheKey = '';
+
     private string $applicationConfigCacheKey = '';
 
     public function __construct(protected SocialInfoRepo $socialInfoRepo)

@@ -7,6 +7,7 @@ use App\Repo\Admin\Dashboard\ContentGrowthRepo;
 use App\Repo\Admin\Dashboard\DashboardRepo;
 use App\Repo\Admin\Dashboard\RevenueGrowthRepo;
 use App\Repo\Admin\Dashboard\UserDashboardRepo;
+use Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Concurrency;
@@ -125,6 +126,22 @@ class DashboardController extends Controller
         );
 
         $folder = env('FILESYSTEM_DISK') == 'local' ? env('STORAGE_VOLUME_PATH', '/') : '/';
+        $diskSpace = formatBytes(disk_total_space($folder));
+        $diskSpaceUsed = formatBytes(disk_total_space($folder) - disk_free_space($folder));
+        $diskUsedPercentage = ((disk_total_space($folder) - disk_free_space($folder)) / disk_total_space($folder)) * 100;
+        if (env('FILESYSTEM_DISK') == 'bunnycdn') {
+            $diskSpace = 40 * 1024 * 1024 * 1024;
+            $diskSpaceUsed = Http::withHeaders([
+                'AccessKey' => config('control.bunnycdn.papi'),
+                'accept' => 'application/json',
+            ])->get(
+                config('control.bunnycdn.api.getZone').config('control.bunnycdn.storage_zone_id')
+            )->json()['StorageUsed'] ?? 0;
+
+            $diskUsedPercentage = (($diskSpaceUsed / $diskSpace) * 100);
+            $diskSpace = formatBytes($diskSpace);
+            $diskSpaceUsed = formatBytes($diskSpaceUsed);
+        }
 
         return response()->json(
             [
@@ -135,9 +152,9 @@ class DashboardController extends Controller
                 'traffic_by_chapters' => $trafficByChapters,
                 'up_time' => fGetUptime(),
                 'time_zone' => date_default_timezone_get(),
-                'disk_space' => formatBytes(disk_total_space($folder)),
-                'disk_space_used' => formatBytes(disk_total_space($folder) - disk_free_space($folder)),
-                'disk_used_percentage' => ((disk_total_space($folder) - disk_free_space($folder)) / disk_total_space($folder)) * 100,
+                'disk_space' => $diskSpace,
+                'disk_space_used' => $diskSpaceUsed,
+                'disk_used_percentage' => $diskUsedPercentage,
             ]
         );
     }

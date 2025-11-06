@@ -62,7 +62,8 @@ test('last-uploaded mogou data with safe content can fetched successfully', func
 });
 
 test('carousel data are cached for 1 hour', function () {
-    $cacheKey = config('control.cache_key.homepage.carousel');
+    $legal_only = request()->get('legal_only', false);
+    $cacheKey = config('control.cache_key.homepage.carousel').'_'.$legal_only;
     $emptyState = Cache::get($cacheKey);
     $this->assertNull($emptyState);
     $response = $this->getJson(route('api.users.carousel'));

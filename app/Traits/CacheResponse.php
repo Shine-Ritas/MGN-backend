@@ -40,9 +40,15 @@ trait CacheResponse
         }
     }
 
-    public function forgetCache(string $key): void
+    public function forgetCache(string|array $key): void
     {
-        Cache::forget($key);
+        if (is_array($key)) {
+            foreach ($key as $k) {
+                Cache::forget($k);
+            }
+        } else {
+            Cache::forget($key);
+        }
     }
 
     public function clearCache(): void
@@ -85,7 +91,13 @@ trait CacheResponse
      */
     public function forgetCacheTags(array|string $tags, string $key): void
     {
-        Cache::tags($tags)->forget($key);
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                Cache::tags($tag)->forget($key);
+            }
+        } else {
+            Cache::tags($tags)->forget($key);
+        }
     }
 
     /**

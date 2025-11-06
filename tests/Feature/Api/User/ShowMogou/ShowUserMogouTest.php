@@ -96,3 +96,12 @@ test('retrieves related latest mogou based on categories', function () {
     ]);
     $response->assertJsonCount(6, 'mogous');
 });
+
+test('retrieves random mogou', function () {
+    $response = $this->getJson(route('api.users.mogous.random'));
+
+    $response->assertOk();
+    $response->assertJsonStructure([
+        'mogou',
+    ]);
+});

@@ -35,6 +35,8 @@ class UserCommentRepo
     {
         $isReply = $request->parent_comment_id != null;
 
+        \Log::info($request);
+
         $data = [
             'content' => $request->text,
             'image_path' => $request->image_path,
@@ -60,12 +62,12 @@ class UserCommentRepo
      */
     public function getInstance(Mogou|SubMogou $mainModel): Builder
     {
+
         return $this->model->query()->with(['subMogou', 'user:id,name,background_color,avatar_id', 'user.avatar'])
             ->withCount('childComments')
             ->when($mainModel instanceof SubMogou, function ($query) use ($mainModel) {
                 $query->where('mogou_id', $mainModel->mogou_id);
                 $query->where('sub_mogou_id', $mainModel->id);
-
             })
             ->when($mainModel instanceof Mogou, function ($query) use ($mainModel) {
                 $query->where('mogou_id', $mainModel->id);
@@ -99,7 +101,7 @@ class UserCommentRepo
     {
         return $this->model->query()->where('parent_comment_id', $comment->id)
             ->with(['subMogou', 'user:id,name,background_color,avatar_id', 'user.avatar'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
     }
 

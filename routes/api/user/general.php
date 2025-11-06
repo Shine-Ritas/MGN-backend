@@ -58,6 +58,7 @@ Route::middleware(['user.maintenance'])->group(function () {
             Route::get('/mogous/{mogou}/chapters/{chapter}', 'getChapter')->name('mogous.getChapter');
             Route::get('/mogous/{mogou}/chapters/{chapter}/viewed', 'getViewed')->name('mogous.getViewed');
             Route::get('/mogous/{mogou}/related', 'relatedPostPerMogou')->name('mogous.relateMogou');
+            Route::get('random/mogous', 'randomMogou')->name('mogous.random');
         });
 
         Route::controller(CommentController::class)->group(function () {

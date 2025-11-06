@@ -74,7 +74,7 @@ class UserMogouService
     {
         $mogou = $this->mogouRepo->findBySlug(
             $mogouSlug,
-            ['id', 'rotation_key', 'title', 'slug', 'cover']
+            ['id', 'rotation_key', 'title', 'slug', 'cover', 'mogou_type']
         );
 
         $currentChapter = $this->subMogouRepo->findChapterBySlug($mogou, $chapterSlug);
@@ -178,5 +178,10 @@ class UserMogouService
         }
 
         return $user->favorites()->where('mogou_id', $mogouId)->exists();
+    }
+
+    public function getRandomMogou(): Mogou
+    {
+        return $this->mogouRepo->getRandomMogou();
     }
 }

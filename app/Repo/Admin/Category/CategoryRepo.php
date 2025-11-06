@@ -30,6 +30,7 @@ class CategoryRepo implements \App\Contracts\ModelRepoInterface
         $request->validate(
             [
                 'title' => 'unique:categories,title',
+
             ]
         );
 
@@ -38,11 +39,6 @@ class CategoryRepo implements \App\Contracts\ModelRepoInterface
 
     public function update(CategoryActionRequest $request, Category $category): Category
     {
-        $request->validate(
-            [
-                'title' => 'unique:categories,title,'.$category->id,
-            ]
-        );
         $category->update($request->validated());
 
         return $category;

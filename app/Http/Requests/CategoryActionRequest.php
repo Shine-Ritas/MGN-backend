@@ -23,7 +23,15 @@ class CategoryActionRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
+            'is_adult' => 'required|boolean',
+        ];
+    }
 
+    public function messages(): array
+    {
+        return [
+            'is_adult.required' => 'The adult category field is required.',
+            'is_adult.boolean' => 'The adult category field must be a boolean.',
         ];
     }
 }

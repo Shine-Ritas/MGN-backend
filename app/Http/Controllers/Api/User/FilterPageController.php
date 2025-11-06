@@ -23,6 +23,10 @@ class FilterPageController extends Controller
             function ($mogou) {
                 $key = $mogou->rotation_key;
 
+                if (request('mogou_total_count')) {
+                    $mogou->append('total_view_count');
+                }
+
                 $subMogou = $mogou->subMogous($key)->select(
                     'id',
                     'title',

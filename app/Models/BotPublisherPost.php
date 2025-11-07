@@ -42,4 +42,34 @@ class BotPublisherPost extends Model
     {
         return $this->belongsTo(BotPublisher::class);
     }
+
+    /**
+     * Summary of mogou
+     *
+     * @return BelongsTo<Mogou, $this>
+     */
+    public function mogou(): BelongsTo
+    {
+        return $this->belongsTo(Mogou::class);
+    }
+
+    /**
+     * Summary of subMogou
+     *
+     * @return BelongsTo<SubMogou, $this>
+     */
+    public function subMogou(): BelongsTo
+    {
+        return $this->belongsTo(SubMogou::class);
+    }
+
+    /**
+     * Summary of socialChannel
+     *
+     * @return BelongsTo<SocialChannel, $this>
+     */
+    public function socialChannel(): BelongsTo
+    {
+        return $this->belongsTo(SocialChannel::class);
+    }
 }

@@ -137,6 +137,7 @@ Route::middleware(['auth:sanctum'])
         Route::controller(BotPublisherController::class)->name('bot-publisher.')->group(function () {
             Route::get('/bot-publisher/{type}/list', 'index')->name('index');
             Route::get('/bot-publisher/{id}/detail', 'showBot')->name('showBot');
+            Route::get('/bot-publisher/{id}/posts', 'getPosts')->name('getPosts');
             Route::post('/bot-publisher', 'store')->name('store');
             Route::post('/bot-publisher/remove', 'remove')->name('remove');
         });

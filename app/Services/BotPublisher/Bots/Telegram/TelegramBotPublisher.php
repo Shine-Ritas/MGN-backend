@@ -79,11 +79,11 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 }
 
                 $title = "$mougou->title - Chapter {$content->chapter_number}";
-                $reply_url = "{$this->clientAppUrl}/read/mogou/{$mougou->slug}/chapter/{$content->slug}";
+                $reply_url = "{$this->clientAppUrl}/read/mogou/{$mougou->slug}/chapters/{$content->slug}";
             }
 
             foreach ($latestThreeChapters as $chapter) {
-                $chapterHrefHtml .= "<a href='{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$chapter->slug}'>Chapter {$chapter->chapter_number}</a>\n";
+                $chapterHrefHtml .= "<a href='{$this->clientAppUrl}/mogou/{$mougou->slug}/chapters/{$chapter->slug}'>Chapter {$chapter->chapter_number}</a>\n";
             }
             $chapterHrefHtml = "<b>Chapters:</b>\n".$chapterHrefHtml;
 

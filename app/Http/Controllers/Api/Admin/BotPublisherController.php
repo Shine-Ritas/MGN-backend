@@ -53,6 +53,18 @@ class BotPublisherController extends Controller
         );
     }
 
+    public function getPosts(Request $request): JsonResponse
+    {
+        $posts = (new GetBotServices)->getPosts((int) $request->id);
+
+        return response()->json(
+            [
+                'success' => true,
+                'posts' => $posts,
+            ]
+        );
+    }
+
     public function remove(Request $request): JsonResponse
     {
         $bot = BotPublisher::find($request->id);

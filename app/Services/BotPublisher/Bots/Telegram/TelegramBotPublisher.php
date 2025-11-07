@@ -96,7 +96,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
             $contentDescription = strip_tags($content->description);
 
             if ($contentDescription) {
-                $contentDescription = "\n\n".$contentDescription ."\n\n";
+                $contentDescription = "\n\n".$contentDescription."\n\n";
             }
 
             $this->serviceBot->sendPhoto([

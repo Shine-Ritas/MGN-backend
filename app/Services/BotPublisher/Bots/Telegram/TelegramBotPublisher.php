@@ -61,7 +61,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 $mougou = $content;
                 $latestThreeChapters = $content->subMogous($mougou->rotation_key)->latest('chapter_number')->limit(3)->get();
                 $title = $content->title;
-                $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}";
+                $reply_url = "{$this->clientAppUrl}/show/{$mougou->slug}";
             } else {
                 $mougou = $content->mogou;
 
@@ -79,7 +79,7 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 }
 
                 $title = "$mougou->title - Chapter {$content->chapter_number}";
-                $reply_url = "{$this->clientAppUrl}/mogou/{$mougou->slug}/chapter/{$content->slug}";
+                $reply_url = "{$this->clientAppUrl}/read/mogou/{$mougou->slug}/chapter/{$content->slug}";
             }
 
             foreach ($latestThreeChapters as $chapter) {
@@ -93,10 +93,10 @@ class TelegramBotPublisher extends BasePublisher implements PublisherInterface
                 \n";
             }
 
-            $contentDescription = $content->description;
+            $contentDescription = strip_tags($content->description);
 
             if ($contentDescription) {
-                $contentDescription = "\n\n".$contentDescription;
+                $contentDescription = "\n\n".$contentDescription ."\n\n";
             }
 
             $this->serviceBot->sendPhoto([

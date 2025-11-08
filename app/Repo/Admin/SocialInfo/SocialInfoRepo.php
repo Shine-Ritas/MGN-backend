@@ -35,7 +35,9 @@ class SocialInfoRepo
      */
     public function getBanners(): Collection
     {
-        return $this->model->where('type', SocialInfoType::Banner->value)->get();
+        return $this->model->where('type', SocialInfoType::Banner->value)
+            ->orderBy('name', 'desc')
+            ->get();
     }
 
     /**
@@ -45,7 +47,9 @@ class SocialInfoRepo
      */
     public function getSocialInfoByType(string $type): Collection
     {
-        return $this->model->where('type', $type)->latest()->get();
+        return $this->model->where('type', $type)
+            ->orderBy('name', 'desc')
+            ->latest()->get();
     }
 
     public function create(array $data): SocialInfo

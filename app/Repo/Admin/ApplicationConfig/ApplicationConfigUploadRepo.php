@@ -29,10 +29,10 @@ class ApplicationConfigUploadRepo
             'logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:300|dimensions:min_width=150,min_height=50',
             'cover_photo' => 'nullable|image|max:1024',
             'water_mark' => 'nullable|image|max:300',
-            'intro_a' => 'nullable|file|mimes:mp4,webm|max:51200',
-            'outro_a' => 'nullable|file|mimes:mp4,webm|max:51200',
-            'intro_b' => 'nullable|file|mimes:mp4,webm|max:51200',
-            'outro_b' => 'nullable|file|mimes:mp4,webm|max:51200',
+            'intro_a' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:51200',
+            'outro_a' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:51200',
+            'intro_b' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:51200',
+            'outro_b' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:51200',
         ];
 
         $messages = [

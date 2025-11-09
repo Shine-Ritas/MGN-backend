@@ -20,8 +20,13 @@ use App\Http\Controllers\Api\Admin\UserSubscriptionController;
 use App\Http\Controllers\Api\Admins\AdminManagementController;
 use App\Models\Mogou;
 use App\Models\SocialChannel;
+use App\Models\Subscription;
 use App\Services\Publishing\PublishingService;
 use Illuminate\Support\Facades\Route;
+
+use Telegram\Bot\Laravel\Facades\Telegram;
+use function False\tRUE;
+
 
 Route::middleware(['auth:sanctum'])
     ->prefix('admin')
@@ -170,4 +175,89 @@ Route::get('/test', function () {
     (new PublishingService)->publishContent(Mogou::first(), SocialChannel::first(), 'test');
 
     return 'success';
+});
+
+// Route to set Telegram webhook (call this once to configure the webhook)
+Route::post('telegram/set-webhook', function () {
+    try {
+        $webhookUrl = 'https://e40cb1f24d22.ngrok-free.app/api/v1/telegram/webhook';
+        
+        Telegram::deleteWebhook();
+        \Log::info('new url' , ['url' => $webhookUrl]);
+        $result = Telegram::setWebhook(['url' => $webhookUrl]);
+        
+        \Log::info('Telegram webhook set', ['url' => $webhookUrl, 'result' => $result]);
+        
+        return response()->json([
+            'ok' => true,
+            'message' => 'Webhook set successfully',
+            'url' => $webhookUrl,
+            'result' => $result
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Failed to set Telegram webhook', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json(['ok' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
+// Telegram webhook endpoint (receives updates from Telegram)
+Route::post('telegram/webhook', function () {
+    try {
+        // Get the webhook update
+        $update = Telegram::getWebhookUpdate();
+        
+        // Log the update for debugging
+        \Log::info('Telegram webhook received', ['update' => $update->toArray()]);
+        
+        // Check if update has a message
+        if (!$update->has('message')) {
+            \Log::warning('Telegram webhook update does not contain a message');
+            return response()->json(['ok' => true, 'message' => 'Update received but no message found']);
+        }
+        
+        $message = $update->getMessage();
+        
+        // Check if message has text
+        if (!$message->has('text')) {
+            \Log::warning('Telegram message does not contain text');
+            return response()->json(['ok' => true, 'message' => 'Message received but no text found']);
+        }
+        
+        $chatId = $message->getChat()->getId();
+        $text = $message->getText();
+        
+        // Send response message
+        if($text == '/subs'){
+            $html = '';
+            foreach(Subscription::all() as $package){
+                $html .= "<b>{$package->title}</b> - {$package->price} Ks\n";
+            }
+            Telegram::sendMessage([
+                'chat_id' => $chatId,
+                'text' => $html,
+                'parse_mode' => 'html',
+            ]);
+        }else{
+            Telegram::sendMessage([
+                'chat_id' => $chatId,
+                'text' => "You said: {$text}",
+            ]);
+        }
+     
+        \Log::info('Telegram response sent', ['chat_id' => $chatId, 'text' => $text]);
+        
+        return response()->json(['ok' => true]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Telegram webhook error', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json(['ok' => false, 'error' => $e->getMessage()], 500);
+    }
 });

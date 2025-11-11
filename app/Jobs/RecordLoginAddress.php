@@ -22,13 +22,19 @@ class RecordLoginAddress implements ShouldQueue
 
     public string $ip;
 
+    public ?string $deviceFingerprint;
+
+    public ?string $deviceDisplayName;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, string $ip)
+    public function __construct(User $user, string $ip, ?string $deviceFingerprint = null, ?string $deviceDisplayName = null)
     {
         $this->user = $user;
         $this->ip = $ip;
+        $this->deviceFingerprint = $deviceFingerprint;
+        $this->deviceDisplayName = $deviceDisplayName;
     }
 
     /**
@@ -38,6 +44,6 @@ class RecordLoginAddress implements ShouldQueue
     {
         $clientIp = app(ClientIpAddressService::class);
 
-        $clientIp->saveRecord($this->user, $this->ip);
+        $clientIp->saveRecord($this->user, $this->ip, $this->deviceFingerprint, $this->deviceDisplayName);
     }
 }

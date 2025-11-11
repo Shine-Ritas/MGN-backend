@@ -4,13 +4,18 @@ namespace App\Services\ClientIp;
 
 use App\Models\LoginHistory;
 use App\Models\User;
-use hisorange\BrowserDetect\Facade as Browser;
+use App\Services\Device\DeviceFingerprintService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stevebauman\Location\Facades\Location;
 use Stevebauman\Location\Position;
 
 class ClientIpAddressService
 {
+    public function __construct(
+        protected DeviceFingerprintService $deviceFingerprintService
+    ) {}
+
     public function getClientInfo(string $ip): bool|Position
     {
         Log::info('ClientIpAddressService R1', ['client_ip' => $ip]);
@@ -18,7 +23,7 @@ class ClientIpAddressService
         return Location::get($ip);
     }
 
-    public function saveRecord(User $user, string $ip): bool
+    public function saveRecord(User $user, string $ip, ?string $deviceFingerprint = null, ?string $deviceDisplayName = null): bool
     {
         if ($user == null) {
             return false;
@@ -26,7 +31,8 @@ class ClientIpAddressService
 
         $location = $this->getClientInfo($ip);
 
-        $device = Browser::platformName().' ( '.Browser::browserFamily().' ) ';
+        // Use provided device display name, or generate from current request
+        $device = $deviceDisplayName ?? $this->deviceFingerprintService->getDeviceDisplayName(request());
 
         $country = $location instanceof Position ? $location->countryName : 'Unknown';
         $region = $location instanceof Position ? $location->regionName : 'Unknown';
@@ -37,6 +43,8 @@ class ClientIpAddressService
             'location' => $locationString,
             'country' => $country,
             'device' => $device,
+            'device_fingerprint' => $deviceFingerprint,
+            'is_active' => true,
             'login_at' => now(),
         ]);
 

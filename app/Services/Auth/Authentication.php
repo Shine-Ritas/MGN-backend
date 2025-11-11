@@ -4,12 +4,15 @@ namespace App\Services\Auth;
 
 use App\Jobs\RecordLoginAddress;
 use App\Repo\Admin\UserRegistrationRepo;
+use App\Services\Device\DeviceFingerprintService;
+use App\Services\Device\DeviceLimitService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -19,11 +22,21 @@ class Authentication
 
     protected Request $request;
 
-    public function __construct(?Request $request = null)
-    {
+    protected DeviceFingerprintService $deviceFingerprintService;
+
+    protected DeviceLimitService $deviceLimitService;
+
+    public function __construct(
+        ?Request $request = null,
+        ?DeviceFingerprintService $deviceFingerprintService = null,
+        ?DeviceLimitService $deviceLimitService = null
+    ) {
         if ($request) {
             $this->request = $request;
         }
+
+        $this->deviceFingerprintService = $deviceFingerprintService ?? app(DeviceFingerprintService::class);
+        $this->deviceLimitService = $deviceLimitService ?? app(DeviceLimitService::class);
     }
 
     /**
@@ -53,11 +66,34 @@ class Authentication
     {
         try {
             $this->authenticate($guard);
+
+            $user = auth()->guard($guard)->user();
+
+            // Generate device fingerprint
+            $deviceFingerprint = $this->deviceFingerprintService->generate($this->request);
+
+            // Enforce device limit only for 'web' guard (User model), not for 'admin' guard
+            if ($user && $guard === 'web' && $user instanceof \App\Models\User) {
+                $this->deviceLimitService->enforceDeviceLimit($user, $deviceFingerprint, $guard);
+
+                // Store device fingerprint in session (only for web requests, not API)
+                if ($this->authType === 'web' && $this->request->hasSession()) {
+                    $this->storeDeviceFingerprintInSession($deviceFingerprint);
+                }
+            }
+
             \Log::info('request ip', ['ip' => request()->ip()]);
-            RecordLoginAddress::dispatchIf($guard == 'web', auth()->user(), request()->ip())->onQueue('normal');
+
+            // Extract device display name before dispatching (Request cannot be serialized)
+            $deviceDisplayName = null;
+            if ($guard == 'web' && $user instanceof \App\Models\User) {
+                $deviceDisplayName = $this->deviceFingerprintService->getDeviceDisplayName($this->request);
+            }
+
+            RecordLoginAddress::dispatchIf($guard == 'web', $user, request()->ip(), $deviceFingerprint, $deviceDisplayName)->onQueue('normal');
             $guard == 'admin' && auth('admin')->user()->update(['last_accessed_at' => now()->toDateTimeString()]);
 
-            return $this->signInResponse($path, $guard);
+            return $this->signInResponse($path, $guard, $deviceFingerprint);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         }
@@ -144,11 +180,11 @@ class Authentication
     /**
      * Generate a response for successful sign-in.
      */
-    protected function signInResponse(string $path, string $guard = 'web'): RedirectResponse|JsonResponse
+    protected function signInResponse(string $path, string $guard = 'web', ?string $deviceFingerprint = null): RedirectResponse|JsonResponse
     {
         return $this->fnResponse(
             fn () => $this->regenerateSessionAndRedirect($path),
-            $this->generateApiResponseData($guard)
+            $this->generateApiResponseData($guard, $deviceFingerprint)
         );
     }
 
@@ -224,7 +260,20 @@ class Authentication
      */
     protected function regenerateSessionAndRedirect(string $path): RedirectResponse
     {
-        $this->request->session()->regenerate();
+        if ($this->request->hasSession()) {
+            $this->request->session()->regenerate();
+
+            // Update session with device fingerprint
+            $deviceFingerprint = $this->request->session()->get('device_fingerprint');
+            if ($deviceFingerprint) {
+                $userId = auth()->id();
+                if ($userId) {
+                    DB::table('sessions')
+                        ->where('id', $this->request->session()->getId())
+                        ->update(['device_fingerprint' => $deviceFingerprint]);
+                }
+            }
+        }
 
         return redirect()->intended($path);
     }
@@ -232,12 +281,25 @@ class Authentication
     /**
      * Generate the API response data.
      */
-    protected function generateApiResponseData(string $guard): array
+    protected function generateApiResponseData(string $guard, ?string $deviceFingerprint = null): array
     {
+        $user = auth()->guard($guard)->user();
+
+        // Create token with device fingerprint
+        $tokenName = $deviceFingerprint ? "{$guard}-{$deviceFingerprint}" : $guard;
+        $token = $user->createToken($tokenName);
+
+        // Store device fingerprint in token
+        if ($deviceFingerprint) {
+            DB::table('personal_access_tokens')
+                ->where('id', $token->accessToken->id)
+                ->update(['device_fingerprint' => $deviceFingerprint]);
+        }
+
         return [
-            'token' => auth()->guard($guard)->user()->createToken($guard)->plainTextToken,
-            'user' => auth()->guard($guard)->user(),
-            'role' => $guard == 'admin' ? auth()->guard($guard)->user()->role_name : null,
+            'token' => $token->plainTextToken,
+            'user' => $user,
+            'role' => $guard == 'admin' ? $user->role_name : null,
         ];
     }
 
@@ -268,8 +330,10 @@ class Authentication
      */
     protected function invalidateSession(): void
     {
-        $this->request->session()->invalidate();
-        $this->request->session()->regenerateToken();
+        if ($this->request->hasSession()) {
+            $this->request->session()->invalidate();
+            $this->request->session()->regenerateToken();
+        }
     }
 
     /**
@@ -277,6 +341,19 @@ class Authentication
      */
     protected function handleWebSignOut(string $path): RedirectResponse
     {
+        $user = Auth::guard('web')->user();
+
+        // Get device fingerprint from session (if available)
+        $deviceFingerprint = null;
+        if ($this->request->hasSession()) {
+            $deviceFingerprint = $this->request->session()->get('device_fingerprint');
+        }
+
+        // Deactivate device in login history (only for User model)
+        if ($user && $deviceFingerprint && $user instanceof \App\Models\User) {
+            $this->deviceLimitService->deactivateDevice($user, $deviceFingerprint);
+        }
+
         Auth::guard('web')->logout();
         $this->invalidateSession();
 
@@ -288,12 +365,52 @@ class Authentication
      */
     protected function handleApiSignOut(): JsonResponse
     {
-        auth()->user()->tokens()->delete();
+        $user = auth()->user();
+
+        // Get device fingerprint from current token
+        $currentToken = $user->currentAccessToken();
+        $deviceFingerprint = null;
+
+        if ($currentToken) {
+            // Check if token is not a TransientToken (which doesn't have an id)
+            // TransientToken is used for stateful authentication, PersonalAccessToken for API
+            if (! ($currentToken instanceof \Laravel\Sanctum\TransientToken)) {
+                // Get device fingerprint from database
+                $tokenData = DB::table('personal_access_tokens')
+                    ->where('id', $currentToken->id)
+                    ->first();
+
+                $deviceFingerprint = $tokenData->device_fingerprint ?? null;
+
+                // Delete current token (only PersonalAccessToken has delete method)
+                $currentToken->delete();
+            } else {
+                // For TransientToken, delete all tokens
+                $user->tokens()->delete();
+            }
+        } else {
+            $user->tokens()->delete();
+        }
+
+        // Deactivate device in login history (only for User model, not Admin)
+        if ($deviceFingerprint && $user instanceof \App\Models\User) {
+            $this->deviceLimitService->deactivateDevice($user, $deviceFingerprint);
+        }
 
         return response()->json(
             [
                 'message' => 'Logged out successfully',
             ]
         );
+    }
+
+    /**
+     * Store device fingerprint in session.
+     */
+    protected function storeDeviceFingerprintInSession(string $deviceFingerprint): void
+    {
+        if ($this->request->hasSession()) {
+            $this->request->session()->put('device_fingerprint', $deviceFingerprint);
+        }
     }
 }

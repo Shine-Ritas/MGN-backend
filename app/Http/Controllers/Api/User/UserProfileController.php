@@ -51,6 +51,7 @@ class UserProfileController extends Controller
         $request->validate([
             'id' => 'required|exists:users,id',
             'user_code' => 'unique:users,user_code,'.$request->input('id'),
+            'email' => 'email|unique:users,email,'.$request->input('id'),
         ]);
 
         $id = $request->input('id');

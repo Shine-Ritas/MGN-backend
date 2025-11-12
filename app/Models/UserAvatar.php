@@ -30,6 +30,6 @@ class UserAvatar extends Model
 
     public function getAvatarUrlPathAttribute(): string
     {
-        return $this->getMedia($this->avatar_path, 'public/user_avatars');
+        return $this->getMedia($this->avatar_path, 'user_avatars');
     }
 }

@@ -14,6 +14,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Database\Factories\UserFactory;
+use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -83,6 +84,15 @@ class User extends Authenticatable
     /*
     * Relationships
     */
+
+    public function getLastLoginAtAttribute(?string $value): ?string
+    {
+        if ($value == null) {
+            return null;
+        }
+
+        return (new DateTime($value))->format('Y-m-d h:i A');
+    }
 
     /**
      * subscription

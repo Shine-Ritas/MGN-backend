@@ -45,11 +45,11 @@ trait CacheResponse
         if (is_array($key)) {
             foreach ($key as $k) {
                 $success = Cache::forget($k);
-                \Log::info('forget cache key',[$k, $success]);
+                \Log::info('forget cache key', [$k, $success]);
             }
         } else {
             $success = Cache::forget($key);
-            \Log::info('forget cache key',[$key, $success]);
+            \Log::info('forget cache key', [$key, $success]);
         }
     }
 

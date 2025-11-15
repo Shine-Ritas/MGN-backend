@@ -42,6 +42,7 @@ trait CacheResponse
 
     public function forgetCache(string|array $key): void
     {
+        \Log::info('forget cache key',[$key]);
         if (is_array($key)) {
             foreach ($key as $k) {
                 Cache::forget($k);

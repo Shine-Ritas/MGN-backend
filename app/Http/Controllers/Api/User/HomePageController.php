@@ -25,7 +25,7 @@ class HomePageController extends Controller
     public function carousel(): JsonResponse
     {
         $legal_only = request()->get('legal_only', false);
-        $cacheKey = config('control.cache_key.homepage.carousel').'_'.$legal_only;
+        $cacheKey = $this->generateCacheKey(config('control.cache_key.homepage.carousel').'_'.$legal_only);
 
         $mogous = $this->cacheResponse($cacheKey, 300, function () {
             $mogous_ids = $this->sms->getBySection('hero_highlight_slider')->childSections
@@ -51,7 +51,7 @@ class HomePageController extends Controller
     public function recommended(): JsonResponse
     {
         $legal_only = request()->get('legal_only', false);
-        $cacheKey = config('control.cache_key.homepage.recommend').'_'.$legal_only;
+        $cacheKey = $this->generateCacheKey(config('control.cache_key.homepage.recommend').'_'.$legal_only);
 
         $mogous = $this->cacheResponse($cacheKey, 300, function () {
             $mogous_ids = $this->sms->getBySection('main_page_recommended')->childSections

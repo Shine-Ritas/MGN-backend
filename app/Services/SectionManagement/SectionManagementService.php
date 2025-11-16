@@ -13,7 +13,10 @@ class SectionManagementService
 {
     use CacheResponse;
 
-    public array $tagKeys = ['homepage'];
+    public function __construct()
+    {
+        $this->setTagKeys(['homepage']);
+    }
 
     public function getBySection(string $type): BaseSection
     {
@@ -55,7 +58,7 @@ class SectionManagementService
         ]);
 
         $this->forgetCache($type);
-        $this->forgetCacheTags($this->tagKeys, $type);
+        $this->clearCacheTags($this->tagKeys);
 
         \Log::info('de', [Cache::has($type)]);
 
@@ -69,7 +72,7 @@ class SectionManagementService
         $baseSection->childSections()->where('pivot_key', $child)->delete();
 
         $this->forgetCache($type);
-        $this->forgetCacheTags($this->tagKeys, $type);
+        $this->clearCacheTags($this->tagKeys);
 
         \Log::info('de', [Cache::has($type)]);
 
@@ -103,7 +106,7 @@ class SectionManagementService
         $baseSection->childSections()->where('pivot_key', $child)->update(['is_visible' => $visibility]);
 
         $this->forgetCache($type);
-        $this->forgetCacheTags($this->tagKeys, $type);
+        $this->clearCacheTags($this->tagKeys);
 
         return $baseSection;
     }
@@ -115,7 +118,7 @@ class SectionManagementService
         $baseSection->childSections()->delete();
 
         $this->forgetCache($type);
-        $this->forgetCacheTags($this->tagKeys, $type);
+        $this->clearCacheTags($this->tagKeys);
 
         return $baseSection;
     }

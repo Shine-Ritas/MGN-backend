@@ -2,7 +2,9 @@
 
 namespace App\Services\ApplicationConfig;
 
+use App\Enum\SocialInfoType;
 use App\Models\ApplicationConfig;
+use App\Models\SocialInfo;
 use App\Traits\CacheResponse;
 
 class CacheApplicationConfigService
@@ -20,9 +22,13 @@ class CacheApplicationConfigService
     public function getApplicationConfig(): mixed
     {
         $key = $this->cacheKey;
+
         $applicationConfig = (new self)->cacheResponse(
             $key, 300, function () {
-                return ApplicationConfig::first();
+                $application = ApplicationConfig::first();
+                $application->socials = SocialInfo::where('type', SocialInfoType::ReferSocial->value)->get();
+
+                return $application;
             }
         );
 

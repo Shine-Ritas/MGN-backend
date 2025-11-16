@@ -17,15 +17,17 @@ class HomePageController extends Controller
 {
     use CacheResponse;
 
-    public array $tagKeys = ['homepage'];
-
     // make constructor
-    public function __construct(protected MogouRepo $mogouRepo, protected SectionManagementService $sms) {}
+    public function __construct(protected MogouRepo $mogouRepo, protected SectionManagementService $sms)
+    {
+        $this->setTagKeys(['homepage']);
+    }
 
     public function carousel(): JsonResponse
     {
         $legal_only = request()->get('legal_only', false);
-        $cacheKey = $this->generateCacheKey(config('control.cache_key.homepage.carousel').'_'.$legal_only);
+
+        $cacheKey = $this->generateCacheKey(config('control.cache_key.homepage.carousel').'_'.$legal_only, 'homepage');
 
         $mogous = $this->cacheResponse($cacheKey, 300, function () {
             $mogous_ids = $this->sms->getBySection('hero_highlight_slider')->childSections
@@ -39,7 +41,7 @@ class HomePageController extends Controller
                 ->with('categories:title')
                 ->whereIn('id', $mogous_ids)
                 ->get();
-        });
+        }, true);
 
         return response()->json(
             [
@@ -65,7 +67,7 @@ class HomePageController extends Controller
                 ->whereIn('id', $mogous_ids)
                 ->take(20)
                 ->get();
-        });
+        }, true);
 
         return response()->json(
             [

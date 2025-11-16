@@ -9,26 +9,37 @@ trait CacheResponse
 {
     public bool $cacheMode = true;
 
-    public function cacheResponse(string $key, int $minutes, Closure $callback, bool $addTagsKeys = true): mixed
+    public array $tagKeys = [];
+
+    public function cacheResponse(string $key, int $minutes, Closure $callback, bool $useTagsKey = false): mixed
     {
+
         if (! $this->cacheMode) {
             return $callback();
         }
 
-        if (Cache::has($key)) {
-
-            return Cache::get($key);
+        if ($useTagsKey) {
+            if (Cache::tags($this->tagKeys)->has($key)) {
+                return Cache::tags($this->tagKeys)->get($key);
+            }
+        } else {
+            if (Cache::has($key)) {
+                return Cache::get($key);
+            }
         }
 
-        return Cache::remember($key, $minutes, function () use ($callback, $addTagsKeys, $key, $minutes) {
-            $process = $callback();
+        $cache = $useTagsKey ? Cache::tags($this->tagKeys) : Cache::store();
 
-            if (! empty($this->tagKeys) && $addTagsKeys) {
-                Cache::tags($this->tagKeys)->put($key, $process, $minutes);
-            }
+        return $cache->remember($key, $minutes, function () use ($callback) {
+            $process = $callback();
 
             return $process;
         });
+    }
+
+    public function setTagKeys(array $tagKeys): void
+    {
+        $this->tagKeys = $tagKeys;
     }
 
     public function updateCache(string $key, mixed $data, ?int $minutes = null): void
@@ -45,12 +56,16 @@ trait CacheResponse
         if (is_array($key)) {
             foreach ($key as $k) {
                 $success = Cache::forget($k);
-                \Log::info('forget cache key', [$k, $success]);
             }
         } else {
             $success = Cache::forget($key);
-            \Log::info('forget cache key', [$key, $success]);
         }
+    }
+
+    public function removeByModule(string $moduleName): void
+    {
+        $geneatedName = $this->generateCacheKey('*', $moduleName);
+        $this->forgetCache($geneatedName);
     }
 
     public function clearCache(): void
@@ -58,7 +73,7 @@ trait CacheResponse
         Cache::flush();
     }
 
-    public function generateCacheKey(string $key): string
+    public function generateCacheKey(string $key, ?string $moduleName = null): string
     {
         $appName = config('app.name');
 
@@ -66,7 +81,7 @@ trait CacheResponse
             $appName = 'default-app';
         }
 
-        return sprintf('%s-%s', $appName, $key);
+        return sprintf('%s-%s-%s', $appName, $moduleName, $key);
     }
 
     /**

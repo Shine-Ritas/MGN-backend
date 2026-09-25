@@ -61,7 +61,12 @@ services:
       - ./storage:/var/www/mgn/storage:rw
       - mgn-cache:/var/www/mgn/bootstrap/cache
       - ./public:/var/www/mgn/public:rw
-      - ./.env:/var/www/mgn/.env
+      - type: bind
+        source: ./.env
+        target: /var/www/mgn/.env
+        read_only: true
+        bind:
+          create_host_path: false
       - ./deploy/logs:/var/log:rw
       - ./deployment/docker/entrypoint.sh:/entrypoint.sh:ro
     tty: true
@@ -86,7 +91,12 @@ services:
       - ./storage:/var/www/mgn/storage:rw
       - mgn-cache:/var/www/mgn/bootstrap/cache
       - ./public:/var/www/mgn/public:rw
-      - ./.env:/var/www/mgn/.env
+      - type: bind
+        source: ./.env
+        target: /var/www/mgn/.env
+        read_only: true
+        bind:
+          create_host_path: false
       - ./deployment/docker/entrypoint.sh:/entrypoint.sh:ro
     tty: true
     networks:
